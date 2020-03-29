@@ -718,7 +718,7 @@ function handle_end_of_round () {
 
   var quit_text = "Restart";
   var quit_func = new_game;
-  var continue_text = "Go on";
+  var continue_text = "Deal Next Hand";
   var continue_func = new_round;
 
   if (players[0].status == "BUST" && !human_loses) {
