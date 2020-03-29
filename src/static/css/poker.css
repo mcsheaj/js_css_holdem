@@ -91,7 +91,7 @@ html {
     top:  410px;
 }
 #seat0 .bet {
-    top: -20px;
+    top: 100px;  //-20px;
 }
 
 #seat1 {

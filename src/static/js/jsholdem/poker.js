@@ -761,7 +761,7 @@ function handle_end_of_round () {
   var elapsed_milliseconds = ((new Date()) - START_DATE);
   var elapsed_time = makeTimeString(elapsed_milliseconds);
 
-  if (human_loses == 1) {
+  if (0) { //(human_loses == 1) {
     var ending = NUM_ROUNDS == 1 ? "1 deal." : NUM_ROUNDS + " deals.";
     my_pseudo_alert("Sorry, you busted " + players[0].name + ".\n\n" +
                     elapsed_time + ", " + ending);
@@ -1019,18 +1019,18 @@ function write_player (n, hilite, show_cards) {
     bet_text = "FOLDED (" +
                (players[n].subtotal_bet + players[n].total_bet) + ")";
     if (n == 0) {
-      HUMAN_GOES_ALL_IN = 0;
+      //HUMAN_GOES_ALL_IN = 0;
     }
   } else if (players[n].status == "BUST") {
     bet_text = "BUSTED";
     if (n == 0) {
-      HUMAN_GOES_ALL_IN = 0;
+      //HUMAN_GOES_ALL_IN = 0;
     }
   } else if (!has_money(n)) {
     bet_text = "ALL IN (" +
                (players[n].subtotal_bet + players[n].total_bet) + ")";
     if (n == 0) {
-      HUMAN_GOES_ALL_IN = 1;
+      //HUMAN_GOES_ALL_IN = 1;
     }
   } else {
     bet_text = allin + "$" + players[n].subtotal_bet +
