@@ -994,7 +994,7 @@ function write_player (n, hilite, show_cards) {
     } else {
       carda = "blinded";
     }
-    if (n == 0 || (show_cards && players[n].status != "FOLD")) {
+    if (show_cards && players[n].status != "FOLD") {
       carda = players[n].carda;
     }
   }
@@ -1005,7 +1005,7 @@ function write_player (n, hilite, show_cards) {
     } else {
       cardb = "blinded";
     }
-    if (n == 0 || (show_cards && players[n].status != "FOLD")) {
+    if (show_cards && players[n].status != "FOLD") {
       cardb = players[n].cardb;
     }
   }
@@ -1152,11 +1152,11 @@ function write_settings_frame () {
     speed_i = default_speed;
   }
   set_speed(speed_i);
-  gui_setup_option_buttons(change_name,
-                           set_raw_speed,
-                           help_func,
-                           update_func,
-                           gui_toggle_the_theme_mode);
+  //gui_setup_option_buttons(change_name,
+  //                         set_raw_speed,
+  //                         help_func,
+  //                         update_func,
+  //                         gui_toggle_the_theme_mode);
 }
 
 function index2speed (index) {
