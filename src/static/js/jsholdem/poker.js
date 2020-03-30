@@ -398,7 +398,7 @@ function main () {
   } else {
     players[current_bettor_index].status = "";
     if (1) {//(current_bettor_index == 0) {********all players are human
-      var call_button_text = "<u>C</u>all";
+      var call_button_text = "<u>C</u>all " + current_bet_amount;
       var fold_button_text = "<u>F</u>old";
       var to_call = current_bet_amount - players[current_bettor_index].subtotal_bet;
       if (to_call > players[current_bettor_index].bankroll) {   //*************************
@@ -498,11 +498,19 @@ function main () {
       gui_write_guick_raise(html9 + html10);
 
       var hi_lite_color = gui_get_theme_mode_highlite_color();
-      var message = "<tr><td><font size=+2><b>Current raise: " +
+      var message = "";
+      if (to_call){
+        message = "<tr><td><font size=+2><b>Current raise: " +
                     current_bet_amount +
                     "</b><br> You need <font color=" + hi_lite_color +
                     " size=+3>" + to_call +
                     "</font> more to call.</font></td></tr>";
+      } else {
+        message = "<tr><td><font size=+2><b>Current raise: " +
+                    current_bet_amount +
+                    "</b><br> </font></td></tr>";  
+      }
+
       gui_write_game_response(message);
       write_player(current_bettor_index, 1, 0);
       return;
@@ -721,11 +729,11 @@ function handle_end_of_round () {
   var continue_text = "Deal Next Hand";
   var continue_func = new_round;
 
-  if (players[0].status == "BUST" && !human_loses) {
+  if (0) { //(players[0].status == "BUST" && !human_loses) {
     continue_text = 0;
     quit_func = function () {
       parent.STOP_AUTOPLAY = 1;
-    };
+    }
     setTimeout(autoplay_new_round, 1 * global_speed);
   }
 
