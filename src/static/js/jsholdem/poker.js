@@ -714,6 +714,7 @@ function handle_end_of_round () {
     HUMAN_WINS_AGAIN = 0;
   }
 
+  /*
   var detail = "";
   for (i = 0; i < players.length; i++) {
     if (players[i].total_bet == 0 && players[i].status == "BUST") {
@@ -723,7 +724,7 @@ function handle_end_of_round () {
               allocations[i] + ".\\n";
   }
   detail = " (<a href='javascript:alert(\"" + detail + "\")'>details</a>)";
-
+*/
   var quit_text = "Restart";
   var quit_func = new_game;
   var continue_text = "Deal Next Hand";
@@ -750,7 +751,7 @@ function handle_end_of_round () {
              get_pot_size_html() +
              "</td></tr></table><br><font size=+2 color=" + hi_lite_color +
              "><b>Winning: " +
-             winner_text + "</b></font>" + detail + "<br>";
+             winner_text + "</b></font><br>";
   gui_write_game_response(html);
 
   gui_setup_fold_call_click(quit_text,
