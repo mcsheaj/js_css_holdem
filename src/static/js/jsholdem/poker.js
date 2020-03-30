@@ -729,14 +729,6 @@ function handle_end_of_round () {
   var continue_text = "Deal Next Hand";
   var continue_func = new_round;
 
-  if (0) { //(players[0].status == "BUST" && !human_loses) {
-    continue_text = 0;
-    quit_func = function () {
-      parent.STOP_AUTOPLAY = 1;
-    }
-    setTimeout(autoplay_new_round, 1 * global_speed);
-  }
-
   var num_playing = number_of_active_players();
   if (num_playing < 2) {
     // Convoluted way of finding the active player and give him the pot
