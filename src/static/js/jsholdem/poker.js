@@ -932,35 +932,6 @@ function human_fold () {
   main();
 }
 
-function bet_from_bot (x) {
-  var b = 0;
-  var n = current_bet_amount - players[x].subtotal_bet;
-  if (!board[0]) b = bot_get_preflop_bet();
-  else b = bot_get_postflop_bet();
-  if (b >= players[x].bankroll) { // ALL IN
-    players[x].status = "";
-  } else if (b < n) { // BET 2 SMALL
-    b = 0;
-    players[x].status = "FOLD";
-  } else if (b == n) { // CALL
-    players[x].status = "CALL";
-  } else if (b > n) {
-    if (b - n < current_min_raise) { // RAISE 2 SMALL
-      b = n;
-      players[x].status = "CALL";
-    } else {
-      players[x].status = ""; // RAISE
-    }
-  }
-  if (the_bet_function(x, b) == 0) {
-    players[x].status = "FOLD";
-    the_bet_function(x, 0);
-  }
-  write_player(current_bettor_index, 0, 0);
-  current_bettor_index = get_next_player_position(current_bettor_index, 1);
-  main();
-}
-
 function write_player (n, hilite, show_cards) {
   var carda = "";
   var cardb = "";
@@ -982,11 +953,9 @@ function write_player (n, hilite, show_cards) {
   }
   gui_hilite_player(name_background_color, name_font_color, n);
 
-  var show_folded = false;  //*************************** */
-  // If the human is out of the game
-  //if (players[0].status == "BUST" || players[0].status == "FOLD") {
-    show_cards = 1; //always show cards since all human now
-  //}
+  var show_folded = false;  
+  show_cards = 1; 
+  
   if (players[n].carda) {
     if (players[n].status == "FOLD") {
       carda = "";
@@ -1018,21 +987,12 @@ function write_player (n, hilite, show_cards) {
   if (players[n].status == "FOLD") {
     bet_text = "FOLDED (" +
                (players[n].subtotal_bet + players[n].total_bet) + ")";
-    if (n == 0) {
-      //HUMAN_GOES_ALL_IN = 0;
-    }
-  } else if (players[n].status == "BUST") {
+    } else if (players[n].status == "BUST") {
     bet_text = "BUSTED";
-    if (n == 0) {
-      //HUMAN_GOES_ALL_IN = 0;
-    }
-  } else if (!has_money(n)) {
+    } else if (!has_money(n)) {
     bet_text = "ALL IN (" +
                (players[n].subtotal_bet + players[n].total_bet) + ")";
-    if (n == 0) {
-      //HUMAN_GOES_ALL_IN = 1;
-    }
-  } else {
+    } else {
     bet_text = allin + "$" + players[n].subtotal_bet +
                " (" + (players[n].subtotal_bet + players[n].total_bet) + ")";
   }
