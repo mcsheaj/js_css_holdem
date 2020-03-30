@@ -287,9 +287,9 @@ function unroll_player (starting_player, player_pos, final_call) {
   var next_player = get_next_player_position(player_pos, 1);
   write_player(player_pos, 0, 0);
   if (starting_player == next_player) {
-    setTimeout(final_call, 550 * global_speed);
+    setTimeout(final_call, 1 * global_speed);
   } else {
-    setTimeout(unroll_player, 550 * global_speed,
+    setTimeout(unroll_player, 1 * global_speed,
                starting_player, next_player, final_call);
   }
 }
@@ -312,7 +312,7 @@ function deal_and_write_a () {
 
 // Make a small delay before starting the bets
 function delay_for_main () {
-  setTimeout(main, 1000);
+  setTimeout(main, 1);
 }
 
 function deal_and_write_b () {
@@ -331,9 +331,9 @@ function deal_and_write_b () {
 
 function go_to_betting () {
   if (get_num_betting() > 1) {
-    setTimeout(main, 1000 * global_speed);
+    setTimeout(main, 1 * global_speed);
   } else {
-    setTimeout(ready_for_next_card, 1000 * global_speed);
+    setTimeout(ready_for_next_card, 1 * global_speed);
   }
 }
 
@@ -341,9 +341,9 @@ function unroll_table (last_pos, current_pos, final_call) {
   gui_lay_board_card(current_pos, board[current_pos]);
 
   if (current_pos == last_pos) {
-    setTimeout(final_call, 150 * global_speed);
+    setTimeout(final_call, 1 * global_speed);
   } else {
-    setTimeout(unroll_table, 150 * global_speed,
+    setTimeout(unroll_table, 1 * global_speed,
                last_pos, current_pos + 1, final_call);
   }
 }
@@ -358,7 +358,7 @@ function deal_flop () {
   }
 
   // Place 3 first cards
-  setTimeout(unroll_table, 1000, /*last_pos*/2, /*start_pos*/0, go_to_betting);
+  setTimeout(unroll_table, 1, /*last_pos*/2, /*start_pos*/0, go_to_betting);
 }
 
 function deal_fourth () {
@@ -369,7 +369,7 @@ function deal_fourth () {
   board[3] = cards[deck_index++];
 
   // Place 4th card
-  setTimeout(unroll_table, 1000, /*last_pos*/3, /*start_pos*/3, go_to_betting);
+  setTimeout(unroll_table, 1, /*last_pos*/3, /*start_pos*/3, go_to_betting);
 }
 
 function deal_fifth () {
@@ -380,7 +380,7 @@ function deal_fifth () {
   board[4] = cards[deck_index++];
 
   // Place 5th card
-  setTimeout(unroll_table, 1000, /*last_pos*/4, /*start_pos*/4, go_to_betting);
+  setTimeout(unroll_table, 1, /*last_pos*/4, /*start_pos*/4, go_to_betting);
 }
 
 function main () {
@@ -530,9 +530,9 @@ function main () {
     current_bettor_index = get_next_player_position(current_bettor_index, 1);
   }
   if (can_break) {
-    setTimeout(ready_for_next_card, 999 * global_speed);
+    setTimeout(ready_for_next_card, 1 * global_speed);
   } else {
-    setTimeout(main, 999 * global_speed);
+    setTimeout(main, 1 * global_speed);
   }
 }
 
@@ -726,7 +726,7 @@ function handle_end_of_round () {
     quit_func = function () {
       parent.STOP_AUTOPLAY = 1;
     };
-    setTimeout(autoplay_new_round, 1500 + 1100 * global_speed);
+    setTimeout(autoplay_new_round, 1 * global_speed);
   }
 
   var num_playing = number_of_active_players();

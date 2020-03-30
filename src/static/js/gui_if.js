@@ -74,11 +74,12 @@ function internal_setCard (diva, card, folded) {
   //             "s14" -> show ace of spades
   var image;
   var opacity = 1.0;
+
   if (typeof card === 'undefined') {
     alert('Undefined card ' + card);
-    image = "url('static/images/outline.gif')";
+    image = "url('')";    
   } else if (card === "") {
-    image = "url('static/images/outline.gif')";
+    image = "url('')";   
   } else if (card === "blinded") {
     image = "url('static/images/cardback.png')";
   } else {
@@ -150,7 +151,7 @@ function gui_set_bankroll (amount, seat) {
   var current = 'seat' + seat;
   var seatloc = table.children[current];
   var chipsdiv = internal_get_a_class_named(seatloc, 'name-chips');
-  //  var chipsdiv = seatloc.getElementById('name-chips');
+    //var chipsdiv = seatloc.getElementById('name-chips');
   var namediv = internal_get_a_class_named(chipsdiv, 'chips');
   if (!isNaN(amount) && amount != "") {
     amount = "$" + amount;
