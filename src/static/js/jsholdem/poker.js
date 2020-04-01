@@ -499,16 +499,21 @@ function main () {
 
       var hi_lite_color = gui_get_theme_mode_highlite_color();
       var message = "";
+      
       if (to_call){
         message = "<tr><td><font size=+2><b>Current raise: " +
-                    current_bet_amount +
+                    current_bet_amount + 
                     "</b><br> You need <font color=" + hi_lite_color +
                     " size=+3>" + to_call +
-                    "</font> more to call.</font></td></tr>";
+                    "</font> more to call.<br>" +
+                    players[current_bettor_index].name + ", it's your turn." +
+                    "</font></td></tr>";
       } else {
         message = "<tr><td><font size=+2><b>Current raise: " +
                     current_bet_amount +
-                    "</b><br> </font></td></tr>";  
+                    "</b><br>" +
+                    players[current_bettor_index].name + ", you are first to act." +
+                    "</font></td></tr>";  
       }
 
       gui_write_game_response(message);
@@ -569,8 +574,8 @@ function handle_end_of_round () {
   var best_hand_players;
   var current_pot_to_split = 0;
   var pot_remainder = 0;
-  if (global_pot_remainder) {
-    gui_log_to_history("transferring global pot remainder " + global_pot_remainder);
+  if (global_pot_remainder) {   //  Can never get here????
+    gui_log_to_history("transferring pot remainder " + global_pot_remainder);
     pot_remainder = global_pot_remainder;
     my_total_pot_size += global_pot_remainder;
     global_pot_remainder = 0;
@@ -708,11 +713,11 @@ function handle_end_of_round () {
     }
   }
   // Have a more liberal take on winning
-  if (allocations[0] > 5) {
-    HUMAN_WINS_AGAIN++;
-  } else {
-    HUMAN_WINS_AGAIN = 0;
-  }
+  //if (allocations[0] > 5) {
+  //  HUMAN_WINS_AGAIN++;
+  //} else {
+  //  HUMAN_WINS_AGAIN = 0;
+  // }
 
   /*
   var detail = "";
@@ -741,17 +746,22 @@ function handle_end_of_round () {
       }
     }
   }
-  if (pot_remainder) {
-    var local_text = "There is " + pot_remainder + " put into next pot\n";
-    detail += local_text;
-  }
+  
   var hi_lite_color = gui_get_theme_mode_highlite_color();
   var html = "<html><body topmargin=2 bottommargin=0 bgcolor=" + BG_HILITE +
+             " onload='document.f.c.focus();'>" +
+             get_pot_size_html() +
+             "  <font size=+2 color=" + hi_lite_color +
+             "><b>Winning: " +
+             winner_text + "</b></font><br>";
+
+             /* var html = "<html><body topmargin=2 bottommargin=0 bgcolor=" + BG_HILITE +
              " onload='document.f.c.focus();'><table><tr><td>" +
              get_pot_size_html() +
              "</td></tr></table><br><font size=+2 color=" + hi_lite_color +
              "><b>Winning: " +
-             winner_text + "</b></font><br>";
+             winner_text + "</b></font><br>"; */
+
   gui_write_game_response(html);
 
   gui_setup_fold_call_click(quit_text,
@@ -1023,11 +1033,12 @@ function get_pot_size () {
   for (var i = 0; i < players.length; i++) {
     p += players[i].total_bet + players[i].subtotal_bet;
   }
+  p += global_pot_remainder;
   return p;
 }
 
 function get_pot_size_html () {
-  return "<font size=+4><b>TOTAL POT: " + get_pot_size() + "</b></font>";
+  return "<font size=+2><b>TOTAL POT: " + get_pot_size() + "</b><br></font>";
 }
 
 function clear_bets () {

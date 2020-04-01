@@ -91,7 +91,7 @@ html {
     top:  410px;
 }
 #seat0 .bet {
-    top: 100px;  //-20px;
+    top: 100px; 
 }
 
 #seat1 {
@@ -178,7 +178,7 @@ html {
     top:  410px;
 }
 #seat7 .bet {
-    top: -20px;
+    top: 100px;
 }
 
 #seat8 {
@@ -190,7 +190,7 @@ html {
     top:  410px;
 }
 #seat8 .bet {
-    top: -20px;
+    top: 100px;
 }
 
 #seat9 {
@@ -202,7 +202,7 @@ html {
     top:  410px;
 }
 #seat9 .bet {
-    top: -20px;
+    top: 100px;
 }
 
 
@@ -231,6 +231,7 @@ html {
 }
 
 #flop1 {
+    left: 0 px;
 }
 
 #flop2 {
@@ -355,11 +356,11 @@ select {
     color: black;
     font-size: 12px;
     height: 300px;
-    left: 900px;
+    left: 9px;
     position: absolute;
-    text-align: center;
-    top: 5px;
-    width: 600px;
+    text-align: left;
+    top: 600px;
+    width: 1000px;
 }
 
 #production-code {

@@ -18,7 +18,7 @@
     position: absolute;
     text-align: center;
     top: 600px;
-    width: 500px;
+    width: 1000px;
 }
 
 #production-code {
@@ -32,3 +32,4 @@
     width: 600px;
 }
 
+}
