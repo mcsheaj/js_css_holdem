@@ -2,6 +2,14 @@
 
 //  --- Not in the interface ---
 
+function getLocalStorage (key) {
+  return localStorage.getItem(key);
+}
+
+function setLocalStorage (key, value) {
+  return localStorage.setItem(key, value);
+}
+
 function internal_get_a_class_named (curr, searched_name) {
   if (!curr) {
     gui_log_to_history("internal_get_a_class_named, no curr for " +
@@ -59,7 +67,7 @@ function internal_GetCardImageUrl (card) {
   rank = internal_FixTheRanking(rank); // 14 -> 'ace' etc
   suit = internal_FixTheSuiting(suit); // c  -> 'clubs' etc
 
-  return "url('static/images/" + rank + "_of_" + suit + ".png')";
+  return "url('images/" + rank + "_of_" + suit + ".png')";
 }
 
 function internal_setBackground (diva, image, opacity) {
@@ -77,11 +85,11 @@ function internal_setCard (diva, card, folded) {
 
   if (typeof card === 'undefined') {
     alert('Undefined card ' + card);
-    image = "url('')";    
-  } else if (card === "") {
     image = "url('')";   
+  } else if (card === "") {
+    image = "url('')";
   } else if (card === "blinded") {
-    image = "url('static/images/cardback.png')";
+    image = "url('images/cardback.png')";
   } else {
     if (folded) {
       opacity = 0.5;
@@ -166,6 +174,20 @@ function gui_set_bet (bet, seat) {
   var betdiv = internal_get_a_class_named(seatloc, 'bet');
 
   betdiv.textContent = bet;
+}
+
+function gui_clear_the_board(board) {
+  for (var i = 0; i < board.length; i++) {
+    if (i > 4) {        // board.length != 5
+      continue;
+    }
+    board[i] = "";
+    gui_lay_board_card(i, board[i]);     // Clear the board
+  }
+  for (i = 0; i < 3; i++) {
+    board[i] = "";
+    gui_burn_board_card(i, board[i]);
+  }
 }
 
 function gui_set_player_cards (card_a, card_b, seat, folded) {
@@ -345,7 +367,7 @@ function gui_setup_option_buttons (name_func,
   internal_le_button(buttons, 'name-button', name_func);
 
   var speed = buttons.children['speed-button'];
-  speed.style.visibility = 'visible';
+  speed.style.visibility = 'hidden';
   speed.onchange = curry_in_speedfunction(speed_func);
 
   internal_le_button(buttons, 'mode-button', mode_func);
@@ -383,6 +405,7 @@ function gui_show_game_response () {
 
 function gui_write_game_response (text) {
   var response = document.getElementById('game-response');
+  response.style.visibility = 'visible';
   response.innerHTML = text;
 }
 
@@ -416,7 +439,7 @@ function gui_initialize_css () {
   var image;
   var item;
   item = document.getElementById('poker_table');
-  image = "url('static/images/poker_table.png')";
+  image = "url('images/poker_table.png')";
   internal_setBackground(item, image, 1.0);
 }
 

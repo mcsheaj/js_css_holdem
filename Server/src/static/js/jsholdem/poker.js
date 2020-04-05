@@ -263,15 +263,7 @@ function blinds_and_deal () {
   SMALL_BLIND = 5;
   BIG_BLIND = 10; 
   var num_playing = number_of_active_players();
-  /*
-  if (num_playing == 3) {
-    SMALL_BLIND = 10;
-    BIG_BLIND = 20;
-  } else if (num_playing < 3) {
-    SMALL_BLIND = 25;
-    BIG_BLIND = 50;
-  }
-  */
+
   var small_blind = get_next_player_position(button_index, 1);
   the_bet_function(small_blind, SMALL_BLIND);
   write_player(small_blind, 0, 0);
@@ -1124,11 +1116,11 @@ function write_settings_frame () {
     speed_i = default_speed;
   }
   set_speed(speed_i);
-  //gui_setup_option_buttons(change_name,
-  //                         set_raw_speed,
-  //                         help_func,
-  //                         update_func,
-  //                         gui_toggle_the_theme_mode);
+  gui_setup_option_buttons(change_name,
+                           set_raw_speed,
+                           help_func,
+                           update_func,
+                           gui_toggle_the_theme_mode);
 }
 
 function index2speed (index) {
