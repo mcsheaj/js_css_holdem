@@ -317,7 +317,7 @@ function gui_hide_fold_call_click () {
 }
 
 function gui_setup_fold_call_click (show_fold, call_text,
-  fold_func, call_func, key_ev) {
+  fold_func, call_func) {
   // Here we have a coupling of the functions 'human_fold' and 'human_call'
   var buttons = document.getElementById('action-options');
   var fold = buttons.children['fold-button'];

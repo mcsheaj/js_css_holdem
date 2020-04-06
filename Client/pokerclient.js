@@ -25,32 +25,43 @@ var STATE = {
   CMD,
   NUM_PLAYERS,
   CURRENT_DEALER,
-  START_DATE,
   NUM_ROUNDS,
-  STOP_AUTOPLAY,
   RUN_EM,
   STARTING_BANKROLL,
   SMALL_BLIND,
   BIG_BLIND,
-  BG_HILITE,
+  BG_HILITE: 'gold',
   cards,
-  players, /*:   [
-    new player("Matt", 0, "", "", "", 0, 0),
-    new player("惠辰國", 0, "", "", "", 0, 0),
-    new player("Jani Sointula", 0, "", "", "", 0, 0),
-    new player("Annette Obrestad", 0, "", "", "", 0, 0),
-    new player("Ricardo Chauriye", 0, "", "", "", 0, 0),
-    new player("Jennifer Shahade", 0, "", "", "", 0, 0),
-    new player("Theo Jørgensen", 0, "", "", "", 0, 0),
-    new player("Marek Židlický", 0, "", "", "", 0, 0),
-    //  Żółć - Grzegorz Brzęczyszczykiewicz
-    new player("Brzęczyszczykiewicz", 0, "", "", "", 0, 0),
-    new player("Chris Moneymaker", 0, "", "", "", 0, 0)
-   ],*/
-  board, deck_index, button_index,
-  current_bettor_index, current_bet_amount, current_min_raise, current_pot
+  players, 
+  board,
+  deck_index,
+  button_index,
+  current_bettor_index,
+  current_bet_amount,
+  current_min_raise,
+  current_pot
 }
 
+function update_state(){
+  CMD  = STATE.CMD;
+  NUM_PLAYERS = STATE.NUM_PLAYERS;
+  CURRENT_DEALER = STATE.CURRENT_DEALER;
+  NUM_ROUNDS = STATE.NUM_ROUNDS
+  RUN_EM = STATE.RUN_EM;
+  STARTING_BANKROLL = STATE.STARTING_BANKROLL;
+  SMALL_BLIND = STATE.SMALL_BLIND
+  BIG_BLIND = STATE.BIG_BLIND
+  BG_HILITE = STATE.BG_HILITE;          
+  cards = STATE.cards;
+  players = STATE.players;
+  board = STATE.board;
+  deck_index = STATE.deck_index;
+  button_index = STATE.button_index;
+  current_bettor_index = STATE.current_bettor_index;
+  current_bet_amount = STATE.current_bet_amount;
+  current_min_raise= STATE.current_min_raise;
+  current_pot = STATE.current_pot;
+}
 
 function init() {
   gui_hide_poker_table();
@@ -64,6 +75,139 @@ function init() {
   make_deck();
   new_game();
   new_game_continues(); 
+}
+
+function main () {
+  gui_hide_guick_raise();
+  var increment_bettor_index = 0;
+  if (players[current_bettor_index].status == "BUST" ||
+      players[current_bettor_index].status == "FOLD") {
+    increment_bettor_index = 1;
+  } else if (!has_money(current_bettor_index)) {
+    players[current_bettor_index].status = "CALL";
+    increment_bettor_index = 1;
+  } else if (players[current_bettor_index].status == "CALL" &&
+             players[current_bettor_index].subtotal_bet == current_bet_amount) {
+    increment_bettor_index = 1;
+  } else {
+    players[current_bettor_index].status = "";
+    if (1) {//(current_bettor_index == 0) {********all players are human
+      var call_button_text = "<u>C</u>all " + current_bet_amount;
+      var fold_button_text = "<u>F</u>old";
+      var to_call = current_bet_amount - players[current_bettor_index].subtotal_bet;
+      if (to_call > players[current_bettor_index].bankroll) {   //*************************
+        to_call = players[current_bettor_index].bankroll;       //*************************
+      }
+      var that_is_not_the_key_you_are_looking_for;
+      if (to_call == 0) {
+        call_button_text = "<u>C</u>heck";
+        fold_button_text = 0;
+        that_is_not_the_key_you_are_looking_for = function (key) {
+          if (key == 67) {         // Check
+            human_call();
+          } else {
+            return true;           // Not my business
+          }
+          return false;
+        };
+      } else {
+        that_is_not_the_key_you_are_looking_for = function (key) {
+          if (key == 67) {         // Call
+            human_call();
+          } else if (key == 70) {  // Fold
+            human_fold();
+          } else {
+            return true;           // Not my business
+          }
+          return false;
+        };
+      }
+      // Fix the shortcut keys - structured and simple
+      // Called through a key event
+      var ret_function = function (key_event) {
+        actual_function(key_event.keyCode, key_event);
+      }
+
+      // Called both by a key press and click on button.
+      // Why? Because we want to disable the shortcut keys when done
+      var actual_function = function (key, key_event) {
+        if (that_is_not_the_key_you_are_looking_for(key)) {
+          return;
+        }
+        gui_disable_shortcut_keys(ret_function);
+        if (key_event != null) {
+          key_event.preventDefault();
+        }
+      };
+
+      // And now set up so the key click also go to 'actual_function'
+      var do_fold = function () {
+        actual_function(70, null);
+      };
+      var do_call = function () {
+        actual_function(67, null);
+      };
+      // Trigger the shortcut keys
+      gui_enable_shortcut_keys(ret_function);
+
+      // And enable the buttons
+      gui_setup_fold_call_click(fold_button_text,
+                                call_button_text,
+                                do_fold,
+                                do_call);
+
+     var quick_values = new Array(6);
+
+     var next_raise;
+     for (var i = 0; i < 6; i++) {
+       next_raise = current_min_raise + (current_min_raise * i);
+      if (next_raise < players[current_bettor_index].bankroll) {
+        quick_values[i] = next_raise;
+      }
+    }
+
+      var bet_or_raise = "Bet";
+      if (to_call > 0) {
+        bet_or_raise = "Raise";
+      }
+      var quick_bets = "<b>Quick " + bet_or_raise + "s</b><br>";
+      for (i = 0; i < 6; i++) {
+        if (quick_values[i]) {
+          quick_bets += "<a href='javascript:parent.handle_human_bet(" +
+                        quick_values[i] + ")'>" + quick_values[i] + "</a>" +
+                        "&nbsp;&nbsp;&nbsp;";
+        }
+      }
+      quick_bets += "<a href='javascript:parent.handle_human_bet(" +
+                    players[current_bettor_index].bankroll + ")'>All In!</a>";
+      var html9 = "<td><table align=center><tr><td align=center>";
+      var html10 = quick_bets +
+                   "</td></tr></table></td></tr></table></body></html>";
+      gui_write_guick_raise(html9 + html10);
+
+      var hi_lite_color = gui_get_theme_mode_highlite_color();
+      var message = "";
+      
+      if (to_call){
+        message = "<tr><td><font size=+2><b>Current raise: " +
+                    current_bet_amount + 
+                    "</b><br> You need <font color=" + hi_lite_color +
+                    " size=+3>" + to_call +
+                    "</font> more to call.<br>" +
+                    players[current_bettor_index].name + ", it's your turn." +
+                    "</font></td></tr>";
+      } else {
+        message = "<tr><td><font size=+2><b>Current raise: " +
+                    current_bet_amount +
+                    "</b><br>" +
+                    players[current_bettor_index].name + ", you are first to act." +
+                    "</font></td></tr>";  
+      }
+      gui_write_game_response(message);
+      write_player(current_bettor_index, 1, 0);
+      return;
+    } 
+  }
 }
 
 function make_deck () {
@@ -295,48 +439,37 @@ function write_player (n, hilite, show_cards) {
 // Next State takes the place of SIGNALR message to/from server
 function next_state () {
   get_msg();
+  update_state();
 
   if (STATE.CMD == "setup_new_player") {
-    NUM_PLAYERS = STATE.NUM_PLAYERS;
     for (var i = 0; i < STATE.NUM_PLAYERS; i++) {
-      setup_new_player(i);  //for testing setup all players, msg from server includes all current players
+      write_player(i, 0, 0);  //for testing setup all players, msg from server includes all current players
     }
   }
 
   if (STATE.CMD == "start new hand") { //msg from server inc current dealer, this players hole cards, and pot size
-    button_index = STATE.button_index;
-    current_bet_amount = STATE.current_bet_amount;
-    current_pot = STATE.current_pot;
-
     gui_place_dealer_button(button_index);
     write_player(small_blind_seat,0,0);
     write_player(big_blind_seat,0,0);
-    players[0].carda = STATE.players[0].carda;
-    players[0].cardb = STATE.players[0].cardb; 
     write_player(0,0,1);  //show my hold cards
     gui_write_basic_general(current_pot);  //just the blinds obviously
-    current_bettor_index = STATE.current_bettor_index;
     write_player(current_bettor_index, 1, 1); //highlight first player to act
   } 
 
-  if (STATE.CMD == "player turn to act") { //this just highlights current bettor unless it is us
-    current_bettor_index = STATE.current_bettor_index;
-    write_player(current_bettor_index, 1, 1);
+  if (STATE.CMD == "player action") { 
+    write_player(5, 0, 1);
+    write_player(0, 1, 1);
+    gui_write_basic_general(current_pot);
     //if it's us then enable bet controls showing to call amount and min raise amount
+    main();
   }
-}
-
-function setup_new_player(position){
-  players[position].bankroll = STATE.players[position].bankroll;
-  players[position] = STATE.players[position];
-  write_player(position,0,0);
 }
 
 var next_msg = 0;
 
 function get_msg() {  //whatever STATE object server sends will be copied to our global STATE object
 
-  if (next_msg == 0) {  //MSG Should include all current players name and buyin
+  if (next_msg == 0) {  //Setup a 6 person game with 5/10 blinds
     STATE.CMD = "setup_new_player"
     STATE.players = [
     new player("Matt", 1000, "", "", "", 0, 0),
@@ -345,38 +478,36 @@ function get_msg() {  //whatever STATE object server sends will be copied to our
     new player("Greg", 800, "blinded", "blinded", "", 0, 0),
     new player("Corrina", 1200, "blinded", "blinded", "", 0, 0),
     new player("Lisa", 950, "blinded", "blinded", "", 0, 0),
-    new player("", 200, "blinded", "blinded", "", 0, 0),
-    new player("", 999, "blinded", "blinded", "", 0, 0),
-    new player("", 888, "blinded", "blinded", "", 0, 0),
-    new player("", 777, "blinded", "blinded", "", 0, 0)
+    //new player("", 200, "blinded", "blinded", "", 0, 0),
+    //new player("", 999, "blinded", "blinded", "", 0, 0),
+    //new player("", 888, "blinded", "blinded", "", 0, 0),
+    //new player("", 777, "blinded", "blinded", "", 0, 0)
     ]
-    players = STATE.players;
-    STATE.NUM_PLAYERS = 8;   //just an arbitrary test
+    //players = STATE.players;
+    STATE.NUM_PLAYERS = 6;   //just an arbitrary test
+    STATE.SMALL_BLIND = 5;   //should be sent by server
+    STATE.BIG_BLIND = 10;
   }
 
   if (next_msg == 1) {    //testing server starting new hand with button at seat3, or index =2
-    var big_blind_seat;
-    var small_blind_seat
-    var first_to_act_seat
-
     STATE.CMD = "start new hand";
     STATE.button_index = 2;
     
-    if (STATE.button_index + 1 < STATE.NUM_PLAYERS) {
+    if (STATE.button_index + 1 < STATE.players.length) {
       small_blind_seat = STATE.button_index + 1;
     }
     else {
       small_blind_seat = 0;
     }
 
-    if (STATE.button_index + 2 < STATE.NUM_PLAYERS) {
+    if (STATE.button_index + 2 < STATE.players.length) {
       big_blind_seat = STATE.button_index + 2;
     }
     else {
       big_blind_seat = 0;
     }
 
-    if (STATE.button_index + 3 < STATE.NUM_PLAYERS) {
+    if (STATE.button_index + 3 < STATE.players.length) {
       first_to_act_seat = STATE.button_index + 3;
     }
     else {
@@ -384,20 +515,38 @@ function get_msg() {  //whatever STATE object server sends will be copied to our
     }
 
     //need blinds posted
-    STATE.players[small_blind_seat].subtotal_bet = 5;
-    STATE.players[small_blind_seat].total_bet_amount = 5;
-    STATE.players[big_blind_seat].subtotal_bet = 10;
-    STATE.players[big_blind_seat].total_bet_amount = 10;
-    STATE.current_bet_amount = 15;
+    STATE.SMALL_BLIND = 5;
+    STATE.BIG_BLIND = 10;
+    STATE.players[small_blind_seat].subtotal_bet = STATE.SMALL_BLIND;
+    STATE.players[small_blind_seat].total_bet_amount = STATE.SMALL_BLIND;
+    STATE.players[big_blind_seat].subtotal_bet = STATE.BIG_BLIND;
+    STATE.players[big_blind_seat].total_bet_amount = STATE.BIG_BLIND;
+    STATE.current_bet_amount = 10;
     STATE.players[0].carda = "h13";
     STATE.players[0].cardb = "s2";
     STATE.current_pot = 15;  //blinds
     STATE.current_bettor_index = first_to_act_seat;
+    STATE.current_min_raise = 10;
   }
 
-  if (next_msg == 2) {
-    STATE.CMD = "player turn to act";
-    STATE.current_bettor_index = 5;
+  if (next_msg == 2) {   //player in seat 5 raises 
+    STATE.CMD = "player action";
+    STATE.players[current_bettor_index].subtotal_bet = 100;
+    STATE.players[current_bettor_index].total_bet_amount += STATE.players[current_bettor_index].subtotal_bet;
+    STATE.current_bet_amount = STATE.players[current_bettor_index].subtotal_bet;
+    STATE.current_pot += STATE.current_bet_amount;
+
+    if (STATE.current_min_raise < STATE.current_bet_amount) {
+      STATE.current_min_raise = STATE.current_bet_amount;
+    }
+
+    if (STATE.current_bettor_index < STATE.players.length-1) {
+      STATE.current_bettor_index++;
+    }
+    else {
+      STATE.current_bettor_index = 0;
+    }
+
   }
   next_msg++;
   return;
