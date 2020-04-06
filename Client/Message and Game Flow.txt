@@ -1,0 +1,46 @@
+Message and Game Flow
+Client actions are indented, server actions are not
+STATE is an object containing all of the global variable at the top of poker.just
+
+Run Server
+{
+        New players request auth.html, send user name, first player setup is designated as GAME_HOST
+
+Server authenticates, SignalR channel is established for each new player,
+server broadcasts msg with all established players populate in STATE object
+
+        Clients display user data
+}
+        GAME_HOST sends msg to start game
+
+BEGIN GAME PLAY
+{
+Server makes new deck, updates STATE with hole cards and first or next dealer position, updates blinds,
+and broadcasts STATE
+
+        Clients display dealer button, blinds, and hole cards, opposing players cards upside down
+
+{
+Server sends msg to first seat to act
+
+        Client sends action to server
+
+Server broadcasts STATE and sends msg to next player to act
+
+        Clients update gui with current STATE
+
+        Next player acts and send action to server
+
+When appropriate, server sends burn cards and board cards
+}
+
+Server sends final hand STATE along with winner and winning hand
+
+        Clients display winning hand info
+
+        GAME_HOST sends msg to start new hand or to end game
+}
+END GAME PLAY
+
+If server receives request to join game from existing player, just send STATE to that player,
+this will be enough for them to resume play
