@@ -1,70 +1,21 @@
-// Next State takes the place of SIGNALR message to/from server
-function next_state () {
-    get_msg();
-  
-    if (STATE.CMD == "setup_new_player") {
-      for (var i = 0; i < STATE.NUM_PLAYERS; i++) {
-        write_player(i, 0, 0);  //for testing setup all players, msg from server includes all current players
-      }
-    }
-  
-    if (STATE.CMD == "start new hand") { //msg from server inc current dealer, this players hole cards, and pot size
-      gui_place_dealer_button(button_index);
-      write_player(small_blind_seat,0,0);
-      write_player(big_blind_seat,0,0);
-      write_player(0,0,1);  //show my hold cards
-      gui_write_basic_general(current_pot);  //just the blinds obviously
-    } 
 
-    if (STATE.CMD == "next player to act") {  //highlights next player and enables betting controls
-        write_player(current_bettor_index, 1, 1);
-        gui_write_basic_general(current_pot);
-    }
-  
-    if (STATE.CMD == "player action") { 
-      write_player(current_bettor_index, 0, 0);
-      gui_write_basic_general(current_pot);
-    }
-  
-    if (STATE.CMD == "my action") { 
-      write_player(current_bettor_index, 0, 0);
-      gui_write_basic_general(current_pot);
-      players[my_seat].status = "";
-      get_my_action();
-    }
 
-    if (STATE.CMD == "lay flop") {
-        clear_bets();
-        reset_player_statuses(2);
-        write_all_players();
-        gui_burn_board_card(0, "blinded");
-        gui_lay_board_card(0, board[0]);
-        gui_lay_board_card(1, board[1]);
-        gui_lay_board_card(2, board[2]);
-    }
   
-    STATE.CMD = "";
-  }
+  var next_test_state = 0; //used just for emulating server messages
   
-  var next_test_state = 0;
-  
+  // get_msg takes the place of SIGNALR message to/from server
   function get_msg() {  //set values of STATE object to emulate a server msg
   
     if (next_test_state == 0) {  //Setup a 6 person game with 5/10 blinds
       STATE.CMD = "setup_new_player"
       STATE.players = [
       new player("Matt", 1000, "", "", "", 0, 0),
-      new player("Sally",900, "blinded", "blinded", "", 0, 0),
-      new player("Les",1100, "blinded", "blinded", "", 0, 0),
-      new player("Greg", 800, "blinded", "blinded", "", 0, 0),
-      new player("Corrina", 1200, "blinded", "blinded", "", 0, 0),
-      new player("Lisa", 950, "blinded", "blinded", "", 0, 0),
-      //new player("", 200, "blinded", "blinded", "", 0, 0),
-      //new player("", 999, "blinded", "blinded", "", 0, 0),
-      //new player("", 888, "blinded", "blinded", "", 0, 0),
-      //new player("", 777, "blinded", "blinded", "", 0, 0)
+      new player("Sally",900, "", "", "", 0, 0),
+      new player("Les",1100, "", "", "", 0, 0),
+      new player("Greg", 800, "", "", "", 0, 0),
+      new player("Corrina", 1200, "", "", "", 0, 0),
+      new player("Lisa", 950, "", "", "", 0, 0),
       ]
-      //players = STATE.players;
       STATE.NUM_PLAYERS = 6;   //just an arbitrary test
       STATE.SMALL_BLIND = 5;   //should be sent by server
       STATE.BIG_BLIND = 10;
@@ -99,37 +50,45 @@ function next_state () {
       STATE.SMALL_BLIND = 5;
       STATE.BIG_BLIND = 10;
       STATE.players[small_blind_seat].subtotal_bet = STATE.SMALL_BLIND;
-      STATE.players[small_blind_seat].total_bet_amount = STATE.SMALL_BLIND;
+      STATE.players[small_blind_seat].total_bet = STATE.SMALL_BLIND;
       STATE.players[big_blind_seat].subtotal_bet = STATE.BIG_BLIND;
-      STATE.players[big_blind_seat].total_bet_amount = STATE.BIG_BLIND;
+      STATE.players[big_blind_seat].total_bet = STATE.BIG_BLIND;
       STATE.current_bet_amount = 10;
-      STATE.players[0].carda = "h13";
-      STATE.players[0].cardb = "s2";
-      STATE.current_pot = 15;  //blinds
+      STATE.players[my_seat].carda = "h13";
+      STATE.players[my_seat].cardb = "s2";
+      STATE.current_pot = STATE.SMALL_BLIND + STATE.BIG_BLIND;  //blinds
       STATE.current_bettor_index = first_to_act_seat;
-      STATE.current_min_raise = 10;
+      STATE.current_min_raise = STATE.BIG_BLIND;
+      STATE.players[small_blind_seat].bankroll -= STATE.SMALL_BLIND;
+      STATE.players[big_blind_seat].bankroll -= STATE.BIG_BLIND;
+
+      for (var seat = 0; seat < STATE.players.length; seat++) {
+        if (seat != my_seat) {
+            STATE.players[seat].carda = "blinded"; //give everyone dummy cards to hide except for me
+            STATE.players[seat].cardb = "blinded";
+        }
+      }
     }
 
-    if (next_test_state == 2) {  //server lets everyone know who next seat to act is, in this case 4
+    if (next_test_state == 2) {  //server lets everyone know who next seat to act is, in this case 5
         STATE.CMD = "next player to act";
         STATE.current_bettor_index = 5;
     }
 
-    if (next_test_state == 3) {   //player in seat 5 raises 
+    if (next_test_state == 3) {   //player in seat 5 raises to 30
       STATE.CMD = "player action";
       STATE.current_bettor_index = 5;
-      STATE.players[current_bettor_index].subtotal_bet = 100;
+      STATE.players[current_bettor_index].subtotal_bet = 30;
       STATE.players[current_bettor_index].total_bet += STATE.players[current_bettor_index].subtotal_bet;
+      STATE.players[current_bettor_index].bankroll -= STATE.players[current_bettor_index].subtotal_bet;
       STATE.current_bet_amount = STATE.players[current_bettor_index].subtotal_bet;
       STATE.current_pot += STATE.current_bet_amount;
-  
-      if (STATE.current_min_raise < STATE.current_bet_amount) {
-        STATE.current_min_raise = STATE.current_bet_amount;
-      }
+      STATE.current_min_raise = 30;
+      STATE.players[current_bettor_index].status = "RAISE";
     }
   
     if (next_test_state == 4) {     // give me the action and betting controls
-      STATE.CMD = "my action";
+      STATE.CMD = "my action";      //i will check
       STATE.current_bettor_index = 0;
     }
 
@@ -177,43 +136,73 @@ function next_state () {
         STATE.players[current_bettor_index].status = "FOLD";
     }
 
-    if (next_test_state == 13) {    //give action to seat 5
-        STATE.CMD = "next player to act";
-        STATE.current_bettor_index = 5;
-    }
-
-    if (next_test_state == 14) {   //have seat 5 check
-        STATE.CMD = "player action";
-        STATE.current_bettor_index = 5;
-        STATE.players[current_bettor_index].status = "CHECK";
-    }
-
-    if (next_test_state == 15) {
+    if (next_test_state == 13) {
+        STATE.board = board;
         STATE.CMD = "lay flop"
         STATE.board[0] = "s7";
         STATE.board[1] = "h10";
         STATE.board[2] = "c11";
     }
 
-    if (next_test_state == 16) {    //give action to seat 5
+    if (next_test_state == 14) {    //give action to seat 5
         STATE.CMD = "next player to act";
         STATE.current_bettor_index = 5;
     }
 
-    if (next_test_state == 17) {   //have seat 5 check
+    if (next_test_state == 15) {   //have seat 5 check
         STATE.CMD = "player action";
         STATE.current_bettor_index = 5;
         STATE.players[current_bettor_index].status = "CHECK";
         STATE.current_bet_amount = 0;
-        STATE.players[current_bettor_index].subtotal_bet = 0;
     }
 
-    if (next_test_state == 18) {     // give me the action and betting controls
+    if (next_test_state == 16) {     // give me the action and betting controls, i'll check
         STATE.CMD = "my action";
-        STATE.current_bettor_index = 0;
-      }
+        STATE.current_bettor_index = my_seat;
+    }
 
-    update_state(); //update global state variables with values from STATE object from server
+    if (next_test_state == 17) {
+        STATE.CMD = "lay turn"
+        STATE.board[3] = "d13";
+    }
+
+    if (next_test_state == 18) {     // give seat5 the action and betting controls, i'll check
+        STATE.CMD = "next player to act";
+        STATE.current_bettor_index = 5;
+    }
+
+    if (next_test_state == 19) {   //player in seat 5 bets 30
+        STATE.CMD = "player action";
+        STATE.current_bettor_index = 5;
+        STATE.players[current_bettor_index].subtotal_bet = 30;
+        STATE.players[current_bettor_index].total_bet += STATE.players[current_bettor_index].subtotal_bet;
+        STATE.players[current_bettor_index].bankroll -= STATE.players[current_bettor_index].subtotal_bet;
+        STATE.current_bet_amount = STATE.players[current_bettor_index].subtotal_bet;
+        STATE.current_pot += STATE.current_bet_amount;
+        STATE.players[current_bettor_index].status = "BET";
+    }
+
+    if (next_test_state == 20) {     // give me the action and betting controls, i'll raise 30
+        STATE.CMD = "my action";
+        STATE.current_bettor_index = my_seat;
+    }
+
+    if (next_test_state == 21) {     // give seat5 the action and betting controls
+        STATE.CMD = "next player to act";
+        STATE.current_bettor_index = 5;
+    }
+
+    if (next_test_state == 22) {   //player in seat 5 calls
+        STATE.CMD = "player action";
+        STATE.current_bettor_index = 5;
+        STATE.players[current_bettor_index].subtotal_bet = 60;
+        STATE.players[current_bettor_index].total_bet += STATE.players[current_bettor_index].subtotal_bet;
+        STATE.players[current_bettor_index].bankroll -= STATE.players[current_bettor_index].subtotal_bet;
+        STATE.current_bet_amount = STATE.players[current_bettor_index].subtotal_bet;
+        STATE.current_pot += STATE.current_bet_amount;
+        STATE.players[current_bettor_index].status = "CALL";
+    }
+
     next_test_state++;
     return;
   }
