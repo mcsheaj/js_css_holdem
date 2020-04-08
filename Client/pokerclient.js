@@ -12,7 +12,7 @@ var START_DATE;
 var NUM_ROUNDS = 0;
 var STOP_AUTOPLAY = 0;
 var RUN_EM = 0;
-var STARTING_BANKROLL = 1000;
+var STARTING_BANKROLL = 10.00;
 var SMALL_BLIND = 0;
 var BIG_BLIND=0
 var BG_HILITE = 'gold';
@@ -103,30 +103,20 @@ function get_pot_size () {
     p += players[i].total_bet;// + players[i].subtotal_bet;
   }
   //p += global_pot_remainder;
-  return p;
+  return p.toFixed(2);
 }
 
 function get_pot_size_html () {
-  return "<font size=+2><b>TOTAL POT: " + get_pot_size() + "</b><br></font>";
+  return "<font size=+2><b>" + get_pot_size() + "</b></font>";
 }
 
 function get_my_action () {
   gui_hide_guick_raise ();
   //var increment_bettor_index = 0;
   
-  if (players[current_bettor_index].status == "BUST" ||
-      players[current_bettor_index].status == "FOLD") {
-    //increment_bettor_index = 1;
-  } else if (!has_money(current_bettor_index)) {
-    players[current_bettor_index].status = "CALL";
-    //increment_bettor_index = 1;
-  } else if (players[current_bettor_index].status == "CALL" &&
-             players[current_bettor_index].subtotal_bet == current_bet_amount) {
-    //increment_bettor_index = 1;
-  } else {
     players[current_bettor_index].status = "";
     if (1) {//(current_bettor_index == 0) {********all players are human
-      var call_button_text = "<u>C</u>all " + current_bet_amount;
+      var call_button_text = "<u>C</u>all " + current_bet_amount.toFixed(2);
       var fold_button_text = "<u>F</u>old";
       var to_call = current_bet_amount; // - players[current_bettor_index].subtotal_bet;
       if (to_call > players[current_bettor_index].bankroll) {   //*************************
@@ -216,12 +206,12 @@ function get_my_action () {
       for (i = 0; i < 6; i++) {
         if (quick_values[i]) {
           quick_bets += "<a href='javascript:parent.handle_my_raise(" +
-                        (quick_values[i] + to_call) + ")'>" + quick_values[i] + "</a>" +
+                        (quick_values[i] + to_call) + ")'>" + quick_values[i].toFixed(2) + "</a>" +
                         "&nbsp;&nbsp;&nbsp;";
         }
       }
       quick_bets += "<a href='javascript:parent.handle_my_raise(" +
-                    players[current_bettor_index].bankroll + ")'>All In!</a>";
+                    players[current_bettor_index].bankroll.toFixed(2) + ")'>All In!</a>";
       var html9 = "<td><table align=center><tr><td align=center>";
       var html10 = quick_bets +
                    "</td></tr></table></td></tr></table></body></html>";
@@ -232,17 +222,14 @@ function get_my_action () {
       
       if (to_call){
         message = "<tr><td><font size=+2><b>Current raise: " +
-                    current_bet_amount + 
+                    current_bet_amount.toFixed(2) + 
                     "</b><br> You need <font color=" + hi_lite_color +
-                    " size=+3>" + to_call +
+                    " size=+3>" + to_call.toFixed(2) +
                     "</font> more to call.<br>" +
                     players[current_bettor_index].name + ", it's your turn." +
                     "</font></td></tr>";
       } else {
-        message = "<tr><td><font size=+2><b>Current raise: " +
-                    current_bet_amount +
-                    "</b><br>" +
-                    players[current_bettor_index].name + ", you are first to act." +
+        message = "<tr><td><font size=+2>" + players[current_bettor_index].name + ", you are next to act." +
                     "</font></td></tr>";  
       }
       gui_write_game_response(message);
@@ -250,7 +237,6 @@ function get_my_action () {
       //return;
     } 
   }
-}
 
 function handle_my_raise (bet_amount) {
   the_bet_function(my_seat, bet_amount);
@@ -260,7 +246,7 @@ function handle_my_raise (bet_amount) {
   gui_hide_guick_raise();
   gui_hide_fold_call_click ();
   gui_write_game_response("");
-  //SEND MSG TO SERVER
+  send_msg();
 }
 
 function the_bet_function (player_index, bet_amount) {
@@ -284,7 +270,7 @@ function player_folds() {
   gui_hide_fold_call_click();
   gui_hide_guick_raise();
   gui_write_game_response("");
-  //SEND MSG TO SERVER
+  send_msg();
 }
 
 function player_calls() {
@@ -299,7 +285,7 @@ function player_calls() {
   gui_hide_guick_raise();
   gui_hide_fold_call_click ();
   gui_write_game_response("");
-  //SEND MSG TO SERVER
+  send_msg();
 }
 
 function player_checks() {
@@ -310,7 +296,7 @@ function player_checks() {
   gui_hide_fold_call_click();
   gui_hide_guick_raise();
   gui_write_game_response("");
-  //SEND MSG TO SERVER
+  send_msg();
 }
 
 function new_game () {
@@ -390,7 +376,7 @@ function clear_bets () {
 
 function help_func () {
   // Open help.html
-  window.location.href = 'help.html';
+  window.open('help.html'); //window.location.href = 
 }
 
 function update_func () {
@@ -489,24 +475,24 @@ function write_player (n, hilite, show_cards) {
     allin = "Called:";
   }
   if (players[n].status == "FOLD") {
-    bet_text = "FOLDED (" +
-               players[n].total_bet + ")";
+    bet_text = "FOLDED ($" +
+               players[n].total_bet.toFixed(2) + ")";
     } else if (players[n].status == "BUST") {
     bet_text = "BUSTED";
     } else if (!has_money(n)) {
-    bet_text = "ALL IN (" +
-               players[n].subtotal_bet + ")";
+    bet_text = "ALL IN " + players[n].subtotal_bet.toFixed(2) + " ($" +
+               players[n].total_bet.toFixed(2) + ")";
     } else {
-    bet_text = allin + "$" + players[n].subtotal_bet +
-               " (" + players[n].total_bet + ")";
+    bet_text = allin + "$" + players[n].subtotal_bet.toFixed(2) +
+               " ($" + players[n].total_bet.toFixed(2) + ")";
   }
   if (players[n].status == "CHECK") {
-    bet_text = "Check" + " (" + players[n].total_bet + ")";
+    bet_text = "Check" + " ($" + players[n].total_bet.toFixed(2) + ")";
   }
 
   gui_set_player_name(players[n].name, n);    // offset 1 on seat-index
   gui_set_bet(bet_text, n);
-  gui_set_bankroll(players[n].bankroll, n);
+  gui_set_bankroll(players[n].bankroll.toFixed(2), n);
   gui_set_player_cards(carda, cardb, n, show_folded);
 }
 
@@ -516,6 +502,12 @@ function write_all_players() {
   }
 }
 
+//send msg to server
+function send_msg(){
+
+}
+
+//HANDLE incoming message from server
 function msg_dispatch () {
   update_STATE();
   get_msg();
@@ -561,11 +553,19 @@ function msg_dispatch () {
   }
 
   if (STATE.CMD == "lay turn") {
-    //reset_player_statuses(2);
     write_all_players();
     gui_burn_board_card(1, "blinded");
     gui_lay_board_card(3, board[3]);
 }
 
+if (STATE.CMD == "lay river") {
+  write_all_players();
+  gui_burn_board_card(2, "blinded");
+  gui_lay_board_card(4, board[4]);
+}
+
+if (STATE.CMD == "hand complete") {
+  gui_write_game_response(STATE.winning_hand_text)
+}
   STATE.CMD = "";
 }

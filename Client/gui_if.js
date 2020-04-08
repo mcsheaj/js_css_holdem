@@ -253,7 +253,7 @@ function gui_write_basic_general (pot_size) {
   var pot_div = table.children.pot;
   var total_div = pot_div.children['total-pot'];
 
-  var the_pot = 'Total pot: ' + pot_size;
+  var the_pot = 'Total pot: $' + pot_size;
   total_div.innerHTML = the_pot;
 }
 
