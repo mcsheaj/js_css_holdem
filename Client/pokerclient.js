@@ -304,7 +304,7 @@ function new_game () {
   NUM_ROUNDS = 0;
   initialize_game();
   gui_setup_option_buttons(msg_dispatch,
-    help_func,
+    change_name,
     help_func,
     update_func,
     gui_toggle_the_theme_mode);
@@ -355,6 +355,19 @@ function clear_player_cards (count) {
   }
 }
 
+function leave_pseudo_alert () {
+  gui_write_modal_box("");
+}
+
+function my_pseudo_alert (text) {
+  var html = "<html><body topmargin=2 bottommargin=0 bgcolor=" +
+             BG_HILITE + " onload='document.f.y.focus();'>" +
+             "<font size=+2>" + text +
+             "</font><form name=f><input name=y type=button value='  OK  ' " +
+             "onclick='parent.leave_pseudo_alert()'></form></body></html>";
+  gui_write_modal_box(html);
+}
+
 function player (name, bankroll, carda, cardb, status, total_bet,
   subtotal_bet) {
 this.name = name;
@@ -377,6 +390,20 @@ function clear_bets () {
 function help_func () {
   // Open help.html
   window.open('help.html'); //window.location.href = 
+}
+
+function change_name () {
+  var name = prompt("What is your name? (14 characters or less)", getLocalStorage("playername"));
+  if (name) {
+    if (name.length > 14) {
+      my_pseudo_alert("Name must be less than 14 characters");
+      name = "";
+    }
+  }
+  if (name){
+//SERVERMSG here with new player name
+  setLocalStorage("playername", name);
+  }
 }
 
 function update_func () {

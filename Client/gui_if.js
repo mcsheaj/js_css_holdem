@@ -327,30 +327,6 @@ function gui_setup_fold_call_click (show_fold, call_text,
   internal_clickin_helper(call, call_text, call_func);
 }
 
-function curry_in_speedfunction (speed_func) {
-  var call_back = speed_func;
-
-  var ret_func = function () {
-    var buttons = document.getElementById('setup-options');
-    var speed = buttons.children['speed-button'];
-    var selector = speed.children['speed-selector'];
-    var qqq = selector.children['speed-options'];
-    var index = qqq.value;
-    var value = qqq[index].text;
-
-    call_back(value);
-  };
-  return ret_func;
-}
-
-function gui_set_selected_speed_option (index) {
-  var buttons = document.getElementById('setup-options');
-  var speed = buttons.children['speed-button'];
-  var selector = speed.children['speed-selector'];
-  var qqq = selector.children['speed-options'];
-  qqq.value = index;
-}
-
 function internal_le_button (buttons, button_name, button_func) {
   var le_button = buttons.children[button_name];
   le_button.style.visibility = 'visible';
@@ -366,9 +342,7 @@ function gui_setup_option_buttons (name_func,
 
   internal_le_button(buttons, 'name-button', name_func);
 
-  var speed = buttons.children['speed-button'];
-  speed.style.visibility = 'hidden';
-  speed.onchange = curry_in_speedfunction(speed_func);
+  internal_le_button(buttons, 'join-button', speed_func);
 
   internal_le_button(buttons, 'mode-button', mode_func);
   internal_le_button(buttons, 'help-button', help_func);
@@ -387,7 +361,7 @@ function gui_hide_setup_option_buttons (name_func,
   var buttons = document.getElementById('setup-options');
 
   internal_hide_le_button(buttons, 'name-button');
-  internal_hide_le_button(buttons, 'speed-button');
+  internal_hide_le_button(buttons, 'join-button');
   internal_hide_le_button(buttons, 'mode-button');
   internal_hide_le_button(buttons, 'help-button');
   internal_hide_le_button(buttons, 'check-button');
