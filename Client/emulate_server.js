@@ -9,12 +9,12 @@
     if (next_test_state == 0) {  //Setup a 6 person game with 5/10 blinds
       STATE.CMD = "setup_new_player"
       STATE.players = [
-      new player("Matt", 10.75, "", "", "", 0, 0),
-      new player("Sally",9.00, "", "", "", 0, 0),
-      new player("Les",11.00, "", "", "", 0, 0),
-      new player("Greg", 8.00, "", "", "", 0, 0),
-      new player("Corrina", 12.00, "", "", "", 0, 0),
-      new player("Lisa", 9.50, "", "", "", 0, 0),
+      new cl_player("Matt", 10.75, "", "", "", 0, 0),
+      new cl_player("Sally",9.00, "", "", "", 0, 0),
+      new cl_player("Les",11.00, "", "", "", 0, 0),
+      new cl_player("Greg", 8.00, "", "", "", 0, 0),
+      new cl_player("Corrina", 12.00, "", "", "", 0, 0),
+      new cl_player("Lisa", 9.50, "", "", "", 0, 0),
       ]
       STATE.SMALL_BLIND = .05;   //should be sent by server
       STATE.BIG_BLIND = .10;
@@ -230,7 +230,7 @@
 
     if (next_test_state == 27) {    //give action to seat 5
         STATE.CMD = "hand complete";
-        var response = "<tr><td><font size=+2>Matt wins $" + get_pot_size() 
+        var response = "<tr><td><font size=+2>Matt wins $" + cl_get_pot_size() 
             + " with a Three of a Kind</font></td></tr>"
         STATE.winning_hand_text = response;
     }
