@@ -16,7 +16,6 @@
       new player("Corrina", 12.00, "", "", "", 0, 0),
       new player("Lisa", 9.50, "", "", "", 0, 0),
       ]
-      STATE.NUM_PLAYERS = 6;   //just an arbitrary test
       STATE.SMALL_BLIND = .05;   //should be sent by server
       STATE.BIG_BLIND = .10;
     }
@@ -78,13 +77,13 @@
     if (next_test_state == 3) {   //player in seat 5 raises to 30
       STATE.CMD = "player action";
       STATE.current_bettor_index = 5;
-      STATE.players[current_bettor_index].subtotal_bet = .30;
-      STATE.players[current_bettor_index].total_bet += STATE.players[current_bettor_index].subtotal_bet;
-      STATE.players[current_bettor_index].bankroll -= STATE.players[current_bettor_index].subtotal_bet;
-      STATE.current_bet_amount = STATE.players[current_bettor_index].subtotal_bet;
+      STATE.players[STATE.current_bettor_index].subtotal_bet = .30;
+      STATE.players[STATE.current_bettor_index].total_bet += STATE.players[STATE.current_bettor_index].subtotal_bet;
+      STATE.players[STATE.current_bettor_index].bankroll -= STATE.players[STATE.current_bettor_index].subtotal_bet;
+      STATE.current_bet_amount = STATE.players[STATE.current_bettor_index].subtotal_bet;
       STATE.current_pot += STATE.current_bet_amount;
       STATE.current_min_raise = .30;
-      STATE.players[current_bettor_index].status = "RAISE";
+      STATE.players[STATE.current_bettor_index].status = "RAISE";
     }
   
     if (next_test_state == 4) {     // give me the action and betting controls
@@ -100,7 +99,7 @@
     if (next_test_state == 6) {   //have seat 1 fold
         STATE.CMD = "player action";
         STATE.current_bettor_index = 1;
-        STATE.players[current_bettor_index].status = "FOLD";
+        STATE.players[STATE.current_bettor_index].status = "FOLD";
     }
 
     if (next_test_state == 7) {    //give action to seat 2
@@ -111,7 +110,7 @@
     if (next_test_state == 8) {   //have seat 2 fold
         STATE.CMD = "player action";
         STATE.current_bettor_index = 2;
-        STATE.players[current_bettor_index].status = "FOLD";
+        STATE.players[STATE.current_bettor_index].status = "FOLD";
     }
 
     if (next_test_state == 9) {    //give action to seat 3
@@ -122,7 +121,7 @@
     if (next_test_state == 10) {   //have seat 3 fold
         STATE.CMD = "player action";
         STATE.current_bettor_index = 3;
-        STATE.players[current_bettor_index].status = "FOLD";
+        STATE.players[STATE.current_bettor_index].status = "FOLD";
     }
 
     if (next_test_state == 11) {    //give action to seat 4
@@ -133,7 +132,7 @@
     if (next_test_state == 12) {   //have seat 4 fold
         STATE.CMD = "player action";
         STATE.current_bettor_index = 4;
-        STATE.players[current_bettor_index].status = "FOLD";
+        STATE.players[STATE.current_bettor_index].status = "FOLD";
     }
 
     if (next_test_state == 13) {
@@ -152,7 +151,7 @@
     if (next_test_state == 15) {   //have seat 5 check
         STATE.CMD = "player action";
         STATE.current_bettor_index = 5;
-        STATE.players[current_bettor_index].status = "CHECK";
+        STATE.players[STATE.current_bettor_index].status = "CHECK";
         STATE.current_bet_amount = 0;
     }
 
@@ -174,12 +173,12 @@
     if (next_test_state == 19) {   //player in seat 5 bets 30
         STATE.CMD = "player action";
         STATE.current_bettor_index = 5;
-        STATE.players[current_bettor_index].subtotal_bet = .30;
-        STATE.players[current_bettor_index].total_bet += STATE.players[current_bettor_index].subtotal_bet;
-        STATE.players[current_bettor_index].bankroll -= STATE.players[current_bettor_index].subtotal_bet;
-        STATE.current_bet_amount = STATE.players[current_bettor_index].subtotal_bet;
+        STATE.players[STATE.current_bettor_index].subtotal_bet = .30;
+        STATE.players[STATE.current_bettor_index].total_bet += STATE.players[STATE.current_bettor_index].subtotal_bet;
+        STATE.players[STATE.current_bettor_index].bankroll -= STATE.players[STATE.current_bettor_index].subtotal_bet;
+        STATE.current_bet_amount = STATE.players[STATE.current_bettor_index].subtotal_bet;
         STATE.current_pot += STATE.current_bet_amount;
-        STATE.players[current_bettor_index].status = "BET";
+        STATE.players[STATE.current_bettor_index].status = "BET";
     }
 
     if (next_test_state == 20) {     // give me the action and betting controls, i'll raise 30
@@ -195,12 +194,12 @@
     if (next_test_state == 22) {   //player in seat 5 calls
         STATE.CMD = "player action";
         STATE.current_bettor_index = 5;
-        STATE.players[current_bettor_index].subtotal_bet = .30;
-        STATE.players[current_bettor_index].total_bet += STATE.players[current_bettor_index].subtotal_bet;
-        STATE.players[current_bettor_index].bankroll -= STATE.players[current_bettor_index].subtotal_bet;
-        STATE.current_bet_amount = STATE.players[current_bettor_index].subtotal_bet;
+        STATE.players[STATE.current_bettor_index].subtotal_bet = .30;
+        STATE.players[STATE.current_bettor_index].total_bet += STATE.players[STATE.current_bettor_index].subtotal_bet;
+        STATE.players[STATE.current_bettor_index].bankroll -= STATE.players[STATE.current_bettor_index].subtotal_bet;
+        STATE.current_bet_amount = STATE.players[STATE.current_bettor_index].subtotal_bet;
         STATE.current_pot += STATE.current_bet_amount;
-        STATE.players[current_bettor_index].status = "CALL";
+        STATE.players[STATE.current_bettor_index].status = "CALL";
     }
 
     if (next_test_state == 23) {
@@ -216,12 +215,12 @@
     if (next_test_state == 25) {   //have seat 5 go all in
         STATE.CMD = "player action";
         STATE.current_bettor_index = 5;
-        STATE.players[current_bettor_index].subtotal_bet = 8.60;
-        STATE.players[current_bettor_index].total_bet += STATE.players[current_bettor_index].subtotal_bet;
-        STATE.players[current_bettor_index].bankroll -= STATE.players[current_bettor_index].subtotal_bet;
-        STATE.current_bet_amount = STATE.players[current_bettor_index].subtotal_bet;
+        STATE.players[STATE.current_bettor_index].subtotal_bet = 8.60;
+        STATE.players[STATE.current_bettor_index].total_bet += STATE.players[STATE.current_bettor_index].subtotal_bet;
+        STATE.players[STATE.current_bettor_index].bankroll -= STATE.players[STATE.current_bettor_index].subtotal_bet;
+        STATE.current_bet_amount = STATE.players[STATE.current_bettor_index].subtotal_bet;
         STATE.current_pot += STATE.current_bet_amount;
-        STATE.players[current_bettor_index].status = "BET";
+        STATE.players[STATE.current_bettor_index].status = "BET";
     }
 
     if (next_test_state == 26) {     // give me the action and betting controls
