@@ -1239,3 +1239,4 @@ function makeTimeString (milliseconds) {
 
   return (string);
 }
+

@@ -543,6 +543,7 @@ function msg_dispatch () {
   if (STATE.CMD == "setup_new_player") {
     for (var i = 0; i < STATE.players.length; i++) {
       write_player(i, 0, 0);  //for testing setup all players, msg from server includes all current players
+      send_msg(STATE.CMD);
     }
   }
 
@@ -583,16 +584,18 @@ function msg_dispatch () {
     write_all_players();
     gui_burn_board_card(1, "blinded");
     gui_lay_board_card(3, board[3]);
-}
+  }
 
-if (STATE.CMD == "lay river") {
-  write_all_players();
-  gui_burn_board_card(2, "blinded");
-  gui_lay_board_card(4, board[4]);
-}
+  if (STATE.CMD == "lay river") {
+    write_all_players();
+    gui_burn_board_card(2, "blinded");
+    gui_lay_board_card(4, board[4]);
+  }
 
-if (STATE.CMD == "hand complete") {
-  gui_write_game_response(STATE.winning_hand_text)
-}
+  if (STATE.CMD == "hand complete") {
+    gui_write_game_response(STATE.winning_hand_text)
+  }
+
   STATE.CMD = "";
 }
+
