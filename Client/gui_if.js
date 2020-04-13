@@ -266,7 +266,7 @@ function gui_write_basic_general_text (text) {
 }
 
 var log_text = [];
-var log_index = 0;
+var log_index = 10;
 
 function gui_log_to_history (text_to_write) {
   for (var idx = log_index; idx > 0; --idx) {
@@ -318,7 +318,7 @@ function gui_hide_fold_call_click () {
 
 function gui_setup_fold_call_click (show_fold, call_text,
   fold_func, call_func) {
-  // Here we have a coupling of the functions 'human_fold' and 'human_call'
+  
   var buttons = document.getElementById('action-options');
   var fold = buttons.children['fold-button'];
   internal_clickin_helper(fold, show_fold, fold_func);
@@ -333,20 +333,20 @@ function internal_le_button (buttons, button_name, button_func) {
   le_button.onclick = button_func;
 }
 
-function gui_setup_option_buttons (name_func,
-                                   speed_func,
+function gui_setup_option_buttons (new_game_func,
+                                   join_game_func,
                                    help_func,
-                                   check_func,
+                                   next_hand_func,
                                    mode_func) {
   var buttons = document.getElementById('setup-options');
 
-  internal_le_button(buttons, 'name-button', name_func);
+  internal_le_button(buttons, 'new-game-button', new_game_func);
 
-  internal_le_button(buttons, 'join-button', speed_func);
+  internal_le_button(buttons, 'join-button', join_game_func);
 
   internal_le_button(buttons, 'mode-button', mode_func);
   internal_le_button(buttons, 'help-button', help_func);
-  internal_le_button(buttons, 'check-button', check_func);
+  internal_le_button(buttons, 'next-hand-button', next_hand_func);
 }
 
 function internal_hide_le_button (buttons, button_name, button_func) {
@@ -360,11 +360,11 @@ function gui_hide_setup_option_buttons (name_func,
                                         check_func) {
   var buttons = document.getElementById('setup-options');
 
-  internal_hide_le_button(buttons, 'name-button');
+  internal_hide_le_button(buttons, 'new-game-button');
   internal_hide_le_button(buttons, 'join-button');
   internal_hide_le_button(buttons, 'mode-button');
   internal_hide_le_button(buttons, 'help-button');
-  internal_hide_le_button(buttons, 'check-button');
+  internal_hide_le_button(buttons, 'next-hand-button');
 }
 
 function gui_hide_game_response () {
@@ -383,7 +383,7 @@ function gui_write_game_response (text) {
   response.innerHTML = text;
 }
 
-function gui_write_guick_raise (text) {
+function gui_write_quick_raise (text) {
   var response = document.getElementById('quick-raises');
   if (text === "") {
     response.style.visibility = 'hidden';
@@ -393,8 +393,8 @@ function gui_write_guick_raise (text) {
   }
 }
 
-function gui_hide_guick_raise () {
-  gui_write_guick_raise("");
+function gui_hide_quick_raise () { 
+  gui_write_quick_raise("");
 }
 
 function gui_write_modal_box (text) {

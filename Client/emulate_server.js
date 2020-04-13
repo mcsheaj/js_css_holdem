@@ -136,7 +136,7 @@
     }
 
     if (next_test_state == 13) {
-        STATE.board = board;
+        STATE.board = LOCAL_STATE.board;
         STATE.CMD = "lay flop"
         STATE.board[0] = "s7";
         STATE.board[1] = "h10";

@@ -724,7 +724,7 @@ function get_predominant_suit (my_cards) {
 function group_cards (player) {
   var c = new Array(7);
   for (var i = 0; i < 5; i++) {
-    c[i] = board[i];
+    c[i] = SERVER_STATE.board[i];
   }
   c[5] = player.carda;
   c[6] = player.cardb;
