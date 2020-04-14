@@ -342,13 +342,13 @@ function cl_change_name () {
 function cl_reset_player_statuses (type) {
   for (var i = 0; i < LOCAL_STATE.players.length; i++) {
     if (type == 0) {
-      LOCAL_STATE.players[i].status = "";
+      //LOCAL_STATE.players[i].status = "";
     } else if (type == 1 && LOCAL_STATE.players[i].status != "BUST") {
-      LOCAL_STATE.players[i].status = "";
+      //LOCAL_STATE.players[i].status = "";
     } else if (type == 2 &&
                LOCAL_STATE.players[i].status != "FOLD" &&
                LOCAL_STATE.players[i].status != "BUST") {
-      LOCAL_STATE.players[i].status = "";
+      //LOCAL_STATE.players[i].status = "";
     }
   }
 }
@@ -417,7 +417,7 @@ function cl_write_player (n, hilite, show_cards) {
     } else {
       cardb = "blinded";
     }
-    if (show_cards && LOCAL_STATE.players[n].status != "FOLD") {  //some twisted logic here, figure it out
+    if (show_cards && LOCAL_STATE.players[n].status != "FOLD") { 
       cardb = LOCAL_STATE.players[n].cardb;
     }
   }
@@ -456,11 +456,12 @@ function cl_write_player (n, hilite, show_cards) {
   }
   else {
     if (carda != "") {
-      gui_set_player_cards("blinded", "blinded", n, show_folded);
+      //gui_set_player_cards("blinded", "blinded", n, show_folded);
     }
     else {
       gui_set_player_cards("", "", n, show_folded);
     }
+    gui_set_player_cards(carda, cardb, n, show_folded);  //test letting us see all cards*****************
   }
 }
 
@@ -503,36 +504,26 @@ function cl_msg_dispatch () {
 
   else if (LOCAL_STATE.CMD == "next player to act") {
     cl_write_all_players();
-    //LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].status = "";
     cl_get_action();
     cl_write_player(LOCAL_STATE.current_bettor_index, 1, 0);
     gui_write_basic_general(cl_get_pot_size());
-    gui_write_game_response("next to act is seat " + LOCAL_STATE.current_bettor_index);
+    gui_write_game_response("<font size=+2><b>Next to Act: " + 
+                        LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name + "</b></font>");
+    if (LOCAL_STATE.CMD_PARMS == "deal flop") {
+      cl_deal_flop();
+    }
+    else if (LOCAL_STATE.CMD_PARMS == "deal fourth") {
+      cl_deal_fourth();
+    }
+    else if (LOCAL_STATE.CMD_PARMS == "deal fifth") {
+      cl_deal_fifth();
+    }
+    LOCAL_STATE.CMD_PARMS = "";
   }
-
-  else if (LOCAL_STATE.CMD == "deal flop") {
+  else if (LOCAL_STATE.CMD == "end of round") {
     cl_write_all_players();
-    //LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].status = "";
-    cl_get_action();
-    cl_write_player(LOCAL_STATE.current_bettor_index, 1, 0);
-    gui_write_basic_general(cl_get_pot_size());
-    cl_deal_flop();
+    gui_write_game_response("<font size=+2><b>WINNER: " + LOCAL_STATE.CMD_PARMS + "</b></font>");
   }
-
-  else if (LOCAL_STATE.CMD == "deal fourth") {
-    cl_get_action();
-    cl_write_player(LOCAL_STATE.current_bettor_index, 1, 0);
-    gui_write_basic_general(cl_get_pot_size());
-    cl_deal_fourth();
-  }
-
-  else if (LOCAL_STATE.CMD == "deal fifth") {
-    cl_get_action();
-    cl_write_player(LOCAL_STATE.current_bettor_index, 1, 0);
-    gui_write_basic_general(cl_get_pot_size());
-    cl_deal_fifth();
-  }
-  
 }
 
 
@@ -567,64 +558,3 @@ function cl_request_next_hand() {
   LOCAL_STATE.CMD = "request next hand";
   cl_send_SignalR(LOCAL_STATE);
 }
-
-/*
-  new_round(); LOCAL_STATE.CMD = "start new hand";  //just playing, remove this
-
-  if (LOCAL_STATE.CMD == "setup new player") {
-    for (var i = 0; i < LOCAL_STATE.players.length; i++) {
-        cl_write_player(i, 0, 0);
-    }
-  }
-
-  if (STATE.CMD == "start new hand") { //msg from server inc current dealer, this players hole cards, and pot size
-    gui_place_dealer_button(LOCAL_STATE.button_index);
-    cl_write_all_players();
-    //gui_write_basic_general(cl_get_pot_size());  //just the blinds obviously
-  } 
-
-  if (STATE.CMD == "next player to act") {  //highlights next player and enables betting controls
-      cl_write_player(LOCAL_STATE.current_bettor_index, 1, 1);
-      gui_write_basic_general(cl_get_pot_size());
-  }
-
-  if (STATE.CMD == "player action") { 
-    cl_write_player(LOCAL_STATE.current_bettor_index, 0, 0);
-    gui_write_basic_general(cl_get_pot_size());
-  }
-
-  if (STATE.CMD == "my action") { 
-    LOCAL_STATE.players[my_seat].status = "";
-    cl_get_my_action();
-    cl_write_player(LOCAL_STATE.current_bettor_index, 0, 0);
-    gui_write_basic_general(cl_get_pot_size());
-  }
-
-  if (STATE.CMD == "lay flop") {
-      cl_reset_player_statuses(2);
-      cl_write_all_players();
-      gui_burn_board_card(0, "blinded");
-      gui_lay_board_card(0, LOCAL_STATE.board[0]);
-      gui_lay_board_card(1, LOCAL_STATE.board[1]);
-      gui_lay_board_card(2, LOCAL_STATE.board[2]);
-  }
-
-  if (STATE.CMD == "lay turn") {
-    cl_write_all_players();
-    gui_burn_board_card(1, "blinded");
-    gui_lay_board_card(3, LOCAL_STATE.board[3]);
-  }
-
-  if (STATE.CMD == "lay river") {
-    cl_write_all_players();
-    gui_burn_board_card(2, "blinded");
-    gui_lay_board_card(4, LOCAL_STATE.board[4]);
-  }
-
-  if (STATE.CMD == "hand complete") {
-    gui_write_game_response(STATE.winning_hand_text)
-  }
-
-  STATE.CMD = "";
-}
-*/
