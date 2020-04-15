@@ -11,9 +11,9 @@ var LOCAL_STATE = {
   CMD_PARMS: "",
   NUM_ROUNDS: 0,
   TO_CALL: 0,
-  STARTING_BANKROLL: 10.00,
-  SMALL_BLIND: 0,
-  BIG_BLIND: 0,
+  STARTING_BANKROLL: 1000,
+  SMALL_BLIND: 5,
+  BIG_BLIND: 10,
   BG_HILITE: 'gold',
   cards: new Array(52),
   players: new Array(),
@@ -24,11 +24,10 @@ var LOCAL_STATE = {
   current_bet_amount: 0,
   current_total_bet: 0,
   current_min_raise: 0,
-  current_pot: 0
+  global_pot_remainder: 0
 }
 
-function cl_player (name, bankroll, carda, cardb, status, total_bet,
-  subtotal_bet) {
+function cl_player (name, bankroll, carda, cardb, status, total_bet, subtotal_bet) {
 this.name = name;
 this.bankroll = bankroll;
 this.carda = carda;
@@ -56,8 +55,8 @@ function cl_get_pot_size () {
   for (var i = 0; i < LOCAL_STATE.players.length; i++) {
     p += LOCAL_STATE.players[i].total_bet;//
   }
-  //p += global_pot_remainder;
-  return p.toFixed(2);
+  p += LOCAL_STATE.global_pot_remainder;
+  return p;
 }
 
 function cl_get_pot_size_html () {
@@ -68,15 +67,15 @@ function cl_get_action () {
   gui_hide_quick_raise ();
   
   var to_call = LOCAL_STATE.TO_CALL;
-  var call_button_text = "<u>C</u>all " + to_call.toFixed(2);
-  var fold_button_text = "<u>F</u>old";
+  var call_button_text = "Call " + (to_call/100).toFixed(2);
+  var fold_button_text = "Fold";
 
   if (to_call > LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {   //*************************
     to_call = LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll;       //*************************
   }
   var that_is_not_the_key_you_are_looking_for;
   if (to_call == 0) {
-    call_button_text = "<u>C</u>heck";
+    call_button_text = "Check";
     fold_button_text = 0;
   } 
 
@@ -101,26 +100,26 @@ function cl_get_action () {
   for (var i = 0; i < 5; i++) {
     next_raise = LOCAL_STATE.current_min_raise * (i + 1);
     if (next_raise < LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {
-      quick_values[i] = next_raise;
+      quick_values[i] = next_raise + to_call;
     }
   }
   var bet_or_raise = "Bet";
   if (to_call > 0) {
-    bet_or_raise = "Raise";
+    bet_or_raise = "Raise To";
   }
-  var quick_bets = "<b>Quick " + bet_or_raise + "s</b><br>";
+  var quick_bets = "<b>" + bet_or_raise + "</b><br>";
   for (i = 0; i < 6; i++) {
     if (quick_values[i]) {
       quick_bets += "<a href='javascript:parent.cl_handle_raise(" +
-                    (quick_values[i] + to_call) + ")'>" + quick_values[i].toFixed(2) + "</a>" +
+                    (quick_values[i]) + ")'>" + (quick_values[i]/100).toFixed(2) + "</a>" +
                     "&nbsp;&nbsp;&nbsp;";
     }
   }
   quick_bets += "<a href='javascript:parent.cl_handle_raise(" +
-                LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll.toFixed(2) + ")'>All In!</a>";
+                LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll + ")'>All In!</a>";
   var html9 = "<td><table align=center><tr><td align=center>";
-  var html10 = quick_bets +
-               "</td></tr></table></td></tr></table></body></html>";
+  var html10 = quick_bets + "</td></tr></table></td></tr></table></body></html>";
+
   gui_write_quick_raise(html9 + html10);
 
   var hi_lite_color = gui_get_theme_mode_highlite_color();
@@ -128,9 +127,9 @@ function cl_get_action () {
      
   if (to_call){
     message = "<tr><td><font size=+2><b>Current raise: " +
-                LOCAL_STATE.current_bet_amount.toFixed(2) + 
+                LOCAL_STATE.current_bet_amount + 
                 "</b><br> You need <font color=" + hi_lite_color +
-                " size=+3>" + to_call.toFixed(2) +
+                " size=+3>" + to_call +
                 "</font> more to call.<br>" +
                 LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name + ", it's your turn." +
                 "</font></td></tr>";
@@ -179,9 +178,7 @@ function cl_player_folds() {
 }
 
 function cl_player_calls() {
-  //var to_call = LOCAL_STATE.current_bet_amount - LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet;
   var to_call = LOCAL_STATE.TO_CALL;
-  LOCAL_STATE.current_pot += to_call;
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bet_amount = to_call;
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet += to_call;
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll -= to_call;
@@ -225,6 +222,8 @@ function cl_new_game () {
     cl_help_func,
     cl_request_next_hand,
     gui_toggle_the_theme_mode);
+  var buttons = document.getElementById('setup-options');
+  internal_hide_le_button(buttons, 'next-hand-button');
 }
 
 function cl_new_game_continues (req_no_opponents) {
@@ -317,10 +316,22 @@ function cl_get_my_seat() {
   my_seat = LOCAL_STATE.current_bettor_index; //need to lookup in players array but for no so I can play all players
 }
 
-
 function cl_help_func () {
   // Open help.html
-  window.open('help.html'); //window.location.href = 
+  //window.open('help.html'); //window.location.href = 
+  var help_text = "Straight Flush\n" +
+  "Four of a Kind\n" +
+  "Full House\n" +
+  "Flush\n" +
+  "Straight\n" +
+  "Three of a Kind\n" +
+  "Two Pair\n" +
+  "One Pair\n" +
+  "High Card\n" +
+  "Leigh Anne Flush\n" +
+  "Leigh Anne Straight\n" +
+  "*Need to ask Leigh Anne if the 5th card kicker is relevant";
+  window.alert(help_text);
 }
 
 function cl_change_name () {
@@ -432,23 +443,23 @@ function cl_write_player (n, hilite, show_cards) {
   }
   if (LOCAL_STATE.players[n].status == "FOLD") {
     bet_text = "FOLDED ($" +
-               LOCAL_STATE.players[n].total_bet.toFixed(2) + ")";
+               (LOCAL_STATE.players[n].total_bet/100).toFixed(2) + ")";
     } else if (LOCAL_STATE.players[n].status == "BUST") {
     bet_text = "BUSTED";
     } else if (!cl_has_money(n)) {
-    bet_text = "ALL IN " + LOCAL_STATE.players[n].subtotal_bet.toFixed(2) + " ($" +
-               LOCAL_STATE.players[n].total_bet.toFixed(2) + ")";
+    bet_text = "ALL IN " + (LOCAL_STATE.players[n].subtotal_bet/100).toFixed(2) + " ($" +
+               (LOCAL_STATE.players[n].total_bet/100).toFixed(2) + ")";
     } else {
-    bet_text = LOCAL_STATE.players[n].status + " $" + LOCAL_STATE.players[n].subtotal_bet.toFixed(2) +
-               " ($" + LOCAL_STATE.players[n].total_bet.toFixed(2) + ")";
+    bet_text = LOCAL_STATE.players[n].status + " $" + (LOCAL_STATE.players[n].subtotal_bet/100).toFixed(2) +
+               " ($" + (LOCAL_STATE.players[n].total_bet/100).toFixed(2) + ")";
   }
   if (LOCAL_STATE.players[n].status == "CHECK") {
-    bet_text = "Check" + " ($" + LOCAL_STATE.players[n].total_bet.toFixed(2) + ")";
+    bet_text = "Check" + " ($" + (LOCAL_STATE.players[n].total_bet/100).toFixed(2) + ")";
   }
 
   gui_set_player_name(LOCAL_STATE.players[n].name, n);    // offset 1 on seat-index
   gui_set_bet(bet_text, n);
-  gui_set_bankroll(LOCAL_STATE.players[n].bankroll.toFixed(2), n);
+  gui_set_bankroll((LOCAL_STATE.players[n].bankroll/100).toFixed(2), n);
   
   //only show cards for my seat, back of cards for all others
   if (LOCAL_STATE.players[n].name == my_name) {
@@ -456,12 +467,15 @@ function cl_write_player (n, hilite, show_cards) {
   }
   else {
     if (carda != "") {
-      //gui_set_player_cards("blinded", "blinded", n, show_folded);
+      gui_set_player_cards("blinded", "blinded", n, show_folded);
     }
     else {
       gui_set_player_cards("", "", n, show_folded);
     }
-    gui_set_player_cards(carda, cardb, n, show_folded);  //test letting us see all cards*****************
+    if (LOCAL_STATE.players[n].status == "WIN") {
+      gui_set_player_cards(carda, cardb, n, show_folded);
+    }
+    //gui_set_player_cards(carda, cardb, n, show_folded);  //get rid of this to hide other players cards*****************
   }
 }
 
@@ -472,6 +486,9 @@ function cl_write_all_players() {
     }
     else {
       cl_write_player(n, 1, 0);
+    }
+    if (LOCAL_STATE.players[n].status == "WIN") {
+      cl_write_player(n, 2, 0);
     }
   }
 }
@@ -508,7 +525,8 @@ function cl_msg_dispatch () {
     cl_write_player(LOCAL_STATE.current_bettor_index, 1, 0);
     gui_write_basic_general(cl_get_pot_size());
     gui_write_game_response("<font size=+2><b>Next to Act: " + 
-                        LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name + "</b></font>");
+                        LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name +
+                        " , minimum bet or raise is " + (LOCAL_STATE.current_min_raise/100).toFixed(2) + "</b></font>");
     if (LOCAL_STATE.CMD_PARMS == "deal flop") {
       cl_deal_flop();
     }
@@ -521,6 +539,12 @@ function cl_msg_dispatch () {
     LOCAL_STATE.CMD_PARMS = "";
   }
   else if (LOCAL_STATE.CMD == "end of round") {
+    var buttons = document.getElementById('setup-options');
+    var le_button = buttons.children['next-hand-button'];
+    le_button.style.visibility = 'visible'
+    le_button.onclick = cl_request_next_hand;
+    gui_hide_quick_raise();
+    gui_hide_fold_call_click ();
     cl_write_all_players();
     gui_write_game_response("<font size=+2><b>WINNER: " + LOCAL_STATE.CMD_PARMS + "</b></font>");
   }
@@ -547,14 +571,17 @@ function cl_start_game() {
     return;
   }
   LOCAL_STATE.CMD = "request new game";
-  cl_send_SignalR(LOCAL_STATE);
-  gui_write_game_response("<font size=+2><b>New game started, player seats randomly assigned, GOOD LUCK everyone!</b></font>");
   var buttons = document.getElementById('setup-options');
-  cl_get_my_seat();
   internal_hide_le_button(buttons, 'new-game-button');
+  cl_send_SignalR(LOCAL_STATE);
+  cl_get_my_seat();
+
 }
 
 function cl_request_next_hand() {
   LOCAL_STATE.CMD = "request next hand";
+  var buttons = document.getElementById('setup-options');
+  internal_hide_le_button(buttons, 'next-hand-button');
   cl_send_SignalR(LOCAL_STATE);
+
 }

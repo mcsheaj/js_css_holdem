@@ -253,7 +253,7 @@ function gui_write_basic_general (pot_size) {
   var pot_div = table.children.pot;
   var total_div = pot_div.children['total-pot'];
 
-  var the_pot = 'Total pot: $' + pot_size;
+  var the_pot = 'Total pot: $' + (pot_size/100).toFixed(2);
   total_div.innerHTML = the_pot;
 }
 
@@ -341,9 +341,7 @@ function gui_setup_option_buttons (new_game_func,
   var buttons = document.getElementById('setup-options');
 
   internal_le_button(buttons, 'new-game-button', new_game_func);
-
   internal_le_button(buttons, 'join-button', join_game_func);
-
   internal_le_button(buttons, 'mode-button', mode_func);
   internal_le_button(buttons, 'help-button', help_func);
   internal_le_button(buttons, 'next-hand-button', next_hand_func);

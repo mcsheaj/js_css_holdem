@@ -6,14 +6,16 @@ Project home page: http://sourceforge.net/projects/jsholdem/
 
 //var cards = new Array(52);
 
+var lowest_chip_amount = 5; //this works for my home game nickel/dime
+
 var SERVER_STATE = {
   CMD: "",
   CMD_PARMS: "",
   NUM_ROUNDS: 0,
   TO_CALL: 0,
   STARTING_BANKROLL: 1000,
-  SMALL_BLIND: 0,
-  BIG_BLIND: 0,
+  SMALL_BLIND: 5,
+  BIG_BLIND: 10,
   BG_HILITE: 'gold',
   cards: new Array(52),
   players: new Array,
@@ -24,10 +26,8 @@ var SERVER_STATE = {
   current_bet_amount: 0, 
   current_total_bet: 0,
   current_min_raise: 0,
-  current_pot: 0
+  global_pot_remainder: 0
 }
-
-
 
 function player (name, bankroll, carda, cardb, status, total_bet,
                  subtotal_bet) {
@@ -113,6 +113,18 @@ function number_of_active_players () {
   return num_playing;
 }
 
+function number_of_players_in_hand () {
+  var num_playing = 0;
+  var i;
+  for (i = 0; i < SERVER_STATE.players.length; i++) {
+    if ((SERVER_STATE.players[i].status != "FOLD") &&
+            (SERVER_STATE.players[i].status != "BUST")) {
+      num_playing += 1;
+    }
+  }
+  return num_playing;
+}
+
 function new_round () {
   SERVER_STATE.NUM_ROUNDS++;
   var num_playing = number_of_active_players();
@@ -172,8 +184,6 @@ function shuffle () {
 }
 
 function blinds_and_deal () {
-  SERVER_STATE.SMALL_BLIND = 5;
-  SERVER_STATE.BIG_BLIND = 10; 
   var num_playing = number_of_active_players();
 
   var small_blind = get_next_player_position(SERVER_STATE.button_index, 1);
@@ -244,7 +254,7 @@ function get_next_action_seat() {
   SERVER_STATE.current_bettor_index = get_next_player_position(SERVER_STATE.button_index,1);
 }
 
-var global_pot_remainder = 0;
+//var global_pot_remainder = 0;
 
 function handle_end_of_round () {
   var candidates = new Array(SERVER_STATE.players.length);
@@ -269,14 +279,14 @@ function handle_end_of_round () {
   var best_hand_players;
   var current_pot_to_split = 0;
   var pot_remainder = 0;
-  if (global_pot_remainder) {   //  Can never get here????
-    //gui_log_to_history("transferring pot remainder " + global_pot_remainder);
-    pot_remainder = global_pot_remainder;
-    my_total_pot_size += global_pot_remainder;
-    global_pot_remainder = 0;
+  if (SERVER_STATE.global_pot_remainder) {   //  Can never get here????
+    //gui_log_to_history("transferring pot remainder " + SERVER_STATE.global_pot_remainder);
+    pot_remainder = SERVER_STATE.global_pot_remainder;
+    my_total_pot_size += SERVER_STATE.global_pot_remainder;
+    SERVER_STATE.global_pot_remainder = 0;
   }
 
-  while (my_total_pot_size > (pot_remainder + 0.01) && still_active_candidates) {
+  while (my_total_pot_size > (pot_remainder + 0.9) && still_active_candidates) {
 //    //gui_log_to_history("splitting pot with pot " + my_total_pot_size +
 //                       " and remainder " + pot_remainder +
 //                       " on " + still_active_candidates + " candidates" );
@@ -310,16 +320,6 @@ function handle_end_of_round () {
       }
     }
 
-    // Compose the pot
-    // If your bet was less than (a fold) or equal to the lowest winner bet:
-    //    then add it to the current pot
-    // If your bet was greater than lowest:
-    //    then just take the 'lowest_winner_bet' to the pot
-
-    // Take in any fraction from a previous split
-//    if (pot_remainder) {
-//      //gui_log_to_history("increasing current pot with remainder " + pot_remainder);
-//    }
     current_pot_to_split = pot_remainder;
     pot_remainder = 0;
 
@@ -333,14 +333,14 @@ function handle_end_of_round () {
       }
     }
 
-    // Divide the pot - in even integrals
-//    //gui_log_to_history("Divide the pot " + current_pot_to_split +
-//                       " on " + num_winners + " winner(s)");
-    var share = Math.floor(current_pot_to_split / num_winners);
-    // and save any remainders to next round
-    pot_remainder = current_pot_to_split - share * num_winners;
-
-//    //gui_log_to_history("share " + share + " remainder " + pot_remainder);
+    var share = current_pot_to_split;
+    if (num_winners > 1) {
+      pot_remainder = current_pot_to_split;
+      for (i=0; pot_remainder > (num_winners * lowest_chip_amount); i++) {
+        pot_remainder -= lowest_chip_amount * num_winners;
+      }
+      share = i * lowest_chip_amount;
+    } 
 
     for (i = 0; i < winners.length; i++) {
       if (my_total_bets_per_player[i] < 0.01) {
@@ -368,9 +368,9 @@ function handle_end_of_round () {
     //gui_log_to_history("End of iteration");
   } // End of pot distribution
 
-  global_pot_remainder = pot_remainder;
-//  //gui_log_to_history("distributed; global_pot_remainder: " +
-//                     global_pot_remainder +
+  SERVER_STATE.global_pot_remainder = pot_remainder;
+//  //gui_log_to_history("distributed; SERVER_STATE.global_pot_remainder: " +
+//                     SERVER_STATE.global_pot_remainder +
 //                     " pot_remainder: " + pot_remainder);
   pot_remainder = 0;
   var winner_text = "";
@@ -386,14 +386,16 @@ function handle_end_of_round () {
       }
       //winner_text += winning_hands[i] + " gives " + allocations[i] +
       //               " to " + SERVER_STATE.players[i].name + ". ";
-
-      winner_text += SERVER_STATE.players[i].name + " wins " + allocations[i] + " with " + 
+      if (number_of_players_in_hand() > 1) {
+        winner_text += SERVER_STATE.players[i].name + " wins $" + (allocations[i]/100).toFixed(2) + " with " + 
                     winning_hands[i] + ". ";
+      }else {
+        winner_text += SERVER_STATE.players[i].name + " wins $" + (allocations[i]/100).toFixed(2);
+      }
 
       SERVER_STATE.players[i].bankroll += allocations[i];
       if (best_hand_players[i]) {
-        // function write_player(n, hilite, show_cards)
-        //write_player(i, 2, 1);
+        SERVER_STATE.players[i].status = "WIN";
       } else {
         //write_player(i, 1, 1);
       }
@@ -429,14 +431,6 @@ function handle_end_of_round () {
              "><b>Winning: " +
              winner_text + "</b></font><br>";
 
-             /* var html = "<html><body topmargin=2 bottommargin=0 bgcolor=" + BG_HILITE +
-             " onload='document.f.c.focus();'><table><tr><td>" +
-             get_pot_size_html() +
-             "</td></tr></table><br><font size=+2 color=" + hi_lite_color +
-             "><b>Winning: " +
-             winner_text + "</b></font><br>"; */
-
-  //gui_write_game_response(html);
   SERVER_STATE.CMD_PARMS = html; //winner_text;
 }
 
@@ -475,7 +469,7 @@ function get_pot_size () {
   for (var i = 0; i < SERVER_STATE.players.length; i++) {
     p += SERVER_STATE.players[i].total_bet; // + SERVER_STATE.players[i].subtotal_bet;
   }
-  p += global_pot_remainder;
+  p += SERVER_STATE.global_pot_remainder;
   return p;
 }
 
@@ -504,7 +498,6 @@ function clear_bets () {
   SERVER_STATE.current_bet_amount = 0;
   SERVER_STATE.current_total_bet = 0;
   SERVER_STATE.current_min_raise = 0;
-  SERVER_STATE.current_pot = 0;
   SERVER_STATE.TO_CALL = 0;
 }
 
@@ -668,9 +661,15 @@ function msg_dispatch(current_state) {
   }
 
   if (current_state.CMD == "player action") {
+    if (number_of_players_in_hand() < 2) {
+      handle_end_of_round();
+      SERVER_STATE.CMD = "end of round";
+      send_SignalR(SERVER_STATE);
+    }
+
     //if the betting round is done figure out next step and tell player
     //no need to send client and action msg as current bettor is already correct and they are ready to act
-    if (betting_is_done()) {
+    else if (betting_is_done()) {
       reset_player_statuses(2);
       SERVER_STATE.TO_CALL = 0;
       if (SERVER_STATE.board[0] == "") {
@@ -691,7 +690,8 @@ function msg_dispatch(current_state) {
         SERVER_STATE.CMD_PARMS = "deal fifth";
         send_SignalR(SERVER_STATE);
       }
-      else if (SERVER_STATE.board[4] != "") { //if betting is done and all 5 board cards are dealt calc winner
+      
+      if ((SERVER_STATE.board[4] != "") || (number_of_players_in_hand() < 2)){ //if betting is done and all 5 board cards are dealt calc winner
         //send_game_response("WINNER!"); //just a stub until I add calc winner code
         handle_end_of_round();
         SERVER_STATE.CMD = "end of round";
