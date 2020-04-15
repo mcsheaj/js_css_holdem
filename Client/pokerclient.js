@@ -3,9 +3,6 @@
 var my_name = "";
 var my_seat = 0;
 
-
-
-
 var LOCAL_STATE = {
   CMD: "",
   CMD_PARMS: "",
@@ -79,10 +76,9 @@ function cl_get_action () {
     fold_button_text = 0;
   } 
 
-  // enable fold and call the buttons
+  // enable fold and call buttons
   if (to_call) {
-    //LOCAL_STATE.current_bet_amount = to_call;
-    gui_setup_fold_call_click(fold_button_text,
+     gui_setup_fold_call_click(fold_button_text,
                               call_button_text,
                               cl_player_folds,
                               cl_player_calls);
@@ -142,9 +138,6 @@ function cl_get_action () {
 } 
 
 function cl_the_bet_function (player_index, bet_amount) {
-  if (bet_amount == LOCAL_STATE.current_bet_amount){
-    //huh  LOCAL_STATE.players[my_seat].status = "CALL";
-  }
   LOCAL_STATE.current_bet_amount = bet_amount; 
   LOCAL_STATE.current_min_raise = LOCAL_STATE.current_bet_amount;
   
@@ -154,7 +147,7 @@ function cl_the_bet_function (player_index, bet_amount) {
   return;
 }
 
-function cl_handle_raise (bet_amount) {
+function cl_handle_raise (bet_amount) {          //call back from betting control
   cl_the_bet_function(LOCAL_STATE.current_bettor_index, bet_amount);
   gui_write_basic_general(cl_get_pot_size());
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].status = "RAISE";
@@ -162,7 +155,6 @@ function cl_handle_raise (bet_amount) {
   gui_hide_quick_raise();
   gui_hide_fold_call_click ();
   gui_write_game_response("");
-  //LOCAL_STATE.current_total_bet = LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].total_bet;
   set_current_total_bet();
   LOCAL_STATE.CMD = "player action";
   cl_send_SignalR(LOCAL_STATE);
@@ -177,7 +169,7 @@ function cl_player_folds() {
   cl_send_SignalR(LOCAL_STATE);
 }
 
-function cl_player_calls() {
+function cl_player_calls() {   //call back from betting control
   var to_call = LOCAL_STATE.TO_CALL;
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bet_amount = to_call;
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet += to_call;
@@ -189,13 +181,12 @@ function cl_player_calls() {
   gui_hide_quick_raise();
   gui_hide_fold_call_click ();
   gui_write_game_response("");
-  //LOCAL_STATE.current_total_bet = LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].total_bet;
   set_current_total_bet();
   LOCAL_STATE.CMD = "player action";
   cl_send_SignalR(LOCAL_STATE);
 }
 
-function cl_player_checks() {
+function cl_player_checks() {          //call back from betting control
   gui_write_basic_general(cl_get_pot_size());
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bet_amount = 0;
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].status = "CHECK";
@@ -203,7 +194,6 @@ function cl_player_checks() {
   gui_hide_fold_call_click();
   gui_hide_quick_raise();
   gui_write_game_response("");
-  //LOCAL_STATE.current_total_bet = LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].total_bet;
   set_current_total_bet();
   LOCAL_STATE.CMD = "player action";
   cl_send_SignalR(LOCAL_STATE);
@@ -228,8 +218,6 @@ function cl_new_game () {
 
 function cl_new_game_continues (req_no_opponents) {
   cl_clear_player_cards(10);  //clear max number of players, it's easier this way, trust me
-  //cl_reset_player_statuses(0); 
-  //cl_clear_bets();
   cl_new_round();
 }
 
@@ -237,8 +225,6 @@ function cl_new_round () {
   LOCAL_STATE.RUN_EM = 0;
   // Clear buttons
   gui_hide_fold_call_click();
-
-  cl_reset_player_statuses(1);
   cl_clear_bets();
   cl_clear_pot();
   LOCAL_STATE.current_min_raise = 0;
@@ -290,7 +276,6 @@ function cl_clear_bets () {
 }
 
 function cl_deal_flop() {
-  cl_reset_player_statuses(2);
   cl_write_all_players();
   gui_burn_board_card(0, "blinded");
   gui_lay_board_card(0, LOCAL_STATE.board[0]);
@@ -299,14 +284,12 @@ function cl_deal_flop() {
 }
 
 function cl_deal_fourth() {
-  cl_reset_player_statuses(2);
   cl_write_all_players();
   gui_burn_board_card(1, "blinded");
   gui_lay_board_card(3, LOCAL_STATE.board[3]);
 }
 
 function cl_deal_fifth() {
-  cl_reset_player_statuses(2);
   cl_write_all_players();
   gui_burn_board_card(2, "blinded");
   gui_lay_board_card(4, LOCAL_STATE.board[4]);
@@ -317,8 +300,6 @@ function cl_get_my_seat() {
 }
 
 function cl_help_func () {
-  // Open help.html
-  //window.open('help.html'); //window.location.href = 
   var help_text = "Straight Flush\n" +
   "Four of a Kind\n" +
   "Full House\n" +
@@ -348,20 +329,6 @@ function cl_change_name () {
   setLocalStorage("playername", my_name);
   }
   cl_send_new_player(my_name);
-}
-
-function cl_reset_player_statuses (type) {
-  for (var i = 0; i < LOCAL_STATE.players.length; i++) {
-    if (type == 0) {
-      //LOCAL_STATE.players[i].status = "";
-    } else if (type == 1 && LOCAL_STATE.players[i].status != "BUST") {
-      //LOCAL_STATE.players[i].status = "";
-    } else if (type == 2 &&
-               LOCAL_STATE.players[i].status != "FOLD" &&
-               LOCAL_STATE.players[i].status != "BUST") {
-      //LOCAL_STATE.players[i].status = "";
-    }
-  }
 }
 
 function cl_clear_pot () {
