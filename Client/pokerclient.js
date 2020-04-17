@@ -61,80 +61,87 @@ function cl_get_pot_size_html () {
 }
 
 function cl_get_action () {
-  gui_hide_quick_raise ();
-  
-  var to_call = LOCAL_STATE.TO_CALL;
-  var call_button_text = "Call " + (to_call/100).toFixed(2);
-  var fold_button_text = "Fold";
+  cl_get_my_seat();
+  if (LOCAL_STATE.current_bettor_index == my_seat) {
+    gui_hide_quick_raise ();
+    
+    var to_call = LOCAL_STATE.TO_CALL;
+    var call_button_text = "Call " + (to_call/100).toFixed(2);
+    var fold_button_text = "Fold";
 
-  if (to_call > LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {   //*************************
-    to_call = LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll;       //*************************
-  }
-  var that_is_not_the_key_you_are_looking_for;
-  if (to_call == 0) {
-    call_button_text = "Check";
-    fold_button_text = 0;
-  } 
+    if (to_call > LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {   //*************************
+      to_call = LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll;       //*************************
+    }
+    var that_is_not_the_key_you_are_looking_for;
+    if (to_call == 0) {
+      call_button_text = "Check";
+      fold_button_text = 0;
+    } 
 
-  // enable fold and call buttons
-  if (to_call) {
-     gui_setup_fold_call_click(fold_button_text,
-                              call_button_text,
-                              cl_player_folds,
-                              cl_player_calls);
+    // enable fold and call buttons
+    if (to_call) {
+      gui_setup_fold_call_click(fold_button_text,
+                                call_button_text,
+                                cl_player_folds,
+                                cl_player_calls);
+    }
+    else {
+      gui_setup_fold_call_click(fold_button_text,
+                                call_button_text,
+                                cl_player_folds,
+                                cl_player_checks);
+    }
+
+    var quick_values = new Array(5);
+
+    var next_raise;
+    for (var i = 0; i < 5; i++) {
+      next_raise = LOCAL_STATE.current_min_raise * (i + 1);
+      if (next_raise < LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {
+        quick_values[i] = next_raise + to_call;
+      }
+    }
+    var bet_or_raise = "Bet";
+    if (to_call > 0) {
+      bet_or_raise = "Raise To";
+    }
+    var quick_bets = "<b>" + bet_or_raise + "</b><br>";
+    for (i = 0; i < 6; i++) {
+      if (quick_values[i]) {
+        quick_bets += "<a href='javascript:parent.cl_handle_raise(" +
+                      (quick_values[i]) + ")'>" + (quick_values[i]/100).toFixed(2) + "</a>" +
+                      "&nbsp;&nbsp;&nbsp;";
+      }
+    }
+    quick_bets += "<a href='javascript:parent.cl_handle_raise(" +
+                  LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll + ")'>All In!</a>";
+    var html9 = "<td><table align=center><tr><td align=center>";
+    var html10 = quick_bets + "</td></tr></table></td></tr></table></body></html>";
+
+    gui_write_quick_raise(html9 + html10);
+
+    var hi_lite_color = gui_get_theme_mode_highlite_color();
+    var message = "";
+      
+    if (to_call){
+      message = "<tr><td><font size=+2><b>Current raise: " +
+                  LOCAL_STATE.current_bet_amount + 
+                  "</b><br> You need <font color=" + hi_lite_color +
+                  " size=+3>" + to_call +
+                  "</font> more to call.<br>" +
+                  LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name + ", it's your turn." +
+                  "</font></td></tr>";
+    } 
+    else {
+      message = "<tr><td><font size=+2>" + LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name + ", you are next to act." +
+                  "</font></td></tr>";  
+    }
+    gui_write_game_response(message);
   }
   else {
-    gui_setup_fold_call_click(fold_button_text,
-                              call_button_text,
-                              cl_player_folds,
-                              cl_player_checks);
+    gui_hide_fold_call_click();
+    gui_hide_quick_raise();
   }
-
-  var quick_values = new Array(5);
-
-  var next_raise;
-  for (var i = 0; i < 5; i++) {
-    next_raise = LOCAL_STATE.current_min_raise * (i + 1);
-    if (next_raise < LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {
-      quick_values[i] = next_raise + to_call;
-    }
-  }
-  var bet_or_raise = "Bet";
-  if (to_call > 0) {
-    bet_or_raise = "Raise To";
-  }
-  var quick_bets = "<b>" + bet_or_raise + "</b><br>";
-  for (i = 0; i < 6; i++) {
-    if (quick_values[i]) {
-      quick_bets += "<a href='javascript:parent.cl_handle_raise(" +
-                    (quick_values[i]) + ")'>" + (quick_values[i]/100).toFixed(2) + "</a>" +
-                    "&nbsp;&nbsp;&nbsp;";
-    }
-  }
-  quick_bets += "<a href='javascript:parent.cl_handle_raise(" +
-                LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll + ")'>All In!</a>";
-  var html9 = "<td><table align=center><tr><td align=center>";
-  var html10 = quick_bets + "</td></tr></table></td></tr></table></body></html>";
-
-  gui_write_quick_raise(html9 + html10);
-
-  var hi_lite_color = gui_get_theme_mode_highlite_color();
-  var message = "";
-     
-  if (to_call){
-    message = "<tr><td><font size=+2><b>Current raise: " +
-                LOCAL_STATE.current_bet_amount + 
-                "</b><br> You need <font color=" + hi_lite_color +
-                " size=+3>" + to_call +
-                "</font> more to call.<br>" +
-                LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name + ", it's your turn." +
-                "</font></td></tr>";
-  } 
-  else {
-    message = "<tr><td><font size=+2>" + LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name + ", you are next to act." +
-                "</font></td></tr>";  
-  }
-  gui_write_game_response(message);
 } 
 
 function cl_the_bet_function (player_index, bet_amount) {
@@ -296,7 +303,11 @@ function cl_deal_fifth() {
 }
 
 function cl_get_my_seat() {
-  my_seat = LOCAL_STATE.current_bettor_index; //need to lookup in players array but for no so I can play all players
+  for (var n = 0; n < LOCAL_STATE.players.length; n++) {
+    if (LOCAL_STATE.players[n].name == my_name) {
+      my_seat = n;
+    }
+  }
 }
 
 function cl_help_func () {
@@ -316,7 +327,7 @@ function cl_help_func () {
 }
 
 function cl_change_name () {
-  my_name = prompt("What is your name? (14 characters or less)", getLocalStorage("playername"));
+  my_name = prompt("What is your name? (14 characters or less)", "");
   if (my_name) {
     if (my_name.length > 14) {
       cl_my_pseudo_alert("Name must be less than 14 characters");
@@ -325,10 +336,9 @@ function cl_change_name () {
     }
   }
   if (my_name){
-//SERVERMSG here with new player name
-  setLocalStorage("playername", my_name);
+    //setLocalStorage("playername", my_name);
+    cl_send_new_player(my_name);
   }
-  cl_send_new_player(my_name);
 }
 
 function cl_clear_pot () {
@@ -460,14 +470,7 @@ function cl_write_all_players() {
   }
 }
 
-//INTERACT WITH SERVER
 
-
-//STUB for eventual SIGNALR receive, currently is is called when a button is pressed
-function cl_rcv_SignalR(current_state) {
-  LOCAL_STATE = current_state;
-  cl_msg_dispatch();
-}
 
 //HANDLE incoming message from server
 function cl_msg_dispatch () {
@@ -503,7 +506,6 @@ function cl_msg_dispatch () {
     else if (LOCAL_STATE.CMD_PARMS == "deal fifth") {
       cl_deal_fifth();
     }
-    LOCAL_STATE.CMD_PARMS = "";
   }
   else if (LOCAL_STATE.CMD == "end of round") {
     var buttons = document.getElementById('setup-options');
@@ -518,10 +520,7 @@ function cl_msg_dispatch () {
 }
 
 
-//send SignalR msg to server -- for now just calls server function directly
-function cl_send_SignalR(current_state) {
-  rcv_SignalR(current_state); //for testing with local server
-}
+
 
 //Outgoing msg functions
 function cl_send_new_player(name) {
@@ -541,8 +540,6 @@ function cl_start_game() {
   var buttons = document.getElementById('setup-options');
   internal_hide_le_button(buttons, 'new-game-button');
   cl_send_SignalR(LOCAL_STATE);
-  cl_get_my_seat();
-
 }
 
 function cl_request_next_hand() {
@@ -551,4 +548,16 @@ function cl_request_next_hand() {
   internal_hide_le_button(buttons, 'next-hand-button');
   cl_send_SignalR(LOCAL_STATE);
 
+}
+
+//send SignalR msg to server -- for now just calls server function directly
+function cl_send_SignalR(current_state) {
+  //rcv_SignalR(current_state); //for testing with local server
+  app.sendMessage(current_state);
+}
+
+//STUB for eventual SIGNALR receive, currently is is called when a button is pressed
+function cl_rcv_SignalR(current_state) {
+  LOCAL_STATE = current_state;
+  cl_msg_dispatch();
 }
