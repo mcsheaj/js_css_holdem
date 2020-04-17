@@ -40,6 +40,76 @@ function player (name, bankroll, carda, cardb, status, total_bet,
   this.subtotal_bet = subtotal_bet;
 }
 
+var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net';
+var authProvider = 'aad'; // aad, twitter, microsoftaccount, google, facebook
+var app = {
+  connection: null,
+  ready: false,
+
+  ///////////////////////////////////////////////
+  // init members, connect to signalR and setup 
+  // callback handlers
+  ///////////////////////////////////////////////
+  init: function () {
+
+      // create a signalr connection (ready to connect, but not yet connected)
+      app.connection = new signalR.HubConnectionBuilder()
+          .withUrl(`${apiBaseUrl}/api`)
+          .build();
+
+      // setup a callback for signalr to send messages back to
+      app.connection.on('newMessage', function (message) {
+          app.messageHandler(message);
+      });
+
+      // setup a callback to tell me when my connection is lost
+      app.connection.onclose(function () { console.log('disconnected'); });
+
+      // now initiate the connection
+      app.connection.start()
+          .then(function () { app.ready = true; })
+          .catch(console.error);
+  },
+
+  ///////////////////////////////////////////////
+  // Send a message to signalR
+  ///////////////////////////////////////////////
+  sendMessage: function (messageText) {
+    var sender = name;
+      // payload is an arbitrary object (i.e. could be your whole state)
+      var message = {
+          recipient: '',
+          sender: sender.value,
+          payload: {
+              priority: 100,
+              text: messageText
+          }
+      };
+
+      // send the message using axios promises
+      return axios.post(`${apiBaseUrl}/api/send`, message)
+          .then(
+              function (resp) {
+                  console.log(resp.data);
+              },
+              function (err) {
+                  console.log(err);
+              }
+          );
+  },
+
+  ///////////////////////////////////////////////
+  // Handle a message coming back from signalR
+  ///////////////////////////////////////////////
+  messageHandler: function (message) {
+      if (!message.sender) message.sender = "anonymous";
+      console.log(message.payload.text);
+      rcv_SignalR(message.payload.text);
+  }
+};
+
+app.init();
+
 function init () {
   cl_init();  //not sure how else to do this, eventually this will be started from client html onload
 
@@ -623,12 +693,6 @@ function compRan () {
   return 0.5 - Math.random();
 }
 
-function rcv_SignalR(current_state) {
-  //SERVER_STATE = current_state;
-  msg_dispatch(current_state);
-}
-
-
 function msg_dispatch(current_state) {
 
   if (current_state.CMD == "add new player") {
@@ -691,19 +755,20 @@ function msg_dispatch(current_state) {
         send_SignalR(SERVER_STATE);
       }
       
-      if ((SERVER_STATE.board[4] != "") || (number_of_players_in_hand() < 2)){ //if betting is done and all 5 board cards are dealt calc winner
+      else if ((SERVER_STATE.board[4] != "") || (number_of_players_in_hand() < 2)){ //if betting is done and all 5 board cards are dealt calc winner
         //send_game_response("WINNER!"); //just a stub until I add calc winner code
         handle_end_of_round();
         SERVER_STATE.CMD = "end of round";
         send_SignalR(SERVER_STATE);
       }
-      SERVER_STATE.CMD_PARMS = "";
+      //SERVER_STATE.CMD_PARMS = "";
     }
     else {
       //if the betting round is not over, figure out out any current bet and ask next player to act
       SERVER_STATE.current_bettor_index = get_next_player_position(SERVER_STATE.current_bettor_index, 1);
       set_to_call();
       SERVER_STATE.CMD = "next player to act";
+      SERVER_STATE.CMD_PARMS = "";
       send_SignalR(SERVER_STATE);
     }
   }
@@ -716,5 +781,12 @@ function send_game_response(response) {
 }
 
 function send_SignalR(SERVER_STATE) {
-  cl_rcv_SignalR(SERVER_STATE);
+  //cl_rcv_SignalR(SERVER_STATE);
+  app.sendMessage(SERVER_STATE);
+  LOCAL_STATE.CMD == "";
+}
+
+function rcv_SignalR(current_state) {
+  cl_rcv_SignalR(current_state);
+  msg_dispatch(current_state);
 }
