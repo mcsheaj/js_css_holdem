@@ -9,6 +9,8 @@ Project home page: http://sourceforge.net/projects/jsholdem/
 var lowest_chip_amount = 5; //this works for my home game nickel/dime
 
 var SERVER_STATE = {
+  SENDER: "",
+  DIRECTION: "",
   CMD: "",
   CMD_PARMS: "",
   NUM_ROUNDS: 0,
@@ -86,11 +88,12 @@ var app = {
           }
       };
 
+
       // send the message using axios promises
       return axios.post(`${apiBaseUrl}/api/send`, message)
           .then(
               function (resp) {
-                  console.log(resp.data);
+                console.log(message.payload.text); //resp.data);
               },
               function (err) {
                   console.log(err);
@@ -136,19 +139,20 @@ function clear_player_cards (count) {
 function add_new_player (current_state) {
   
   if (SERVER_STATE.players.length == 0) { //first player
-    SERVER_STATE.players[0] = new player(current_state.CMD_PARMS, 1000, "", "", "", 0, 0);
+    SERVER_STATE.players[0] = new player(current_state.CMD_PARMS, 1000, "", "", "WAIT", 0, 0);
   }
   else if (SERVER_STATE.players.length < 10) { //can't have more than 10 players
     var dup = false;
     for (var n=0; n<SERVER_STATE.players.length; n++) { //look for a player with duplicate name
       if (SERVER_STATE.players[n].name == current_state.CMD_PARMS) { 
         dup = true; 
-        send_game_response("Player tried to join with duplicate name, use different name");
+        //send_game_response("Player tried to join with duplicate name, use different name");
+        //rejoining with same name should just send back game state without adding new player
         return(0);
       }
     }
     if (!dup) {   //don't add player with duplicate name
-      SERVER_STATE.players[SERVER_STATE.players.length] = new player(current_state.CMD_PARMS, 1000, "", "", "", 0, 0);
+      SERVER_STATE.players[SERVER_STATE.players.length] = new player(current_state.CMD_PARMS, 1000, "", "", "WAIT", 0, 0);
     }
   }
   else{
@@ -172,6 +176,18 @@ function new_game () {
   new_round();
 }
 
+function new_round () {
+  SERVER_STATE.NUM_ROUNDS++;
+  reset_player_statuses(1);
+  clear_bets();
+  clear_pot();
+  SERVER_STATE.current_min_raise = 0;
+  collect_cards();
+  SERVER_STATE.button_index = get_next_player_position(SERVER_STATE.button_index, 1);
+  shuffle();
+  blinds_and_deal();
+}
+
 function number_of_active_players () {
   var num_playing = 0;
   var i;
@@ -188,26 +204,12 @@ function number_of_players_in_hand () {
   var i;
   for (i = 0; i < SERVER_STATE.players.length; i++) {
     if ((SERVER_STATE.players[i].status != "FOLD") &&
-            (SERVER_STATE.players[i].status != "BUST")) {
+            (SERVER_STATE.players[i].status != "BUST") &&
+            (SERVER_STATE.players[i].status != "WAIT")) {
       num_playing += 1;
     }
   }
   return num_playing;
-}
-
-function new_round () {
-  SERVER_STATE.NUM_ROUNDS++;
-  var num_playing = number_of_active_players();
-  if (num_playing < 2) return;
-   
-  reset_player_statuses(1);
-  clear_bets();
-  clear_pot();
-  SERVER_STATE.current_min_raise = 0;
-  collect_cards();
-  SERVER_STATE.button_index = get_next_player_position(SERVER_STATE.button_index, 1);
-  shuffle();
-  blinds_and_deal();
 }
 
 function collect_cards () {
@@ -338,7 +340,9 @@ function handle_end_of_round () {
   for (i = 0; i < candidates.length; i++) {
     allocations[i] = 0;
     my_total_bets_per_player[i] = SERVER_STATE.players[i].total_bet;
-    if (SERVER_STATE.players[i].status != "FOLD" && SERVER_STATE.players[i].status != "BUST") {
+    if (SERVER_STATE.players[i].status != "FOLD" &&
+             SERVER_STATE.players[i].status != "BUST" &&
+             SERVER_STATE.players[i].status != "WAIT") {
       candidates[i] = SERVER_STATE.players[i];
       still_active_candidates += 1;
     }
@@ -406,7 +410,7 @@ function handle_end_of_round () {
     var share = current_pot_to_split;
     if (num_winners > 1) {
       pot_remainder = current_pot_to_split;
-      for (i=0; pot_remainder > (num_winners * lowest_chip_amount); i++) {
+      for (i=0; pot_remainder >= (num_winners * lowest_chip_amount); i++) {
         pot_remainder -= lowest_chip_amount * num_winners;
       }
       share = i * lowest_chip_amount;
@@ -552,7 +556,8 @@ function pot_is_good() {
   for (var n=0; n<LOCAL_STATE.players.length-1; n++) {
     if ((LOCAL_STATE.players[n].status != "FOLD") &&
          (LOCAL_STATE.players[n].status != "BUST") &&
-         (LOCAL_STATE.players[n].status != "ALL IN")) {
+         (LOCAL_STATE.players[n].status != "ALL IN") &&
+         (LOCAL_STATE.players[n].status != "WAIT")) {
       if (LOCAL_STATE.players[n].total_bet != LOCAL_STATE.current_total_bet) {
         good = false
       }
@@ -582,12 +587,14 @@ function reset_player_statuses (type) {
     if (type == 0) {
       SERVER_STATE.players[i].status = "";
     } else if (type == 1 && 
-              SERVER_STATE.players[i].status != "BUST") {
+              SERVER_STATE.players[i].status != "BUST")
+              {
         SERVER_STATE.players[i].status = "";
     } else if (type == 2 &&
                SERVER_STATE.players[i].status != "FOLD" &&
                SERVER_STATE.players[i].status != "BUST" &&
-               SERVER_STATE.players[i].status != "ALL IN") {
+               SERVER_STATE.players[i].status != "ALL IN" &&
+               SERVER_STATE.players[i].status != "WAIT") {
         SERVER_STATE.players[i].status = "";
     }
   }
@@ -598,6 +605,7 @@ function get_num_betting () {
   for (var i = 0; i < SERVER_STATE.players.length; i++) {
     if (SERVER_STATE.players[i].status != "FOLD" &&
         SERVER_STATE.players[i].status != "BUST" &&
+        SERVER_STATE.players[i].status != "WAIT" &&
         has_money(i)) {
       n++;
     }
@@ -625,6 +633,7 @@ function get_next_player_position (i, delta) {
     loop_on = 0;
     if (SERVER_STATE.players[i].status == "BUST") loop_on = 1;
     if (SERVER_STATE.players[i].status == "FOLD") loop_on = 1;
+    if (SERVER_STATE.players[i].status == "WAIT") loop_on = 1;
     if (++j < delta) loop_on = 1;
   } while (loop_on);
 
@@ -638,6 +647,8 @@ function has_money (i) {
   return false;
 }
 
+var all_all_in = false;
+
 function betting_is_done() {  //this is done before we move to next player so see if next player has OPTION
   var done = true;            //if any statuses are "" than we have not been around once yet
                               //and check that each players total bet is the same for this round OR
@@ -647,7 +658,7 @@ function betting_is_done() {  //this is done before we move to next player so se
   if (!pot_is_good()) { 
     done = false; 
   }
-  //but if current player has OPTION (BB in first round) then betting is still not done
+  //but if next player has OPTION (BB in first round) then betting is still not done
   else if (SERVER_STATE.players[get_next_player_position(SERVER_STATE.current_bettor_index, 1)].status == "OPTION")
     { done = false; }
   //and if any players status is "" then we haven't been completely around once in this round so keep betting
@@ -655,23 +666,26 @@ function betting_is_done() {  //this is done before we move to next player so se
     if (SERVER_STATE.players[n].status == "") {
       done = false;
     }
-    
-    if ((SERVER_STATE.players[n].status != "FOLD") && (SERVER_STATE.players[n].status != "BUST")) {
+    //if anyones total bet is not equal to the tables current high total then keep betting
+    if ((SERVER_STATE.players[n].status != "FOLD") && 
+            (SERVER_STATE.players[n].status != "BUST") &&
+            (SERVER_STATE.players[n].status != "WAIT")) {
       if (SERVER_STATE.players[n].total_bet != SERVER_STATE.current_total_bet) {
         done = false;
       }
     }
-    
-    //Ok, all else being checked, if every active player is ALL IN then pot is good
+    //Ok, all else being checked, if every active player is ALL IN then betting is done
     var num_allin_or_fold_or_bust = 0;
     for (var i = 0; i < SERVER_STATE.players.length; i++) {
-      if ((SERVER_STATE.players[i].status == "ALL IN") ||
+      if (!has_money(i) || 
           (SERVER_STATE.players[i].status == "FOLD") ||
-          (SERVER_STATE.players[i].status == "BUST")) {
+          (SERVER_STATE.players[i].status == "BUST") ||
+          (SERVER_STATE.players[i].status == "WAIT")) {
             num_allin_or_fold_or_bust++;
       }
       if (num_allin_or_fold_or_bust == SERVER_STATE.players.length) {
         done = true;
+        all_all_in = true;
       }
     }
   }
@@ -681,6 +695,7 @@ function betting_is_done() {  //this is done before we move to next player so se
 function set_to_call() { 
 
   if (SERVER_STATE.current_total_bet > SERVER_STATE.players[SERVER_STATE.current_bettor_index].bankroll) {
+    //All in
     SERVER_STATE.TO_CALL = SERVER_STATE.players[SERVER_STATE.current_bettor_index].bankroll;
   }
   else {
@@ -695,12 +710,14 @@ function compRan () {
 
 function msg_dispatch(current_state) {
 
-  if (current_state.CMD == "add new player") {
+  if (!I_am_Host) return;  //if i'm not host then don't do any game logic
+
+   if (current_state.CMD == "add new player") {
     if (add_new_player(current_state)) {
       SERVER_STATE.CMD = "new player added";
       send_SignalR(SERVER_STATE); //tell clients to add new player
-      return;  //so we do not clobber SERVER_STATE with an empty LOCAL_STATE
     }
+    return;  //so we do not clobber SERVER_STATE with an empty LOCAL_STATE
   }
 
   SERVER_STATE = current_state;
@@ -709,23 +726,35 @@ function msg_dispatch(current_state) {
     new_game();
     SERVER_STATE.CMD = "start hand";
     send_SignalR(SERVER_STATE);
-    SERVER_STATE.TO_CALL = SERVER_STATE.BIG_BLIND;
+    if (number_of_active_players() < 3) {
+      SERVER_STATE.TO_CALL = SERVER_STATE.SMALL_BLIND; //when only two players
+    }
+    else {
+      SERVER_STATE.TO_CALL = SERVER_STATE.BIG_BLIND;
+    }
     SERVER_STATE.CMD = "next player to act";
     send_SignalR(SERVER_STATE);
+    return;
   }
 
   if (current_state.CMD == "request next hand") {
-    SERVER_STATE.TO_CALL = SERVER_STATE.BIG_BLIND;
     new_round();
+    SERVER_STATE.TO_CALL = SERVER_STATE.BIG_BLIND;
     SERVER_STATE.CMD = "start hand";
     send_SignalR(SERVER_STATE);
-    SERVER_STATE.TO_CALL = SERVER_STATE.BIG_BLIND;
+    if (number_of_active_players() < 3) {
+      SERVER_STATE.TO_CALL = SERVER_STATE.SMALL_BLIND; //when only two players
+    }
+    else {
+      SERVER_STATE.TO_CALL = SERVER_STATE.BIG_BLIND;
+    }
     SERVER_STATE.CMD = "next player to act";
     send_SignalR(SERVER_STATE);
+    return;
   }
 
   if (current_state.CMD == "player action") {
-    if (number_of_players_in_hand() < 2) {
+    if (number_of_players_in_hand() < 2) { //only one player left so give them the pot
       handle_end_of_round();
       SERVER_STATE.CMD = "end of round";
       send_SignalR(SERVER_STATE);
@@ -734,6 +763,10 @@ function msg_dispatch(current_state) {
     //if the betting round is done figure out next step and tell player
     //no need to send client and action msg as current bettor is already correct and they are ready to act
     else if (betting_is_done()) {
+      if (all_all_in) {
+        deal_rest_of_hand();
+        return;
+      }
       reset_player_statuses(2);
       SERVER_STATE.TO_CALL = 0;
       if (SERVER_STATE.board[0] == "") {
@@ -761,10 +794,9 @@ function msg_dispatch(current_state) {
         SERVER_STATE.CMD = "end of round";
         send_SignalR(SERVER_STATE);
       }
-      //SERVER_STATE.CMD_PARMS = "";
     }
     else {
-      //if the betting round is not over, figure out out any current bet and ask next player to act
+      //if the betting round is not over, figure out any current bet and ask next player to act
       SERVER_STATE.current_bettor_index = get_next_player_position(SERVER_STATE.current_bettor_index, 1);
       set_to_call();
       SERVER_STATE.CMD = "next player to act";
@@ -774,19 +806,50 @@ function msg_dispatch(current_state) {
   }
 }
 
+function deal_rest_of_hand() {
+  if (SERVER_STATE.board[0] == "") {
+    deal_flop();
+    deal_fourth();
+    deal_fifth();
+    handle_end_of_round();
+    SERVER_STATE.CMD = "end of round";
+    //SERVER_STATE.CMD_PARMS = "deal fifth";
+    send_SignalR(SERVER_STATE);
+  }
+  else if (SERVER_STATE.board[3] == "") {
+    deal_fourth();
+    deal_fifth()
+    SERVER_STATE.CMD = "end of round";
+    //SERVER_STATE.CMD_PARMS = "deal fifth";
+    send_SignalR(SERVER_STATE);
+  }
+  else if (SERVER_STATE.board[4] == "") {
+    deal_fifth();
+    SERVER_STATE.CMD = "end of round";
+    //SERVER_STATE.CMD_PARMS = "deal fifth";
+    send_SignalR(SERVER_STATE);
+  }
+}
+
 function send_game_response(response) {
   SERVER_STATE.CMD = "game response";
   SERVER_STATE.CMD_PARMS = response;
   send_SignalR(SERVER_STATE);
 }
 
-function send_SignalR(SERVER_STATE) {
-  //cl_rcv_SignalR(SERVER_STATE);
-  app.sendMessage(SERVER_STATE);
-  LOCAL_STATE.CMD == "";
+function send_SignalR(current_state) {
+  current_state.SENDER = my_name;
+  current_state.DIRECTION = "XMT"
+  //setTimeout(app.sendMessage, 1000, current_state);
+  app.sendMessage(current_state);
+  SERVER_STATE.CMD == "";
+  SERVER_STATE.CMD == "";
 }
 
 function rcv_SignalR(current_state) {
-  cl_rcv_SignalR(current_state);
   msg_dispatch(current_state);
+  cl_rcv_SignalR(current_state);
+  SERVER_STATE.CMD == "";
+  SERVER_STATE.CMD == "";
 }
+

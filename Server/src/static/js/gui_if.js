@@ -336,18 +336,14 @@ function internal_le_button (buttons, button_name, button_func) {
 }
 
 function gui_setup_option_buttons (name_func,
-                                   speed_func,
+                                   join_func,
                                    help_func,
                                    check_func,
                                    mode_func) {
   var buttons = document.getElementById('setup-options');
 
   internal_le_button(buttons, 'name-button', name_func);
-
-  var speed = buttons.children['speed-button'];
-  speed.style.visibility = 'visible';
-  speed.onchange = curry_in_speedfunction(speed_func);
-
+  internal_le_button(buttons, 'join-button', join_func);                                 
   internal_le_button(buttons, 'mode-button', mode_func);
   internal_le_button(buttons, 'help-button', help_func);
   internal_le_button(buttons, 'check-button', check_func);

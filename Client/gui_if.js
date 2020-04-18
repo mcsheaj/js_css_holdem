@@ -177,10 +177,10 @@ function gui_set_bet (bet, seat) {
 }
 
 function gui_clear_the_board(board) {
-  for (var i = 0; i < board.length; i++) {
-    if (i > 4) {        // board.length != 5
-      continue;
-    }
+  for (var i = 0; i < 5; i++) {
+//    if (i > 4) {        // board.length != 5
+//      continue;
+//    }
     board[i] = "";
     gui_lay_board_card(i, board[i]);     // Clear the board
   }
@@ -340,11 +340,17 @@ function gui_setup_option_buttons (new_game_func,
                                    mode_func) {
   var buttons = document.getElementById('setup-options');
 
-  internal_le_button(buttons, 'new-game-button', new_game_func);
+  if (I_am_Host) {
+    internal_le_button(buttons, 'new-game-button', new_game_func);
+    internal_le_button(buttons, 'next-hand-button', next_hand_func);
+  }
+  else{
+    internal_hide_le_button(buttons, 'new-game-button', new_game_func);
+    internal_hide_le_button(buttons, 'next-hand-button', next_hand_func);
+  }
   internal_le_button(buttons, 'join-button', join_game_func);
-  internal_le_button(buttons, 'mode-button', mode_func);
+  internal_hide_le_button(buttons, 'mode-button', mode_func);
   internal_le_button(buttons, 'help-button', help_func);
-  internal_le_button(buttons, 'next-hand-button', next_hand_func);
 }
 
 function internal_hide_le_button (buttons, button_name, button_func) {
@@ -427,8 +433,9 @@ function gui_disable_shortcut_keys (func) {
 function internal_get_theme_mode () {
   var mode = getLocalStorage("currentmode");
   if (mode === null) {  // first time
-    mode = "light";
+    mode = "dark";
   }
+  //return mode;
   return mode;
 }
 
@@ -471,6 +478,7 @@ function gui_toggle_the_theme_mode () {
   } else {
     mode = "dark";
   }
+  mode="dark";
   internal_get_into_the_mode(mode);
   internal_set_theme_mode(mode);
 }

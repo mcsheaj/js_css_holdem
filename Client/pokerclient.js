@@ -4,6 +4,8 @@ var my_name = "";
 var my_seat = 0;
 
 var LOCAL_STATE = {
+  SENDER: "",
+  DIRECTION: "",
   CMD: "",
   CMD_PARMS: "",
   NUM_ROUNDS: 0,
@@ -62,7 +64,7 @@ function cl_get_pot_size_html () {
 
 function cl_get_action () {
   cl_get_my_seat();
-  if (LOCAL_STATE.current_bettor_index == my_seat) {
+  if ((LOCAL_STATE.current_bettor_index == my_seat) || (I_am_Host)) {
     gui_hide_quick_raise ();
     
     var to_call = LOCAL_STATE.TO_CALL;
@@ -219,8 +221,8 @@ function cl_new_game () {
     cl_help_func,
     cl_request_next_hand,
     gui_toggle_the_theme_mode);
-  var buttons = document.getElementById('setup-options');
-  internal_hide_le_button(buttons, 'next-hand-button');
+    var buttons = document.getElementById('setup-options');
+    //internal_hide_le_button(buttons, 'next-hand-button');
 }
 
 function cl_new_game_continues (req_no_opponents) {
@@ -282,6 +284,17 @@ function cl_clear_bets () {
   LOCAL_STATE.current_bet_amount = 0;
 }
 
+function cl_show_board() {
+  for (var n = 0; n < 6; n++) {
+    if (board[n]) {
+      gui_lay_board_card(n, LOCAL_STATE.board[n]);
+    }
+  }
+  for (n=0; n<3; n++) {
+    //gui_burn_board_card([n], "");
+  }
+}
+
 function cl_deal_flop() {
   cl_write_all_players();
   gui_burn_board_card(0, "blinded");
@@ -327,7 +340,7 @@ function cl_help_func () {
 }
 
 function cl_change_name () {
-  my_name = prompt("What is your name? (14 characters or less)", "");
+  my_name = prompt("What is your name? (14 characters or less)", getLocalStorage("playername"));
   if (my_name) {
     if (my_name.length > 14) {
       cl_my_pseudo_alert("Name must be less than 14 characters");
@@ -336,7 +349,7 @@ function cl_change_name () {
     }
   }
   if (my_name){
-    //setLocalStorage("playername", my_name);
+    setLocalStorage("playername", my_name);
     cl_send_new_player(my_name);
   }
 }
@@ -352,6 +365,22 @@ function cl_collect_cards () {
   for (var i = 0; i < LOCAL_STATE.players.length; i++) {
     LOCAL_STATE.players[i].carda = "";
     LOCAL_STATE.players[i].cardb = "";
+    LOCAL_STATE.board[0] = "";    
+    LOCAL_STATE.board[1] = "";
+    LOCAL_STATE.board[2] = "";
+    LOCAL_STATE.board[3] = "";
+    LOCAL_STATE.board[4] = "";
+  }   
+  for (i = 0; i < LOCAL_STATE.board.length; i++) {
+    if (i > 4) {        // board.length != 5
+      continue;
+    }
+    LOCAL_STATE.board[i] = "";
+    gui_lay_board_card(i, LOCAL_STATE.board[i]);     // Clear the board
+  }
+  for (i = 0; i < 3; i++) {
+    LOCAL_STATE.board[i] = "";
+    gui_burn_board_card(i, LOCAL_STATE.board[i]);
   }
 }
 
@@ -377,7 +406,7 @@ function cl_write_player (n, hilite, show_cards) {
     name_font_color = 'black';
     name_background_color = 'gray';
   }
-  if (LOCAL_STATE.players[n].status == "BUST") {
+  if ((LOCAL_STATE.players[n].status == "BUST") || (LOCAL_STATE.players[n].status == "WAIT")){
     name_font_color = 'white';
     name_background_color = 'black';
   }
@@ -421,7 +450,7 @@ function cl_write_player (n, hilite, show_cards) {
   if (LOCAL_STATE.players[n].status == "FOLD") {
     bet_text = "FOLDED ($" +
                (LOCAL_STATE.players[n].total_bet/100).toFixed(2) + ")";
-    } else if (LOCAL_STATE.players[n].status == "BUST") {
+    } else if ((LOCAL_STATE.players[n].status == "BUST")){
     bet_text = "BUSTED";
     } else if (!cl_has_money(n)) {
     bet_text = "ALL IN " + (LOCAL_STATE.players[n].subtotal_bet/100).toFixed(2) + " ($" +
@@ -476,21 +505,23 @@ function cl_write_all_players() {
 function cl_msg_dispatch () {
 
   if (LOCAL_STATE.CMD == "new player added") {
-    for (var i = 0; i < LOCAL_STATE.players.length; i++) {
-      cl_write_player(i, 0, 0);
-    }
+    cl_write_all_players();
   }
   else if (LOCAL_STATE.CMD == "game response") {
     gui_write_game_response("<font size=+2><b>" + LOCAL_STATE.CMD_PARMS + "</b></font>");
   }
 
-  else if (LOCAL_STATE.CMD == "start hand") {
+  else if ((LOCAL_STATE.CMD == "start hand") || (LOCAL_STATE.CMD == "request next hand")) {
+    cl_new_round();
+    cl_show_board();
     gui_place_dealer_button(LOCAL_STATE.button_index);
     cl_write_all_players();
+    LOCAL_STATE.CMD = "next player to act";
   }
 
-  else if (LOCAL_STATE.CMD == "next player to act") {
+  if (LOCAL_STATE.CMD == "next player to act") {
     cl_write_all_players();
+    //cl_show_board();
     cl_get_action();
     cl_write_player(LOCAL_STATE.current_bettor_index, 1, 0);
     gui_write_basic_general(cl_get_pot_size());
@@ -508,19 +539,19 @@ function cl_msg_dispatch () {
     }
   }
   else if (LOCAL_STATE.CMD == "end of round") {
-    var buttons = document.getElementById('setup-options');
-    var le_button = buttons.children['next-hand-button'];
-    le_button.style.visibility = 'visible'
-    le_button.onclick = cl_request_next_hand;
+    if (I_am_Host) {
+      var buttons = document.getElementById('setup-options');
+      internal_le_button(buttons, 'next-hand-button', cl_request_next_hand);
+    }
+    cl_deal_flop();
+    cl_deal_fourth();
+    cl_deal_fifth();
     gui_hide_quick_raise();
     gui_hide_fold_call_click ();
     cl_write_all_players();
     gui_write_game_response("<font size=+2><b>WINNER: " + LOCAL_STATE.CMD_PARMS + "</b></font>");
   }
 }
-
-
-
 
 //Outgoing msg functions
 function cl_send_new_player(name) {
@@ -538,26 +569,28 @@ function cl_start_game() {
   }
   LOCAL_STATE.CMD = "request new game";
   var buttons = document.getElementById('setup-options');
-  internal_hide_le_button(buttons, 'new-game-button');
+  //internal_hide_le_button(buttons, 'new-game-button');
   cl_send_SignalR(LOCAL_STATE);
 }
 
 function cl_request_next_hand() {
   LOCAL_STATE.CMD = "request next hand";
   var buttons = document.getElementById('setup-options');
-  internal_hide_le_button(buttons, 'next-hand-button');
+  //internal_hide_le_button(buttons, 'next-hand-button');
   cl_send_SignalR(LOCAL_STATE);
-
 }
 
 //send SignalR msg to server -- for now just calls server function directly
 function cl_send_SignalR(current_state) {
-  //rcv_SignalR(current_state); //for testing with local server
+  current_state.SENDER = my_name;
+  current_state.DIRECTION = "RCV";
   app.sendMessage(current_state);
 }
 
 //STUB for eventual SIGNALR receive, currently is is called when a button is pressed
 function cl_rcv_SignalR(current_state) {
   LOCAL_STATE = current_state;
-  cl_msg_dispatch();
+  if (my_name != "") {
+    cl_msg_dispatch();  //if I have not joined game yet then ignore everything
+  }
 }
