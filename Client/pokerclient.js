@@ -215,6 +215,9 @@ function set_current_total_bet() {
 }
 
 function cl_new_game () {
+  for (var n=0; n<LOCAL_STATE.players.length; n++){
+    LOCAL_STATE.players[n].bankroll = LOCAL_STATE.STARTING_BANKROLL;
+  }
   cl_initialize_game();
   gui_setup_option_buttons(cl_start_game,
     cl_change_name,
@@ -286,7 +289,7 @@ function cl_clear_bets () {
 
 function cl_show_board() {
   for (var n = 0; n < 6; n++) {
-    if (board[n]) {
+    if (LOCAL_STATE.board[n]) {
       gui_lay_board_card(n, LOCAL_STATE.board[n]);
     }
   }
@@ -506,6 +509,15 @@ function cl_msg_dispatch () {
 
   if (LOCAL_STATE.CMD == "new player added") {
     cl_write_all_players();
+    cl_show_board();
+    //cl_get_action();
+    gui_write_basic_general(cl_get_pot_size());
+
+    //gui_write_game_response("<font size=+2><b>Next to Act: " + 
+    //                    LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name +
+    //                    ", minimum bet or raise is " + (LOCAL_STATE.current_min_raise/100).toFixed(2) + "</b></font>");
+
+    return;
   }
   else if (LOCAL_STATE.CMD == "game response") {
     gui_write_game_response("<font size=+2><b>" + LOCAL_STATE.CMD_PARMS + "</b></font>");
@@ -527,7 +539,7 @@ function cl_msg_dispatch () {
     gui_write_basic_general(cl_get_pot_size());
     gui_write_game_response("<font size=+2><b>Next to Act: " + 
                         LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name +
-                        " , minimum bet or raise is " + (LOCAL_STATE.current_min_raise/100).toFixed(2) + "</b></font>");
+                        ", minimum bet or raise is " + (LOCAL_STATE.current_min_raise/100).toFixed(2) + "</b></font>");
     if (LOCAL_STATE.CMD_PARMS == "deal flop") {
       cl_deal_flop();
     }
@@ -555,6 +567,7 @@ function cl_msg_dispatch () {
 
 //Outgoing msg functions
 function cl_send_new_player(name) {
+  app.init();
   LOCAL_STATE.CMD = "add new player";
   LOCAL_STATE.CMD_PARMS = name;
   cl_send_SignalR(LOCAL_STATE);
@@ -571,6 +584,7 @@ function cl_start_game() {
   var buttons = document.getElementById('setup-options');
   //internal_hide_le_button(buttons, 'new-game-button');
   cl_send_SignalR(LOCAL_STATE);
+  cl_new_game();
 }
 
 function cl_request_next_hand() {
@@ -589,8 +603,10 @@ function cl_send_SignalR(current_state) {
 
 //STUB for eventual SIGNALR receive, currently is is called when a button is pressed
 function cl_rcv_SignalR(current_state) {
-  LOCAL_STATE = current_state;
-  if (my_name != "") {
-    cl_msg_dispatch();  //if I have not joined game yet then ignore everything
+  if (current_state.CMD != "add new player") {
+    LOCAL_STATE = current_state;
   }
+  //if (my_name != "") {
+    cl_msg_dispatch();  //if I have not joined game yet then ignore everything
+  //}
 }

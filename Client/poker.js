@@ -93,7 +93,7 @@ var app = {
       return axios.post(`${apiBaseUrl}/api/send`, message)
           .then(
               function (resp) {
-                console.log(message.payload.text); //resp.data);
+                console.log("sendMessage ",message.payload.text); //resp.data);
               },
               function (err) {
                   console.log(err);
@@ -106,7 +106,7 @@ var app = {
   ///////////////////////////////////////////////
   messageHandler: function (message) {
       if (!message.sender) message.sender = "anonymous";
-      console.log(message.payload.text);
+      console.log("messageHandler ",message.payload.text);
       rcv_SignalR(message.payload.text);
   }
 };
@@ -137,29 +137,29 @@ function clear_player_cards (count) {
 }
 
 function add_new_player (current_state) {
+  var player_added = false;
   
   if (SERVER_STATE.players.length == 0) { //first player
     SERVER_STATE.players[0] = new player(current_state.CMD_PARMS, 1000, "", "", "WAIT", 0, 0);
+    player_added=true;
   }
   else if (SERVER_STATE.players.length < 10) { //can't have more than 10 players
     var dup = false;
     for (var n=0; n<SERVER_STATE.players.length; n++) { //look for a player with duplicate name
       if (SERVER_STATE.players[n].name == current_state.CMD_PARMS) { 
         dup = true; 
-        //send_game_response("Player tried to join with duplicate name, use different name");
         //rejoining with same name should just send back game state without adding new player
-        return(0);
       }
     }
-    if (!dup) {   //don't add player with duplicate name
+    if (!dup) {
       SERVER_STATE.players[SERVER_STATE.players.length] = new player(current_state.CMD_PARMS, 1000, "", "", "WAIT", 0, 0);
+      player_added = true;
     }
   }
   else{
     send_game_response("Player tried to join a full game. No more than 10 players allowed");
-    return(0);
   }
-  return(1);
+  return player_added;
 }
 
 function compRan () {
@@ -648,11 +648,15 @@ function has_money (i) {
 }
 
 var all_all_in = false;
+var why = "";
 
 function betting_is_done() {  //this is done before we move to next player so see if next player has OPTION
   var done = true;            //if any statuses are "" than we have not been around once yet
                               //and check that each players total bet is the same for this round OR
                               //if all active players are ALL IN
+
+
+  all_all_in = false;
 
   //if each players total bet amount is the same then pot is good, 
   if (!pot_is_good()) { 
@@ -660,34 +664,34 @@ function betting_is_done() {  //this is done before we move to next player so se
   }
   //but if next player has OPTION (BB in first round) then betting is still not done
   else if (SERVER_STATE.players[get_next_player_position(SERVER_STATE.current_bettor_index, 1)].status == "OPTION")
-    { done = false; }
+    { done = false; why = "option"}
   //and if any players status is "" then we haven't been completely around once in this round so keep betting
   for (var n = 0; n < SERVER_STATE.players.length; n++) {
     if (SERVER_STATE.players[n].status == "") {
-      done = false;
+      done = false; why = "not around once";
     }
     //if anyones total bet is not equal to the tables current high total then keep betting
     if ((SERVER_STATE.players[n].status != "FOLD") && 
             (SERVER_STATE.players[n].status != "BUST") &&
             (SERVER_STATE.players[n].status != "WAIT")) {
       if (SERVER_STATE.players[n].total_bet != SERVER_STATE.current_total_bet) {
-        done = false;
+        done = false; why = "players total bet not - current total bet";
       }
     }
-    //Ok, all else being checked, if every active player is ALL IN then betting is done
-    var num_allin_or_fold_or_bust = 0;
-    for (var i = 0; i < SERVER_STATE.players.length; i++) {
-      if (!has_money(i) || 
+  }
+      //Ok, all else being checked, if every active player is ALL IN then betting is done
+  var num_allin_or_fold_or_bust = 0;
+  for (var i = 0; i < SERVER_STATE.players.length; i++) {
+    if (!has_money(i) || 
           (SERVER_STATE.players[i].status == "FOLD") ||
           (SERVER_STATE.players[i].status == "BUST") ||
           (SERVER_STATE.players[i].status == "WAIT")) {
             num_allin_or_fold_or_bust++;
-      }
-      if (num_allin_or_fold_or_bust == SERVER_STATE.players.length) {
-        done = true;
-        all_all_in = true;
-      }
     }
+  }
+  if (num_allin_or_fold_or_bust == (SERVER_STATE.players.length)) {
+    done = true;
+    all_all_in = true; why = "all in";
   }
   return done;
 }
@@ -716,6 +720,9 @@ function msg_dispatch(current_state) {
     if (add_new_player(current_state)) {
       SERVER_STATE.CMD = "new player added";
       send_SignalR(SERVER_STATE); //tell clients to add new player
+    } else {
+      SERVER_STATE.CMD = "new player added";
+      send_SignalR(SERVER_STATE); //I know this is redundant but Im testing and im tired
     }
     return;  //so we do not clobber SERVER_STATE with an empty LOCAL_STATE
   }
@@ -762,6 +769,7 @@ function msg_dispatch(current_state) {
 
     //if the betting round is done figure out next step and tell player
     //no need to send client and action msg as current bettor is already correct and they are ready to act
+    
     else if (betting_is_done()) {
       if (all_all_in) {
         deal_rest_of_hand();
@@ -843,13 +851,11 @@ function send_SignalR(current_state) {
   //setTimeout(app.sendMessage, 1000, current_state);
   app.sendMessage(current_state);
   SERVER_STATE.CMD == "";
-  SERVER_STATE.CMD == "";
 }
 
 function rcv_SignalR(current_state) {
   msg_dispatch(current_state);
   cl_rcv_SignalR(current_state);
-  SERVER_STATE.CMD == "";
   SERVER_STATE.CMD == "";
 }
 
