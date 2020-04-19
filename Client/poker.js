@@ -115,8 +115,7 @@ var app = {
 app.init();
 
 function init() {
-    cl_init();  //not sure how else to do this, eventually this will be started from client html onload
-
+    cl_init();
     make_deck();
 }
 
@@ -848,7 +847,8 @@ function send_SignalR(current_state) {
     current_state.SENDER = my_name;
     current_state.DIRECTION = "XMT"
     //setTimeout(app.sendMessage, 1000, current_state);
-    app.sendMessage(current_state);
+    //app.sendMessage(current_state);
+    app.connection.send
     SERVER_STATE.CMD == "";
 }
 

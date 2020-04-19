@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+   <title>Matty's Poker Room</title>
+   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+   <link rel="stylesheet" href="pokerclient.css" type="text/css">
+   <script src="https://cdn.jsdelivr.net/npm/@aspnet/signalr@1.0.3/dist/browser/signalr.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/axios@0.18.0/dist/axios.min.js"></script>
+   <script charset="UTF-8" src=pokerclient.js></script>
+   <script charset="UTF-8" src=gui_if.js></script>
+   <script charset="UTF-8" src=hands.js></script>
+   <script charset="UTF-8" src=poker.js></script>
+   <script>I_am_Host = false;</script>
+</head>
+<body onload="parent.init()">
+    <div id="poker_table" class="poker-table" data-uid="">
+        <img src="images/poker_table.png" style="width:100%;" alt="">
+        <div id="seat0" class="seat"> 
+            <div class="holecards">
+                <div class="card holecard1"></div>
+                <div class="card holecard2"></div>
+            </div>
+            <div class="name-chips">
+                <div class="player-name"></div>
+                <div class="chips"></div>
+            </div>
+            <div class="bet"></div>
+        </div>
+        <div id="seat1" class="seat">
+            <div class="holecards">
+                <div class="card holecard1"></div>
+                <div class="card holecard2"></div>
+            </div>
+            <div class="name-chips">
+                <div class="player-name"></div>
+                <div class="chips"></div>
+            </div>
+            <div class="bet"></div>
+        </div>
+        <div id="seat2" class="seat">
+            <div class="holecards">
+                <div class="card holecard1"></div>
+                <div class="card holecard2"></div>
+            </div>
+            <div class="name-chips">
+                <div class="player-name"></div>
+                <div class="chips"></div>
+            </div>
+            <div class="bet"></div>
+        </div>
+        <div id="seat3" class="seat">
+            <div class="holecards">
+                <div class="card holecard1"></div>
+                <div class="card holecard2"></div>
+            </div>
+            <div class="name-chips">
+                <div class="player-name"></div>
+                <div class="chips"></div>
+            </div>
+            <div class="bet"></div>
+        </div>
+        <div id="seat4" class="seat">
+            <div class="holecards">
+                <div class="card holecard1"></div>
+                <div class="card holecard2"></div>
+            </div>
+            <div class="name-chips">
+                <div class="player-name"></div>
+                <div class="chips"></div>
+            </div>
+            <div class="bet"></div>
+        </div>
+        <div id="seat5" class="seat">
+            <div class="holecards">
+                <div class="card holecard1"></div>
+                <div class="card holecard2"></div>
+            </div>
+            <div class="name-chips">
+                <div class="player-name"></div>
+                <div class="chips"></div>
+            </div>
+            <div class="bet"></div>
+        </div>
+        <div id="seat6" class="seat">
+            <div class="holecards">
+                <div class="card holecard1"></div>
+                <div class="card holecard2"></div>
+            </div>
+            <div class="name-chips">
+                <div class="player-name"></div>
+                <div class="chips"></div>
+            </div>
+            <div class="bet"></div>
+        </div>
+        <div id="seat7" class="seat">
+            <div class="holecards">
+                <div class="card holecard1"></div>
+                <div class="card holecard2"></div>
+            </div>
+            <div class="name-chips">
+                <div class="player-name"></div>
+                <div class="chips"></div>
+            </div>
+            <div class="bet"></div>
+        </div>
+        <div id="seat8" class="seat">
+            <div class="holecards">
+                <div class="card holecard1"></div>
+                <div class="card holecard2"></div>
+            </div>
+            <div class="name-chips">
+                <div class="player-name"></div>
+                <div class="chips"></div>
+            </div>
+            <div class="bet"></div>
+        </div>
+        <div id="seat9" class="seat">
+            <div class="holecards">
+                <div class="card holecard1"></div>
+                <div class="card holecard2"></div>
+            </div>
+            <div class="name-chips">
+                <div class="player-name"></div>
+                <div class="chips"></div>
+            </div>
+            <div class="bet"></div>
+        </div>
+        <div id="board">
+            <div id="flop1" class="card boardcard"></div>
+            <div id="flop2" class="card boardcard"></div>
+            <div id="flop3" class="card boardcard"></div>
+            <div id="turn" class="card boardcard"></div>
+            <div id="river" class="card boardcard"></div>
+            <div id="burn1" class="card boardcard"></div>
+            <div id="burn2" class="card boardcard"></div>
+            <div id="burn3" class="card boardcard"></div>
+        </div>
+        <div id="pot">
+            <div id="current-pot"></div>
+            <div id="total-pot"></div>
+        </div>
+    </div>
+    <div id="button" class="seat6-button"></div>
+    <div id="history"></div>
+    <div id="action-options">
+        <div id="fold-button" class="action-button"></div>
+        <div id="call-button" class="action-button"></div>
+    </div>
+    <div id="setup-options">
+        <div id="new-game-button" class="setup-button">Start Game</div>
+        <div id="join-button" class="setup-button">Join Game</div>
+        <div id="mode-button" class="setup-button">Dark mode</div>
+        <div id="help-button" class="setup-button">Help</div>
+        <div id="next-hand-button" class="setup-button">Next Hand</div>
+    </div>
+    <div id="quick-raises">Quick Raises</div>
+    <div id="game-response" class="response-normal"></div>
+    <div id="production-code"></div>
+    <div id="modal-box"></div>
+</body>
