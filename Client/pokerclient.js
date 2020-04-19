@@ -567,7 +567,7 @@ function cl_msg_dispatch () {
 
 //Outgoing msg functions
 function cl_send_new_player(name) {
-  app.init();
+  //app.init();
   LOCAL_STATE.CMD = "add new player";
   LOCAL_STATE.CMD_PARMS = name;
   cl_send_SignalR(LOCAL_STATE);
