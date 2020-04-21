@@ -847,8 +847,8 @@ function send_SignalR(current_state) {
     current_state.SENDER = my_name;
     current_state.DIRECTION = "XMT"
     //setTimeout(app.sendMessage, 1000, current_state);
-    //app.sendMessage(current_state);
-    app.connection.send
+    app.sendMessage(current_state);
+    //app.connection.send(current_state);
     SERVER_STATE.CMD == "";
 }
 
