@@ -553,7 +553,7 @@ function get_pot_size_html() {
 
 function pot_is_good() {
     var good = true;
-    for (var n = 0; n < LOCAL_STATE.players.length - 1; n++) {
+    for (var n = 0; n < LOCAL_STATE.players.length; n++) {
         if ((LOCAL_STATE.players[n].status != "FOLD") &&
             (LOCAL_STATE.players[n].status != "BUST") &&
             (LOCAL_STATE.players[n].status != "ALL IN") &&
@@ -662,7 +662,8 @@ function betting_is_done() {  //this is done before we move to next player so se
         done = false;
     }
     //but if next player has OPTION (BB in first round) then betting is still not done
-    else if (SERVER_STATE.players[get_next_player_position(SERVER_STATE.current_bettor_index, 1)].status == "OPTION") { done = false; why = "option" }
+    else if (SERVER_STATE.players[get_next_player_position(SERVER_STATE.current_bettor_index, 1)].status == "OPTION") {
+         done = false; why = "option" }
     //and if any players status is "" then we haven't been completely around once in this round so keep betting
     for (var n = 0; n < SERVER_STATE.players.length; n++) {
         if (SERVER_STATE.players[n].status == "") {
@@ -691,6 +692,7 @@ function betting_is_done() {  //this is done before we move to next player so se
         done = true;
         all_all_in = true; why = "all in";
     }
+    console.log("betting_is_done returned ", done)
     return done;
 }
 
@@ -726,6 +728,9 @@ function msg_dispatch(current_state) {
     }
 
     SERVER_STATE = current_state;
+    if (SERVER_STATE.players.length == 0) {
+        console.log("SERVER_STATE players array is empty");
+    }
 
     if (current_state.CMD == "request new game") {
         new_game();
@@ -795,7 +800,6 @@ function msg_dispatch(current_state) {
             }
 
             else if ((SERVER_STATE.board[4] != "") || (number_of_players_in_hand() < 2)) { //if betting is done and all 5 board cards are dealt calc winner
-                //send_game_response("WINNER!"); //just a stub until I add calc winner code
                 handle_end_of_round();
                 SERVER_STATE.CMD = "end of round";
                 send_SignalR(SERVER_STATE);
