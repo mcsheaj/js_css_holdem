@@ -849,7 +849,7 @@ function send_game_response(response) {
 
 function send_SignalR(current_state) {
     current_state.SENDER = my_name;
-    current_state.DIRECTION = "XMT"
+    current_state.DIRECTION = "GAME"
     //setTimeout(app.sendMessage, 1000, current_state);
     app.sendMessage(current_state);
     //app.connection.send(current_state);
@@ -857,7 +857,12 @@ function send_SignalR(current_state) {
 }
 
 function rcv_SignalR(current_state) {
-    msg_dispatch(current_state);
-    cl_rcv_SignalR(current_state);
+    if (current_state.DIRECTION == "PLAYER") {
+        msg_dispatch(current_state);
+    }
+    else {
+        cl_rcv_SignalR(current_state);
+    }
     SERVER_STATE.CMD == "";
+    SERVER_STATE.CMD_PARMS = "";
 }

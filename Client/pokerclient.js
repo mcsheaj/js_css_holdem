@@ -597,7 +597,7 @@ function cl_request_next_hand() {
 //send SignalR msg to server -- for now just calls server function directly
 function cl_send_SignalR(current_state) {
   current_state.SENDER = my_name;
-  current_state.DIRECTION = "RCV";
+  current_state.DIRECTION = "PLAYER";
   app.sendMessage(current_state);
 }
 
