@@ -857,12 +857,7 @@ function send_SignalR(current_state) {
 }
 
 function rcv_SignalR(current_state) {
-    if (current_state.DIRECTION == "PLAYER") {
-        msg_dispatch(current_state);
-    }
-    else {
-        cl_rcv_SignalR(current_state);
-    }
+    msg_dispatch(current_state);
+    cl_rcv_SignalR(current_state);
     SERVER_STATE.CMD == "";
-    SERVER_STATE.CMD_PARMS = "";
 }
