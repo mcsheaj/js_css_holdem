@@ -239,8 +239,8 @@ function cl_new_round () {
   gui_hide_fold_call_click();
   cl_clear_bets();
   cl_clear_pot();
-  LOCAL_STATE.current_min_raise = 0;
-  cl_collect_cards();
+  LOCAL_STATE.current_min_raise = LOCAL_STATE.BIG_BLIND;
+  //cl_collect_cards();
  
   var i;
   for (i = 0; i < LOCAL_STATE.players.length; i++) {
@@ -296,6 +296,17 @@ function cl_show_board() {
   for (n=0; n<3; n++) {
     //gui_burn_board_card([n], "");
   }
+}
+
+function cl_write_board() {
+  gui_burn_board_card(0, "");
+  gui_burn_board_card(1, "");
+  gui_burn_board_card(2, "");
+  gui_lay_board_card(0, LOCAL_STATE.board[0]);
+  gui_lay_board_card(1, LOCAL_STATE.board[1]);
+  gui_lay_board_card(2, LOCAL_STATE.board[2]);
+  gui_lay_board_card(3, LOCAL_STATE.board[3]);
+  gui_lay_board_card(4, LOCAL_STATE.board[4]);
 }
 
 function cl_deal_flop() {

@@ -181,7 +181,7 @@ function new_round() {
     reset_player_statuses(1);
     clear_bets();
     clear_pot();
-    SERVER_STATE.current_min_raise = 0;
+    SERVER_STATE.current_min_raise = SERVER_STATE.BIG_BLIND;
     collect_cards();
     SERVER_STATE.button_index = get_next_player_position(SERVER_STATE.button_index, 1);
     shuffle();
@@ -557,6 +557,7 @@ function pot_is_good() {
         if ((LOCAL_STATE.players[n].status != "FOLD") &&
             (LOCAL_STATE.players[n].status != "BUST") &&
             (LOCAL_STATE.players[n].status != "ALL IN") &&
+            (LOCAL_STATE.players[n].status != "OPTION") &&
             (LOCAL_STATE.players[n].status != "WAIT")) {
             if (LOCAL_STATE.players[n].total_bet != LOCAL_STATE.current_total_bet) {
                 good = false
@@ -654,12 +655,13 @@ function betting_is_done() {  //this is done before we move to next player so se
     //and check that each players total bet is the same for this round OR
     //if all active players are ALL IN
 
-
+    why = ""
     all_all_in = false;
 
     //if each players total bet amount is the same then pot is good, 
     if (!pot_is_good()) {
         done = false;
+        why = "pot is not right"
     }
     //but if next player has OPTION (BB in first round) then betting is still not done
     else if (SERVER_STATE.players[get_next_player_position(SERVER_STATE.current_bettor_index, 1)].status == "OPTION") {
@@ -674,7 +676,7 @@ function betting_is_done() {  //this is done before we move to next player so se
             (SERVER_STATE.players[n].status != "BUST") &&
             (SERVER_STATE.players[n].status != "WAIT")) {
             if (SERVER_STATE.players[n].total_bet != SERVER_STATE.current_total_bet) {
-                done = false; why = "players total bet not - current total bet";
+                done = false; why = "player " + SERVER_STATE.players[n].name + " bet not = current total bet";
             }
         }
     }
@@ -692,7 +694,7 @@ function betting_is_done() {  //this is done before we move to next player so se
         done = true;
         all_all_in = true; why = "all in";
     }
-    console.log("betting_is_done returned ", done)
+    //console.log("betting_is_done returned " + done + " because " + why);
     return done;
 }
 
@@ -758,8 +760,8 @@ function msg_dispatch(current_state) {
         else {
             SERVER_STATE.TO_CALL = SERVER_STATE.BIG_BLIND;
         }
-        SERVER_STATE.CMD = "next player to act";
-        send_SignalR(SERVER_STATE);
+        //SERVER_STATE.CMD = "next player to act";
+        //send_SignalR(SERVER_STATE);
         return;
     }
 
@@ -858,8 +860,6 @@ function send_SignalR(current_state) {
 
 function rcv_SignalR(current_state) {
     msg_dispatch(current_state);
-    if (current_state.DIRECTION == "GAME") {
-        cl_rcv_SignalR(current_state);
-    }
+    cl_rcv_SignalR(current_state);
     SERVER_STATE.CMD == "";
 }
