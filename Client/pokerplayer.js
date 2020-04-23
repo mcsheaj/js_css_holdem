@@ -41,6 +41,7 @@ function cl_init() {
   gui_hide_log_window();
   gui_hide_setup_option_buttons();
   gui_hide_fold_call_click();
+  gui_hide_betting_click();
   gui_hide_quick_raise();
   gui_hide_dealer_button();
   gui_hide_game_response();
@@ -82,10 +83,20 @@ function cl_get_action () {
     } 
 
     // enable fold and call buttons
-    gui_setup_fold_call_click(fold_button_text,
+    if (to_call) {
+      gui_setup_fold_call_click(fold_button_text,
+                                  call_button_text,
+                                  cl_player_folds,
+                                  cl_player_calls);
+    }
+    else{
+      gui_setup_fold_call_click(fold_button_text,
                                 call_button_text,
                                 cl_player_folds,
                                 cl_player_checks);
+    }
+
+    gui_setup_betting_click("==> Make Bet", cl_handle_raise);
 
     var quick_values = new Array(5);
 
@@ -110,9 +121,11 @@ function cl_get_action () {
     var minCurrency = (LOCAL_STATE.current_min_raise/100);
     var bankrollCurrency = (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll/100);
     var stepCurrency = (lowest_chip_amount/100);
+    
     spinBox = new SpinBox('quick-raises', 
           {'minimum' : minCurrency, 
           'maximum' : bankrollCurrency,
+          'value' : minCurrency,
           'step' : stepCurrency, 
           'decimals' : 2});
 /*
@@ -129,7 +142,7 @@ function cl_get_action () {
     var html10 = quick_bets + "</td></tr></table></td></tr></table></body></html>";
 
     gui_write_quick_raise(html9 + html10);
-*/
+
     var hi_lite_color = gui_get_theme_mode_highlite_color();
     var message = "";
       
@@ -147,9 +160,11 @@ function cl_get_action () {
                   "</font></td></tr>";  
     }
     gui_write_game_response(message);
+    */
   }
   else {
     gui_hide_fold_call_click();
+    gui_hide_betting_click();
     gui_hide_quick_raise();
   }
 } 
@@ -164,22 +179,44 @@ function cl_the_bet_function (player_index, bet_amount) {
   return;
 }
 
-function cl_handle_raise (bet_amount) {          //call back from betting control
+function cl_handle_raise () {          //call back from betting control
+  var bet_amount = spinBox.getValue() * 100;
+  //need input value validation here
+  if (bet_amount > LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {
+    gui_write_game_response("<b><font size=+2>Bet is greater than your bankroll, get a clue!</b>");
+    cl_get_action();
+    return;
+  }
+  if (bet_amount < (LOCAL_STATE.TO_CALL)) {
+    gui_write_game_response("<b><font size=+2>Bet is less than needed to call, get a grip!</b>");
+    cl_get_action();
+    return;
+  }
+  if (bet_amount % lowest_chip_amount) {
+    gui_write_game_response("<b><font size=+2>Bet must be a multiple of " + lowest_chip_amount +
+          ", get off the crack!</b>");
+          cl_get_action();
+          return;
+  }
+
   cl_the_bet_function(LOCAL_STATE.current_bettor_index, bet_amount);
   gui_write_basic_general(cl_get_pot_size());
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].status = "RAISE";
   cl_write_player(LOCAL_STATE.current_bettor_index, 0, 0);
   gui_hide_quick_raise();
-  gui_hide_fold_call_click ();
+  gui_hide_fold_call_click();
+  gui_hide_betting_click();
   gui_write_game_response("");
   set_current_total_bet();
   LOCAL_STATE.CMD = "player action";
   cl_send_SignalR(LOCAL_STATE);
 }
+
 function cl_player_folds() {
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].status = "FOLD";
   cl_write_player(LOCAL_STATE.current_bettor_index, 0, 0);
   gui_hide_fold_call_click();
+  gui_hide_betting_click();
   gui_hide_quick_raise();
   gui_write_game_response("");
   LOCAL_STATE.CMD = "player action";
@@ -197,6 +234,7 @@ function cl_player_calls() {   //call back from betting control
   gui_write_basic_general(cl_get_pot_size());
   gui_hide_quick_raise();
   gui_hide_fold_call_click ();
+  gui_hide_betting_click();
   gui_write_game_response("");
   set_current_total_bet();
   LOCAL_STATE.CMD = "player action";
@@ -209,6 +247,7 @@ function cl_player_checks() {          //call back from betting control
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].status = "CHECK";
   cl_write_player(LOCAL_STATE.current_bettor_index, 0, 0);
   gui_hide_fold_call_click();
+  gui_hide_betting_click();
   gui_hide_quick_raise();
   gui_write_game_response("");
   set_current_total_bet();
@@ -245,8 +284,9 @@ function cl_new_round () {
   LOCAL_STATE.RUN_EM = 0;
   // Clear buttons
   gui_hide_fold_call_click();
-  cl_clear_bets();
-  cl_clear_pot();
+  gui_hide_betting_click();
+  //cl_clear_bets();
+  //cl_clear_pot();
   LOCAL_STATE.current_min_raise = LOCAL_STATE.BIG_BLIND;
   //cl_collect_cards();
  
@@ -263,6 +303,7 @@ function cl_initialize_game () {
   gui_hide_poker_table();
   gui_hide_dealer_button();
   gui_hide_fold_call_click();
+  gui_hide_betting_click();
   gui_show_poker_table();
 }
 
@@ -579,6 +620,7 @@ function cl_msg_dispatch () {
     cl_deal_fifth();
     gui_hide_quick_raise();
     gui_hide_fold_call_click ();
+    gui_hide_betting_click();
     cl_write_all_players();
     gui_write_game_response("<font size=+2><b>WINNER: " + LOCAL_STATE.CMD_PARMS + "</b></font>");
   }

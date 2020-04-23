@@ -262,7 +262,7 @@ html {
 }
 
 #action-options {
-    height: 100px;
+    height: 50px;
     left: 110px;
     position: absolute;
     top: 450px;
@@ -272,7 +272,7 @@ html {
 .action-button {
     background-color: silver;
     border-radius: 4px;
-    color: white;
+    color: darkgreen;
     cursor: pointer;
     font-size: 18px;
     height: 30px;
@@ -293,7 +293,7 @@ html {
 .setup-button {
     background-color: silver;
     border-radius: 4px;
-    color: white;
+    color: darkgreen;
     cursor: pointer;
     font-size: 18px;
     height: 30px;
@@ -309,17 +309,17 @@ html {
 }
 
 #betting-options {
-    height: 400px;
+    height:50px;
     left: 200px;
     position: absolute;
-    top: 380px;
+    top: 530px;
     width: 200px;
 }
 
 .betting-button {
     background-color: silver;
     border-radius: 4px;
-    color: white;
+    color: darkgreen;
     cursor: pointer;
     font-size: 18px;
     height: 30px;
@@ -335,7 +335,7 @@ html {
 }
 
 #bet-button {
-    top: 150px;
+    top: 0px;
 }
 
 #new-game-button {

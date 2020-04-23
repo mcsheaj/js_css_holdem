@@ -387,6 +387,20 @@ function gui_write_game_response (text) {
   response.innerHTML = text;
 }
 
+function gui_setup_betting_click (betting_text,
+  betting_func) {
+  
+  var buttons = document.getElementById('betting-options');
+  var betting = buttons.children['bet-button'];
+  internal_clickin_helper(betting, betting_text, betting_func);
+}
+
+function gui_hide_betting_click () {
+  var buttons = document.getElementById('betting-options');
+  var betting = buttons.children['bet-button'];
+  internal_clickin_helper(betting, 0, 0);
+}
+
 function gui_write_quick_raise (text) {
   var response = document.getElementById('quick-raises');
   if (text === "") {
