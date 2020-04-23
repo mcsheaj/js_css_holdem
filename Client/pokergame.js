@@ -552,18 +552,20 @@ function get_pot_size_html() {
 }
 
 function pot_is_good() {
+    //if the next players total bet is = tables current bet then pot is good
     var good = true;
-    for (var n = 0; n < LOCAL_STATE.players.length; n++) {
-        if ((LOCAL_STATE.players[n].status != "FOLD") &&
-            (LOCAL_STATE.players[n].status != "BUST") &&
-            (LOCAL_STATE.players[n].status != "ALL IN") &&
-            (LOCAL_STATE.players[n].status != "OPTION") &&
-            (LOCAL_STATE.players[n].status != "WAIT")) {
-            if (LOCAL_STATE.players[n].total_bet != LOCAL_STATE.current_total_bet) {
+    //for (var n = 0; n < LOCAL_STATE.players.length; n++) {
+    //    if ((LOCAL_STATE.players[n].status != "FOLD") &&
+    //        (LOCAL_STATE.players[n].status != "BUST") &&
+    //        (LOCAL_STATE.players[n].status != "ALL IN") &&
+    //        (LOCAL_STATE.players[n].status != "OPTION") &&
+    //        (LOCAL_STATE.players[n].status != "WAIT")) {
+        var next = get_next_player_position(SERVER_STATE.current_bettor_index, 1);
+            if (SERVER_STATE.players[next].total_bet != SERVER_STATE.current_total_bet) {
                 good = false
             }
-        }
-    }
+    //    }
+    //}
     return good;
 }
 
@@ -694,7 +696,8 @@ function betting_is_done() {  //this is done before we move to next player so se
         done = true;
         all_all_in = true; why = "all in";
     }
-    //console.log("betting_is_done returned " + done + " because " + why);
+    console.log("betting_is_done returned " + done + " player is " + 
+                SERVER_STATE.players[SERVER_STATE.current_bettor_index].name + " because " + why);
     return done;
 }
 
