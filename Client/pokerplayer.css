@@ -308,12 +308,41 @@ html {
     box-shadow: 3px 3px 4px #000000;
 }
 
+#betting-options {
+    height: 400px;
+    left: 200px;
+    position: absolute;
+    top: 380px;
+    width: 200px;
+}
+
+.betting-button {
+    background-color: silver;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+    height: 30px;
+    left: 0px;
+    padding: 10px 5px 0px 5px;
+    position: absolute;
+    text-align: center;
+    top: 0px;
+    width: 120px;
+}
+.betting-button:hover {
+    box-shadow: 3px 3px 4px #000000;
+}
+
+#bet-button {
+    top: 150px;
+}
+
 #new-game-button {
     top: 0px;
 }
 
 #join-button {
-    cursor: default;
     top: 50px;
 }
 
@@ -391,12 +420,12 @@ html {
     background-color: silver;
     border-radius: 4px;
     font-size: 18px;
-    height: 75px;
-    left: 25px;
+    height: 30px;
+    left: 100px;
     position: absolute;
     text-align: center;
-    top: 515px;
-    width: 350px;
+    top: 535px;
+    width: 3.5em;
 }
 #quick-raises a:link {
     color: white;
@@ -429,4 +458,6 @@ html {
     color: white;
     text-shadow: 3px 3px 4px #000000;
 }
+
+
 

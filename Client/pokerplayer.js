@@ -62,6 +62,7 @@ function cl_get_pot_size_html () {
   return "<font size=+2><b>" + cl_get_pot_size() + "</b></font>";
 }
 
+var spinBox;
 function cl_get_action () {
   cl_get_my_seat();
   if ((LOCAL_STATE.current_bettor_index == my_seat) || (I_am_Host)) {
@@ -81,18 +82,10 @@ function cl_get_action () {
     } 
 
     // enable fold and call buttons
-    if (to_call) {
-      gui_setup_fold_call_click(fold_button_text,
-                                call_button_text,
-                                cl_player_folds,
-                                cl_player_calls);
-    }
-    else {
-      gui_setup_fold_call_click(fold_button_text,
+    gui_setup_fold_call_click(fold_button_text,
                                 call_button_text,
                                 cl_player_folds,
                                 cl_player_checks);
-    }
 
     var quick_values = new Array(5);
 
@@ -108,6 +101,21 @@ function cl_get_action () {
       bet_or_raise = "Raise To";
     }
     var quick_bets = "<b>" + bet_or_raise + "</b><br>";
+
+    //PUT SPINNER INPUT HERE
+    var response = document.getElementById('quick-raises');
+    response.style.visibility = 'visible';
+    //response.innerHTML = "Adjust";
+
+    var minCurrency = (LOCAL_STATE.current_min_raise/100);
+    var bankrollCurrency = (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll/100);
+    var stepCurrency = (lowest_chip_amount/100);
+    spinBox = new SpinBox('quick-raises', 
+          {'minimum' : minCurrency, 
+          'maximum' : bankrollCurrency,
+          'step' : stepCurrency, 
+          'decimals' : 2});
+/*
     for (i = 0; i < 6; i++) {
       if (quick_values[i]) {
         quick_bets += "<a href='javascript:parent.cl_handle_raise(" +
@@ -121,7 +129,7 @@ function cl_get_action () {
     var html10 = quick_bets + "</td></tr></table></td></tr></table></body></html>";
 
     gui_write_quick_raise(html9 + html10);
-
+*/
     var hi_lite_color = gui_get_theme_mode_highlite_color();
     var message = "";
       
