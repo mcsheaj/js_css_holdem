@@ -3,13 +3,15 @@
 <head>
    <title>Matty's Poker Room</title>
    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-   <link rel="stylesheet" href="pokerclient.css" type="text/css">
+   <link rel="stylesheet" href="pokerplayer.css" type="text/css">
+   <link rel="stylesheet" href="SpinBox.css" type="text/css">
    <script src="https://cdn.jsdelivr.net/npm/@aspnet/signalr@1.0.3/dist/browser/signalr.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/axios@0.18.0/dist/axios.min.js"></script>
-   <script charset="UTF-8" src=pokerclient.js></script>
+   <script charset="UTF-8" src=SpinBox.js></script>
+   <script charset="UTF-8" src=pokerplayer.js></script>
    <script charset="UTF-8" src=gui_if.js></script>
    <script charset="UTF-8" src=hands.js></script>
-   <script charset="UTF-8" src=poker.js></script>
+   <script charset="UTF-8" src=pokergame.js></script>
    <script>I_am_Host = true;</script>
 </head>
 
@@ -154,8 +156,11 @@
         <div id="help-button" class="setup-button">Help</div>
         <div id="next-hand-button" class="setup-button">Next Hand</div>
     </div>
-    <div id="quick-raises">Quick Raises</div>
+    <div id="quick-raises"></div>
     <div id="game-response" class="response-normal"></div>
     <div id="production-code"></div>
     <div id="modal-box"></div>
+    <div id="betting-options">
+        <div id="bet-button" class="betting-button">==> Make Bet</div>
+    </div>
 </body>
