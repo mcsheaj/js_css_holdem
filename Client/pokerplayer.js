@@ -14,10 +14,10 @@ var LOCAL_STATE = {
   SMALL_BLIND: 5,
   BIG_BLIND: 10,
   BG_HILITE: 'gold',
-  cards: new Array(52),
+  //cards: new Array(52),
   players: new Array(),
   board: new Array(),
-  deck_index: 0,
+  //deck_index: 0,
   button_index: 0,
   current_bettor_index: 0,
   current_bet_amount: 0,
@@ -180,7 +180,7 @@ function cl_the_bet_function (player_index, bet_amount) {
 }
 
 function cl_handle_raise () {          //call back from betting control
-  var bet_amount = spinBox.getValue() * 100;
+  var bet_amount = spinBox.getValue().toFixed(2) * 100;
   //need input value validation here
   if (bet_amount > LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {
     gui_write_game_response("<b><font size=+2>Bet is greater than your bankroll, get a clue!</b>");
@@ -308,7 +308,6 @@ function cl_initialize_game () {
 }
 
 function cl_clear_player_cards (count) {
-  count = count; // Count that human too
   for (var pl = 0; pl < count; ++pl) {
     gui_set_player_cards("", "", pl);
     gui_set_player_name("", pl);
@@ -345,17 +344,6 @@ function cl_show_board() {
   for (n=0; n<3; n++) {
     //gui_burn_board_card([n], "");
   }
-}
-
-function cl_write_board() {
-  gui_burn_board_card(0, "");
-  gui_burn_board_card(1, "");
-  gui_burn_board_card(2, "");
-  gui_lay_board_card(0, LOCAL_STATE.board[0]);
-  gui_lay_board_card(1, LOCAL_STATE.board[1]);
-  gui_lay_board_card(2, LOCAL_STATE.board[2]);
-  gui_lay_board_card(3, LOCAL_STATE.board[3]);
-  gui_lay_board_card(4, LOCAL_STATE.board[4]);
 }
 
 function cl_deal_flop() {
@@ -452,6 +440,14 @@ function cl_has_money (i) {
     return true;
   }
   return false;
+}
+
+function cl_check_for_busts() {
+  for (var n=0; n<LOCAL_STATE.players.length; n++) {
+    if (LOCAL_STATE.players[n].bankroll == 0) {
+      LOCAL_STATE.players[n].status = "BUST";
+    }
+  }
 }
 
 function cl_write_player (n, hilite, show_cards) {
@@ -571,7 +567,7 @@ function cl_msg_dispatch () {
     cl_write_all_players();
     cl_show_board();
     //cl_get_action();
-    gui_write_basic_general(cl_get_pot_size());
+    gui_write_basic_general(LOCAL_STATE.current_bet_amount);
 
     //gui_write_game_response("<font size=+2><b>Next to Act: " + 
     //                    LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name +
@@ -621,8 +617,9 @@ function cl_msg_dispatch () {
     gui_hide_quick_raise();
     gui_hide_fold_call_click ();
     gui_hide_betting_click();
+    cl_check_for_busts();
     cl_write_all_players();
-    gui_write_game_response("<font size=+2><b>WINNER: " + LOCAL_STATE.CMD_PARMS + "</b></font>");
+    gui_write_game_response(LOCAL_STATE.CMD_PARMS);
   }
 }
 
@@ -655,19 +652,38 @@ function cl_request_next_hand() {
   cl_send_SignalR(LOCAL_STATE);
 }
 
-//send SignalR msg to server -- for now just calls server function directly
 function cl_send_SignalR(current_state) {
   current_state.SENDER = my_name;
   current_state.DIRECTION = "PLAYER";
+  //cl_unplaycards(current_state);
   app.sendMessage(current_state);
 }
 
-//STUB for eventual SIGNALR receive, currently is is called when a button is pressed
 function cl_rcv_SignalR(current_state) {
   if (current_state.CMD != "add new player") {
     LOCAL_STATE = current_state;
   }
-  //if (my_name != "") {
-    cl_msg_dispatch();  //if I have not joined game yet then ignore everything
-  //}
+    cl_msg_dispatch();
+}
+
+function cl_playcards(current_state) {
+  if (cardsPlayed) return;
+  for (var n=0; n<current_state.players.length; n++) {
+    if (current_state.players[n].carda){
+      cardsPlayed = true;
+      current_state.players[n].carda = current_state.players[n].carda.defs(13);
+      current_state.players[n].cardb = current_state.players[n].cardb.defs(13);
+    }
+  }
+}
+  
+function cl_unplaycards(current_state) {
+  if (!cardsPlayed) return;
+  for (var n=0; n<current_state.players.length; n++) {
+    if (current_state.players[n].carda){
+      cardsPlayed = false;
+      current_state.players[n].carda = current_state.players[n].carda.obfs(13);
+      current_state.players[n].cardb = current_state.players[n].cardb.obfs(13);
+    }
+  }
 }
