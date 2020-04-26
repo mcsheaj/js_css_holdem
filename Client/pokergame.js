@@ -194,7 +194,7 @@ function number_of_active_players() {
     var num_playing = 0;
     var i;
     for (i = 0; i < SERVER_STATE.players.length; i++) {
-        if (has_money(i)) {
+        if ((has_money(i)) && (SERVER_STATE.players[i].status != "BUST")) {
             num_playing += 1;
         }
     }
@@ -660,7 +660,7 @@ function betting_is_done() {  //this is done before we move to next player so se
     }
     //and if any players status is "" then we haven't been completely around once in this round so keep betting
     for (var n = 0; n < SERVER_STATE.players.length; n++) {
-        if (SERVER_STATE.players[n].status == "") {
+        if (active_player(n) && (SERVER_STATE.players[n].status == "")) {
             done = false; why = "not around once";
         }
         //if anyones total bet is not equal to the tables current high total then keep betting
@@ -688,7 +688,7 @@ function betting_is_done() {  //this is done before we move to next player so se
 
 function set_to_call() {
 
-    if (SERVER_STATE.current_total_bet > SERVER_STATE.players[SERVER_STATE.current_bettor_index].bankroll) {
+    if (SERVER_STATE.current_bet_amount > SERVER_STATE.players[SERVER_STATE.current_bettor_index].bankroll) {
         //All in
         SERVER_STATE.TO_CALL = SERVER_STATE.players[SERVER_STATE.current_bettor_index].bankroll;
     }

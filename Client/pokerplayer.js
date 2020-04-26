@@ -245,6 +245,8 @@ function cl_player_checks() {          //call back from betting control
   gui_write_basic_general(cl_get_pot_size());
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bet_amount = 0;
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].status = "CHECK";
+  LOCAL_STATE.current_bet_amount = 0; 
+  LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet = 0;
   cl_write_player(LOCAL_STATE.current_bettor_index, 0, 0);
   gui_hide_fold_call_click();
   gui_hide_betting_click();
