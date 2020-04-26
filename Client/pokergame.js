@@ -300,7 +300,7 @@ function deal_and_write_b() {
     } while (current_player != start_player);
 
     //first player to act is button position + 3
-    SERVER_STATE.current_bettor_index = get_next_player_position(SERVER_STATE.button_index, 3);
+    //SERVER_STATE.current_bettor_index = get_next_player_position(SERVER_STATE.button_index, 3);
 }
 
 function deal_flop() {
