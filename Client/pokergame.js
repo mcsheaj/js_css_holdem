@@ -355,7 +355,7 @@ function handle_end_of_round() {
     var best_hand_players;
     var current_pot_to_split = 0;
     var pot_remainder = 0;
-    if (SERVER_STATE.global_pot_remainder) {   //  Can never get here????
+    if (SERVER_STATE.global_pot_remainder) {
         pot_remainder = SERVER_STATE.global_pot_remainder;
         my_total_pot_size += SERVER_STATE.global_pot_remainder;
         SERVER_STATE.global_pot_remainder = 0;
@@ -455,14 +455,16 @@ function handle_end_of_round() {
             if (number_of_players_in_hand() > 1) {
                 winner_text += SERVER_STATE.players[i].name + " wins $" + (allocations[i] / 100).toFixed(2) + " with " +
                     winning_hands[i] + ". ";
+                    if (best_hand_players[i]) {
+                        SERVER_STATE.players[i].status = "WIN";
+                    } 
             } else {
                 winner_text += SERVER_STATE.players[i].name + " wins $" + (allocations[i] / 100).toFixed(2);
+                if (best_hand_players[i]) {
+                    SERVER_STATE.players[i].status = "NOSHOW";
+                } 
             }
-
             SERVER_STATE.players[i].bankroll += allocations[i];
-            if (best_hand_players[i]) {
-                SERVER_STATE.players[i].status = "WIN";
-            } 
         }
     }
 

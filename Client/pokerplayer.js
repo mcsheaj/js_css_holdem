@@ -540,6 +540,9 @@ function cl_write_player (n, hilite, show_cards) {
     if (LOCAL_STATE.players[n].status == "WIN") {
       gui_set_player_cards(carda, cardb, n, show_folded);
     }
+    if (LOCAL_STATE.players[n].status == "NOSHOW") {
+      gui_set_player_cards("blinded", "blinded", n, show_folded);
+    }
     //gui_set_player_cards(carda, cardb, n, show_folded);  //get rid of this to hide other players cards*****************
   }
 }
@@ -552,7 +555,7 @@ function cl_write_all_players() {
     else {
       cl_write_player(n, 1, 0);
     }
-    if (LOCAL_STATE.players[n].status == "WIN") {
+    if (LOCAL_STATE.players[n].status == "WIN") { //PROBLEM, should only show if show down!!!
       cl_write_player(n, 2, 0);
     }
   }
