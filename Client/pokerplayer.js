@@ -180,7 +180,7 @@ function cl_the_bet_function (player_index, bet_amount) {
 }
 
 function cl_handle_raise () {          //call back from betting control
-  var bet_amount = spinBox.getValue().toFixed(2) * 100;
+  var bet_amount = Number((spinBox.getValue().toFixed(2) * 100).toFixed(2));
   //need input value validation here
   if (bet_amount > LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {
     gui_write_game_response("<b><font size=+2>Bet is greater than your bankroll, get a clue!</b>");
