@@ -66,7 +66,7 @@ var app = {
         });
 
         // setup a callback to tell me when my connection is lost
-        app.connection.onclose(function () { console.log('disconnected'); });
+        app.connection.onclose(function () { console.log('disconnected'); app.init(); });
 
         // now initiate the connection
         app.connection.start()
@@ -310,18 +310,27 @@ function deal_flop() {
         SERVER_STATE.board[i] = cards[deck_index++];
     }
     get_next_action_seat();
+    clear_subtotal_bets();
 }
 
 function deal_fourth() {
     var burn = cards[deck_index++];
     SERVER_STATE.board[3] = cards[deck_index++];
     get_next_action_seat();
+    clear_subtotal_bets();
 }
 
 function deal_fifth() {
     var burn = cards[deck_index++];
     SERVER_STATE.board[4] = cards[deck_index++];
     get_next_action_seat();
+    clear_subtotal_bets();
+}
+
+function clear_subtotal_bets() {
+    for (var n=0; n<SERVER_STATE.players.length; n++) {
+        SERVER_STATE.players[n].subtotal_bet = 0;
+    }
 }
 
 function get_next_action_seat() {
@@ -496,7 +505,7 @@ function the_bet_function(player_index, bet_amount) {
     if (SERVER_STATE.current_bet_amount < bet_amount) {
         SERVER_STATE.current_bet_amount = bet_amount;
     }
-    if (SERVER_STATE.current_min_raise < (bet_amount * 2)) { 
+    if (SERVER_STATE.current_min_raise < bet_amount) { 
         SERVER_STATE.current_min_raise = bet_amount;
     }
     SERVER_STATE.players[player_index].subtotal_bet += bet_amount;
@@ -592,6 +601,10 @@ function get_num_betting() {
 }
 
 function get_next_player_position(i, delta) {
+    if (number_of_active_players() < 1) { // getting here is not good
+        console.log("no active player left but get_next_player was called")
+        return;
+    }
     var j = 0;
     var step = 1;
     if (delta < 0) step = -1;
@@ -614,6 +627,9 @@ function get_next_player_position(i, delta) {
         if (SERVER_STATE.players[i].status == "WAIT") loop_on = 1;
         if (!has_money(i)) loop_on = 1;
         if (++j < delta) loop_on = 1;
+        if (j > SERVER_STATE.players.length) { //no active players, getting here is not good
+            loop_on = 0;
+        }
     } while (loop_on);
 
     return i;
@@ -648,6 +664,11 @@ function betting_is_done() {  //this is done before we move to next player so se
     why = ""
     all_all_in = false;
 
+    if (!number_of_active_players()) {
+        all_all_in = true;
+        return true;
+    }
+
     //if each players total bet amount is the same then pot is good, 
     if (!pot_is_good()) {
         done = false;
@@ -677,7 +698,7 @@ function betting_is_done() {  //this is done before we move to next player so se
             num_allin_or_fold_or_bust++;
         }
     }
-    if (num_allin_or_fold_or_bust == (SERVER_STATE.players.length-1)) {
+    if (num_allin_or_fold_or_bust == (SERVER_STATE.players.length)) {
         done = true;
         all_all_in = true; why = "all in";
     }
@@ -688,7 +709,7 @@ function betting_is_done() {  //this is done before we move to next player so se
 
 function set_to_call() {
 
-    if (SERVER_STATE.current_bet_amount > SERVER_STATE.players[SERVER_STATE.current_bettor_index].bankroll) {
+    if (SERVER_STATE.TO_CALL > SERVER_STATE.players[SERVER_STATE.current_bettor_index].bankroll) {
         //All in
         SERVER_STATE.TO_CALL = SERVER_STATE.players[SERVER_STATE.current_bettor_index].bankroll;
     }
@@ -762,7 +783,7 @@ function msg_dispatch(current_state) {
         //no need to send client and action msg as current bettor is already correct and they are ready to act
 
         else if (betting_is_done()) {
-            if (all_all_in) {
+            if ((all_all_in) || (number_of_active_players()) == 1) {
                 deal_rest_of_hand();
                 return;
             }
@@ -809,21 +830,17 @@ function deal_rest_of_hand() {
         deal_flop();
         deal_fourth();
         deal_fifth();
-        handle_end_of_round();
-        SERVER_STATE.CMD = "end of round";
-        send_SignalR(SERVER_STATE);
     }
     else if (SERVER_STATE.board[3] == "") {
         deal_fourth();
         deal_fifth()
-        SERVER_STATE.CMD = "end of round";
-        send_SignalR(SERVER_STATE);
     }
     else if (SERVER_STATE.board[4] == "") {
         deal_fifth();
-        SERVER_STATE.CMD = "end of round";
-        send_SignalR(SERVER_STATE);
     }
+    handle_end_of_round();
+    SERVER_STATE.CMD = "end of round";
+    send_SignalR(SERVER_STATE);
 }
 
 function send_game_response(response) {
