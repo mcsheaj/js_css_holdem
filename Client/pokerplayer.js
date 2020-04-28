@@ -261,7 +261,7 @@ function cl_new_round () {
   //cl_clear_pot();
   LOCAL_STATE.current_min_raise = LOCAL_STATE.BIG_BLIND;
   LOCAL_STATE.current_bet_amount = LOCAL_STATE.BIG_BLIND;
-  //cl_collect_cards();
+  cl_collect_cards();
  
   var i;
   for (i = 0; i < LOCAL_STATE.players.length; i++) {
@@ -386,19 +386,16 @@ function cl_clear_pot () {
 
 function cl_collect_cards () {
   LOCAL_STATE.board = new Array(6);
-  for (var i = 0; i < LOCAL_STATE.players.length; i++) {
-    LOCAL_STATE.players[i].carda = "";
-    LOCAL_STATE.players[i].cardb = "";
+  //for (var i = 0; i < LOCAL_STATE.players.length; i++) {
+    //LOCAL_STATE.players[i].carda = "";
+    //LOCAL_STATE.players[i].cardb = "";
     LOCAL_STATE.board[0] = "";    
     LOCAL_STATE.board[1] = "";
     LOCAL_STATE.board[2] = "";
     LOCAL_STATE.board[3] = "";
     LOCAL_STATE.board[4] = "";
-  }   
-  for (i = 0; i < LOCAL_STATE.board.length; i++) {
-    if (i > 4) {        // board.length != 5
-      continue;
-    }
+  //}   
+  for (var i = 0; i < 5; i++) {
     LOCAL_STATE.board[i] = "";
     gui_lay_board_card(i, LOCAL_STATE.board[i]);     // Clear the board
   }
@@ -541,21 +538,22 @@ function cl_msg_dispatch () {
 
   if (LOCAL_STATE.CMD == "new player added") {
     cl_write_all_players();
-    cl_show_board();
+    //cl_show_board();
     //cl_get_action();
     gui_write_basic_general(LOCAL_STATE.current_bet_amount);
-
-    //gui_write_game_response("<font size=+2><b>Next to Act: " + 
-    //                    LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name +
-    //                    ", minimum bet or raise is " + (LOCAL_STATE.current_min_raise/100).toFixed(2) + "</b></font>");
-
     return;
   }
+  
   else if (LOCAL_STATE.CMD == "game response") {
     gui_write_game_response("<font size=+2><b>" + LOCAL_STATE.CMD_PARMS + "</b></font>");
   }
 
-  else if ((LOCAL_STATE.CMD == "start hand") || (LOCAL_STATE.CMD == "request next hand")) {
+  //else if (LOCAL_STATE.CMD == "request new game") {
+  //  cl_new_game();
+  //}
+
+  else if ((LOCAL_STATE.CMD == "start hand") || (LOCAL_STATE.CMD == "request next hand") ||
+            (LOCAL_STATE.CMD == "request new game")) {
     cl_new_round();
     cl_show_board();
     gui_place_dealer_button(LOCAL_STATE.button_index);

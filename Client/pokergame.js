@@ -808,7 +808,7 @@ function msg_dispatch(current_state) {
                 send_SignalR(SERVER_STATE);
             }
 
-            else { //if ((SERVER_STATE.board[4] != "") || (number_of_players_in_hand() < 2)) { //if betting is done and all 5 board cards are dealt calc winner
+            else { 
                 handle_end_of_round();
                 SERVER_STATE.CMD = "end of round";
                 send_SignalR(SERVER_STATE);
