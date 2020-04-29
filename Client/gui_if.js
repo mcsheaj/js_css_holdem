@@ -178,14 +178,11 @@ function gui_set_bet (bet, seat) {
 
 function gui_clear_the_board(board) {
   for (var i = 0; i < 5; i++) {
-//    if (i > 4) {        // board.length != 5
-//      continue;
-//    }
     board[i] = "";
-    gui_lay_board_card(i, board[i]);     // Clear the board
+    gui_lay_board_card(i, board[i]);     
   }
   for (i = 0; i < 3; i++) {
-    board[i] = "";
+    //board[i] = "";
     gui_burn_board_card(i, board[i]);
   }
 }

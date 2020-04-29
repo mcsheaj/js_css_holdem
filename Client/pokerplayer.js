@@ -14,10 +14,10 @@ var LOCAL_STATE = {
   SMALL_BLIND: 5,
   BIG_BLIND: 10,
   BG_HILITE: 'gold',
-  cards: new Array(52),
+  //cards: new Array(52),
   players: new Array(),
   board: new Array(),
-  deck_index: 0,
+  //deck_index: 0,
   button_index: 0,
   current_bettor_index: 0,
   current_bet_amount: 0,
@@ -64,6 +64,7 @@ function cl_get_pot_size_html () {
 }
 
 var spinBox;
+
 function cl_get_action () {
   cl_get_my_seat();
   if ((LOCAL_STATE.current_bettor_index == my_seat) || (I_am_Host)) {
@@ -95,32 +96,27 @@ function cl_get_action () {
                                 cl_player_folds,
                                 cl_player_checks);
     }
-
-    gui_setup_betting_click("==> Make Bet", cl_handle_raise);
-
-    var quick_values = new Array(5);
-
-    var next_raise;
-    for (var i = 0; i < 5; i++) {
-      next_raise = LOCAL_STATE.current_min_raise * (i + 1);
-      if (next_raise < LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {
-        quick_values[i] = next_raise + to_call;
-      }
+    if (to_call) {
+      gui_setup_betting_click("==> Raise to", cl_handle_raise);
     }
-    var bet_or_raise = "Bet";
-    if (to_call > 0) {
-      bet_or_raise = "Raise To";
+    else {
+      gui_setup_betting_click("==> Bet to", cl_handle_raise);
     }
-    var quick_bets = "<b>" + bet_or_raise + "</b><br>";
-
     //PUT SPINNER INPUT HERE
     var response = document.getElementById('quick-raises');
     response.style.visibility = 'visible';
-    //response.innerHTML = "Adjust";
-
-    var minCurrency = (LOCAL_STATE.current_min_raise/100);
-    var bankrollCurrency = (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll/100);
-    var stepCurrency = (lowest_chip_amount/100);
+    if (to_call) {
+      var minCurrency = (LOCAL_STATE.current_min_raise/100) + 
+                        (LOCAL_STATE.current_total_bet/100); 
+                      //(LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet/100) +
+                      //(LOCAL_STATE.TO_CALL / 100);
+    }
+    else {
+      minCurrency = (LOCAL_STATE.current_min_raise/100) + (LOCAL_STATE.current_total_bet/100);
+    }
+    var bankrollCurrency = (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll/100) +
+                          (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet/100)   ;   
+    var stepCurrency = lowest_chip_amount/100;
     
     spinBox = new SpinBox('quick-raises', 
           {'minimum' : minCurrency, 
@@ -128,39 +124,6 @@ function cl_get_action () {
           'value' : minCurrency,
           'step' : stepCurrency, 
           'decimals' : 2});
-/*
-    for (i = 0; i < 6; i++) {
-      if (quick_values[i]) {
-        quick_bets += "<a href='javascript:parent.cl_handle_raise(" +
-                      (quick_values[i]) + ")'>" + (quick_values[i]/100).toFixed(2) + "</a>" +
-                      "&nbsp;&nbsp;&nbsp;";
-      }
-    }
-    quick_bets += "<a href='javascript:parent.cl_handle_raise(" +
-                  LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll + ")'>All In!</a>";
-    var html9 = "<td><table align=center><tr><td align=center>";
-    var html10 = quick_bets + "</td></tr></table></td></tr></table></body></html>";
-
-    gui_write_quick_raise(html9 + html10);
-
-    var hi_lite_color = gui_get_theme_mode_highlite_color();
-    var message = "";
-      
-    if (to_call){
-      message = "<tr><td><font size=+2><b>Current raise: " +
-                  LOCAL_STATE.current_bet_amount + 
-                  "</b><br> You need <font color=" + hi_lite_color +
-                  " size=+3>" + to_call +
-                  "</font> more to call.<br>" +
-                  LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name + ", it's your turn." +
-                  "</font></td></tr>";
-    } 
-    else {
-      message = "<tr><td><font size=+2>" + LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name + ", you are next to act." +
-                  "</font></td></tr>";  
-    }
-    gui_write_game_response(message);
-    */
   }
   else {
     gui_hide_fold_call_click();
@@ -170,19 +133,24 @@ function cl_get_action () {
 } 
 
 function cl_the_bet_function (player_index, bet_amount) {
-  LOCAL_STATE.current_bet_amount = bet_amount; 
-  LOCAL_STATE.current_min_raise = LOCAL_STATE.current_bet_amount;
-  
   LOCAL_STATE.players[player_index].subtotal_bet = bet_amount;
   LOCAL_STATE.players[player_index].total_bet += bet_amount;
   LOCAL_STATE.players[player_index].bankroll -= bet_amount;
+  //if player went all in with less then current bet amount then dont update bet amount
+  //or min raise
+  if (LOCAL_STATE.players[player_index].total_bet > LOCAL_STATE.current_bet_amount) {
+    LOCAL_STATE.current_min_raise = LOCAL_STATE.players[player_index].total_bet - 
+    LOCAL_STATE.current_bet_amount;
+    LOCAL_STATE.current_bet_amount = LOCAL_STATE.players[player_index].total_bet;
+  }
   return;
 }
 
 function cl_handle_raise () {          //call back from betting control
-  var bet_amount = spinBox.getValue() * 100;
+  var bet_amount = Number((spinBox.getValue().toFixed(2) * 100).toFixed(2));
   //need input value validation here
-  if (bet_amount > LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {
+  if (bet_amount > LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll +
+                    LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet) {
     gui_write_game_response("<b><font size=+2>Bet is greater than your bankroll, get a clue!</b>");
     cl_get_action();
     return;
@@ -198,7 +166,7 @@ function cl_handle_raise () {          //call back from betting control
           cl_get_action();
           return;
   }
-
+  bet_amount -= LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].total_bet;
   cl_the_bet_function(LOCAL_STATE.current_bettor_index, bet_amount);
   gui_write_basic_general(cl_get_pot_size());
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].status = "RAISE";
@@ -243,8 +211,12 @@ function cl_player_calls() {   //call back from betting control
 
 function cl_player_checks() {          //call back from betting control
   gui_write_basic_general(cl_get_pot_size());
+  if (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].status != "OPTION") {
+    LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet = 0;
+  }
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bet_amount = 0;
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].status = "CHECK";
+  //LOCAL_STATE.current_bet_amount = 0; 
   cl_write_player(LOCAL_STATE.current_bettor_index, 0, 0);
   gui_hide_fold_call_click();
   gui_hide_betting_click();
@@ -288,7 +260,8 @@ function cl_new_round () {
   //cl_clear_bets();
   //cl_clear_pot();
   LOCAL_STATE.current_min_raise = LOCAL_STATE.BIG_BLIND;
-  //cl_collect_cards();
+  LOCAL_STATE.current_bet_amount = LOCAL_STATE.BIG_BLIND;
+  cl_collect_cards();
  
   var i;
   for (i = 0; i < LOCAL_STATE.players.length; i++) {
@@ -308,7 +281,6 @@ function cl_initialize_game () {
 }
 
 function cl_clear_player_cards (count) {
-  count = count; // Count that human too
   for (var pl = 0; pl < count; ++pl) {
     gui_set_player_cards("", "", pl);
     gui_set_player_name("", pl);
@@ -345,17 +317,6 @@ function cl_show_board() {
   for (n=0; n<3; n++) {
     //gui_burn_board_card([n], "");
   }
-}
-
-function cl_write_board() {
-  gui_burn_board_card(0, "");
-  gui_burn_board_card(1, "");
-  gui_burn_board_card(2, "");
-  gui_lay_board_card(0, LOCAL_STATE.board[0]);
-  gui_lay_board_card(1, LOCAL_STATE.board[1]);
-  gui_lay_board_card(2, LOCAL_STATE.board[2]);
-  gui_lay_board_card(3, LOCAL_STATE.board[3]);
-  gui_lay_board_card(4, LOCAL_STATE.board[4]);
 }
 
 function cl_deal_flop() {
@@ -425,19 +386,16 @@ function cl_clear_pot () {
 
 function cl_collect_cards () {
   LOCAL_STATE.board = new Array(6);
-  for (var i = 0; i < LOCAL_STATE.players.length; i++) {
-    LOCAL_STATE.players[i].carda = "";
-    LOCAL_STATE.players[i].cardb = "";
+  //for (var i = 0; i < LOCAL_STATE.players.length; i++) {
+    //LOCAL_STATE.players[i].carda = "";
+    //LOCAL_STATE.players[i].cardb = "";
     LOCAL_STATE.board[0] = "";    
     LOCAL_STATE.board[1] = "";
     LOCAL_STATE.board[2] = "";
     LOCAL_STATE.board[3] = "";
     LOCAL_STATE.board[4] = "";
-  }   
-  for (i = 0; i < LOCAL_STATE.board.length; i++) {
-    if (i > 4) {        // board.length != 5
-      continue;
-    }
+  //}   
+  for (var i = 0; i < 5; i++) {
     LOCAL_STATE.board[i] = "";
     gui_lay_board_card(i, LOCAL_STATE.board[i]);     // Clear the board
   }
@@ -452,6 +410,14 @@ function cl_has_money (i) {
     return true;
   }
   return false;
+}
+
+function cl_check_for_busts() {
+  for (var n=0; n<LOCAL_STATE.players.length; n++) {
+    if (LOCAL_STATE.players[n].bankroll == 0) {
+      LOCAL_STATE.players[n].status = "BUST";
+    }
+  }
 }
 
 function cl_write_player (n, hilite, show_cards) {
@@ -544,6 +510,9 @@ function cl_write_player (n, hilite, show_cards) {
     if (LOCAL_STATE.players[n].status == "WIN") {
       gui_set_player_cards(carda, cardb, n, show_folded);
     }
+    if (LOCAL_STATE.players[n].status == "NOSHOW") {
+      gui_set_player_cards("blinded", "blinded", n, show_folded);
+    }
     //gui_set_player_cards(carda, cardb, n, show_folded);  //get rid of this to hide other players cards*****************
   }
 }
@@ -556,7 +525,7 @@ function cl_write_all_players() {
     else {
       cl_write_player(n, 1, 0);
     }
-    if (LOCAL_STATE.players[n].status == "WIN") {
+    if (LOCAL_STATE.players[n].status == "WIN") { //PROBLEM, should only show if show down!!!
       cl_write_player(n, 2, 0);
     }
   }
@@ -569,21 +538,22 @@ function cl_msg_dispatch () {
 
   if (LOCAL_STATE.CMD == "new player added") {
     cl_write_all_players();
-    cl_show_board();
+    //cl_show_board();
     //cl_get_action();
-    gui_write_basic_general(cl_get_pot_size());
-
-    //gui_write_game_response("<font size=+2><b>Next to Act: " + 
-    //                    LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name +
-    //                    ", minimum bet or raise is " + (LOCAL_STATE.current_min_raise/100).toFixed(2) + "</b></font>");
-
+    gui_write_basic_general(LOCAL_STATE.current_bet_amount);
     return;
   }
+  
   else if (LOCAL_STATE.CMD == "game response") {
     gui_write_game_response("<font size=+2><b>" + LOCAL_STATE.CMD_PARMS + "</b></font>");
   }
 
-  else if ((LOCAL_STATE.CMD == "start hand") || (LOCAL_STATE.CMD == "request next hand")) {
+  //else if (LOCAL_STATE.CMD == "request new game") {
+  //  cl_new_game();
+  //}
+
+  else if ((LOCAL_STATE.CMD == "start hand") || (LOCAL_STATE.CMD == "request next hand") ||
+            (LOCAL_STATE.CMD == "request new game")) {
     cl_new_round();
     cl_show_board();
     gui_place_dealer_button(LOCAL_STATE.button_index);
@@ -598,8 +568,7 @@ function cl_msg_dispatch () {
     cl_write_player(LOCAL_STATE.current_bettor_index, 1, 0);
     gui_write_basic_general(cl_get_pot_size());
     gui_write_game_response("<font size=+2><b>Next to Act: " + 
-                        LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name +
-                        ", minimum bet or raise is " + (LOCAL_STATE.current_min_raise/100).toFixed(2) + "</b></font>");
+                        LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].name);
     if (LOCAL_STATE.CMD_PARMS == "deal flop") {
       cl_deal_flop();
     }
@@ -621,8 +590,9 @@ function cl_msg_dispatch () {
     gui_hide_quick_raise();
     gui_hide_fold_call_click ();
     gui_hide_betting_click();
+    cl_check_for_busts();
     cl_write_all_players();
-    gui_write_game_response("<font size=+2><b>WINNER: " + LOCAL_STATE.CMD_PARMS + "</b></font>");
+    gui_write_game_response(LOCAL_STATE.CMD_PARMS);
   }
 }
 
@@ -655,19 +625,38 @@ function cl_request_next_hand() {
   cl_send_SignalR(LOCAL_STATE);
 }
 
-//send SignalR msg to server -- for now just calls server function directly
 function cl_send_SignalR(current_state) {
   current_state.SENDER = my_name;
   current_state.DIRECTION = "PLAYER";
+  //cl_unplaycards(current_state);
   app.sendMessage(current_state);
 }
 
-//STUB for eventual SIGNALR receive, currently is is called when a button is pressed
 function cl_rcv_SignalR(current_state) {
   if (current_state.CMD != "add new player") {
     LOCAL_STATE = current_state;
   }
-  //if (my_name != "") {
-    cl_msg_dispatch();  //if I have not joined game yet then ignore everything
-  //}
+    cl_msg_dispatch();
+}
+
+function cl_playcards(current_state) {
+  if (cardsPlayed) return;
+  for (var n=0; n<current_state.players.length; n++) {
+    if (current_state.players[n].carda){
+      cardsPlayed = true;
+      current_state.players[n].carda = current_state.players[n].carda.defs(13);
+      current_state.players[n].cardb = current_state.players[n].cardb.defs(13);
+    }
+  }
+}
+  
+function cl_unplaycards(current_state) {
+  if (!cardsPlayed) return;
+  for (var n=0; n<current_state.players.length; n++) {
+    if (current_state.players[n].carda){
+      cardsPlayed = false;
+      current_state.players[n].carda = current_state.players[n].carda.obfs(13);
+      current_state.players[n].cardb = current_state.players[n].cardb.obfs(13);
+    }
+  }
 }
