@@ -97,25 +97,22 @@ function cl_get_action () {
                                 cl_player_checks);
     }
     if (to_call) {
-      gui_setup_betting_click("==> Raise to", cl_handle_raise);
+      gui_setup_betting_click("==> Raise", cl_handle_raise);
     }
     else {
-      gui_setup_betting_click("==> Bet to", cl_handle_raise);
+      gui_setup_betting_click("==> Bet", cl_handle_raise);
     }
     //PUT SPINNER INPUT HERE
     var response = document.getElementById('quick-raises');
     response.style.visibility = 'visible';
-    if (to_call) {
-      var minCurrency = (LOCAL_STATE.current_min_raise/100) + 
-                        (LOCAL_STATE.current_total_bet/100); 
-                      //(LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet/100) +
-                      //(LOCAL_STATE.TO_CALL / 100);
-    }
-    else {
-      minCurrency = (LOCAL_STATE.current_min_raise/100) + (LOCAL_STATE.current_total_bet/100);
-    }
+
+    var minCurrency = (LOCAL_STATE.current_min_raise/100);
+                        //(LOCAL_STATE.current_bet_amount/100) -
+                        //(LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet/100); 
+
     var bankrollCurrency = (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll/100) +
-                          (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet/100)   ;   
+                          (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet/100); 
+
     var stepCurrency = lowest_chip_amount/100;
     
     spinBox = new SpinBox('quick-raises', 
@@ -133,9 +130,10 @@ function cl_get_action () {
 } 
 
 function cl_the_bet_function (player_index, bet_amount) {
+  LOCAL_STATE.players[player_index].total_bet += (bet_amount - LOCAL_STATE.players[player_index].subtotal_bet);
+  LOCAL_STATE.players[player_index].bankroll -= (bet_amount - LOCAL_STATE.players[player_index].subtotal_bet);
   LOCAL_STATE.players[player_index].subtotal_bet = bet_amount;
-  LOCAL_STATE.players[player_index].total_bet += bet_amount;
-  LOCAL_STATE.players[player_index].bankroll -= bet_amount;
+
   //if player went all in with less then current bet amount then dont update bet amount
   //or min raise
   if (LOCAL_STATE.players[player_index].total_bet > LOCAL_STATE.current_bet_amount) {
@@ -147,7 +145,9 @@ function cl_the_bet_function (player_index, bet_amount) {
 }
 
 function cl_handle_raise () {          //call back from betting control
-  var bet_amount = Number((spinBox.getValue().toFixed(2) * 100).toFixed(2));
+  var bet_amount = Number((spinBox.getValue().toFixed(2) * 100).toFixed(2)) + 
+                    Number(LOCAL_STATE.TO_CALL) +
+                    Number(LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet);
   //need input value validation here
   if (bet_amount > LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll +
                     LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet) {
@@ -166,7 +166,6 @@ function cl_handle_raise () {          //call back from betting control
           cl_get_action();
           return;
   }
-  bet_amount -= LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].total_bet;
   cl_the_bet_function(LOCAL_STATE.current_bettor_index, bet_amount);
   gui_write_basic_general(cl_get_pot_size());
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].status = "RAISE";
