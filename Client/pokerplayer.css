@@ -10,7 +10,7 @@ body {
     width: 100%;
 }
 
-body {
+html {
     background-image: url('images/holdem.jpg');
     background-size: cover;
     background-repeat: no-repeat;
@@ -251,7 +251,7 @@ body {
     height: 50px;
     left: 110px;
     position: absolute;
-    top: 460px;
+    top: 480px;
     width: 500px;
 }
 
@@ -272,7 +272,7 @@ body {
     height: 400px;
     left: 900px;
     position: absolute;
-    top: 410px;
+    top: 430px;
     width: 200px;
 }
 
@@ -298,7 +298,7 @@ body {
     height:50px;
     left: 200px;
     position: absolute;
-    top: 540px;
+    top: 560px;
     width: 200px;
 }
 
@@ -367,7 +367,7 @@ body {
     left: 9px;
     position: absolute;
     text-align: left;
-    top: 600px;
+    top: 630px;
     width: 800px;
 }
 
@@ -411,7 +411,7 @@ body {
     left: 100px;
     position: absolute;
     text-align: center;
-    top: 545px;
+    top: 565px;
     width: 3.5em;
 }
 #quick-raises a:link {
