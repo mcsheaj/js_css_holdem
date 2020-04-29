@@ -18,7 +18,7 @@
 <body onload="parent.init()">
     <div id="poker_table" class="poker-table" data-uid="">
         <img src="images/poker_table.png" style="width:100%;" alt="">
-        <div id="seat0" class="seat"> 
+        <div id="seat0" class="seat">
             <div class="holecards">
                 <div class="card holecard1"></div>
                 <div class="card holecard2"></div>
@@ -144,23 +144,35 @@
         </div>
     </div>
     <div id="button" class="seat6-button"></div>
-    <div id="history"></div>
-    <div id="action-options">
-        <div id="fold-button" class="action-button"></div>
-        <div id="call-button" class="action-button"></div>
-    </div>
-    <div id="setup-options">
-        <div id="new-game-button" class="setup-button">Start Game</div>
-        <div id="join-button" class="setup-button">Join Game</div>
-        <div id="mode-button" class="setup-button">Dark mode</div>
-        <div id="help-button" class="setup-button">Help</div>
-        <div id="next-hand-button" class="setup-button">Next Hand</div>
-    </div>
-    <div id="quick-raises"></div>
-    <div id="game-response" class="response-normal"></div>
-    <div id="production-code"></div>
-    <div id="modal-box"></div>
-    <div id="betting-options">
-        <div id="bet-button" class="betting-button">==> Make Bet</div>
+    <div id="all-options">
+        <table>
+            <tr>
+                <td>
+                    <div id="game-options">
+                        <div id="action-options">
+                            <div id="fold-button" class="action-button"></div>
+                            <div id="call-button" class="action-button"></div>
+                        </div>
+                        <div id="betting-options">
+                            <div id="quick-raises"></div>
+                            <div id="bet-button" class="betting-button">==> Make Bet</div>
+                        </div>
+                        <div id="game-response" class="response-normal"></div>
+                    </div>            
+                </td>
+                <td>
+                    <div id="setup-options">
+                        <div id="new-game-button" class="setup-button">Start Game</div>
+                        <div id="join-button" class="setup-button">Join Game</div>
+                        <div id="help-button" class="setup-button">Help</div>
+                        <div id="next-hand-button" class="setup-button">Next Hand</div>
+                        <div id="mode-button" class="setup-button">Dark mode</div>
+                    </div>            
+                </td>
+            </tr>
+        </table>
+        <div id="history"></div>
+        <div id="production-code"></div>
+        <div id="modal-box"></div>
     </div>
 </body>

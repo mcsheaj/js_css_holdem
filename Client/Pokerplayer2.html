@@ -1,23 +1,25 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-   <title>Matty's Poker Room</title>
-   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-   <link rel="stylesheet" href="pokerplayer.css" type="text/css">
-   <link rel="stylesheet" href="SpinBox.css" type="text/css">
-   <script src="https://cdn.jsdelivr.net/npm/@aspnet/signalr@1.0.3/dist/browser/signalr.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/axios@0.18.0/dist/axios.min.js"></script>
-   <script charset="UTF-8" src=SpinBox.js></script>
-   <script charset="UTF-8" src=pokerplayer.js></script>
-   <script charset="UTF-8" src=gui_if.js></script>
-   <script charset="UTF-8" src=hands.js></script>
-   <script charset="UTF-8" src=pokergame.js></script>
-   <script>I_am_Host = false;</script>
+    <title>Matty's Poker Room</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="pokerplayer2.css" type="text/css">
+    <link rel="stylesheet" href="SpinBox.css" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/@aspnet/signalr@1.0.3/dist/browser/signalr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.18.0/dist/axios.min.js"></script>
+    <script charset="UTF-8" src=SpinBox.js></script>
+    <script charset="UTF-8" src=pokerplayer.js></script>
+    <script charset="UTF-8" src=gui_if.js></script>
+    <script charset="UTF-8" src=hands.js></script>
+    <script charset="UTF-8" src=pokergame.js></script>
+    <script>I_am_Host = false;</script>
 </head>
+
 <body onload="parent.init()">
     <div id="poker_table" class="poker-table" data-uid="">
         <img src="images/poker_table.png" style="width:100%;" alt="">
-        <div id="seat0" class="seat"> 
+        <div id="seat0" class="seat">
             <div class="holecards">
                 <div class="card holecard1"></div>
                 <div class="card holecard2"></div>
@@ -143,23 +145,35 @@
         </div>
     </div>
     <div id="button" class="seat6-button"></div>
-    <div id="history"></div>
-    <div id="action-options">
-        <div id="fold-button" class="action-button"></div>
-        <div id="call-button" class="action-button"></div>
-    </div>
-    <div id="setup-options">
-        <div id="new-game-button" class="setup-button">Start Game</div>
-        <div id="join-button" class="setup-button">Join Game</div>
-        <div id="mode-button" class="setup-button">Dark mode</div>
-        <div id="help-button" class="setup-button">Help</div>
-        <div id="next-hand-button" class="setup-button">Next Hand</div>
-    </div>
-    <div id="quick-raises"></div>
-    <div id="game-response" class="response-normal"></div>
-    <div id="production-code"></div>
-    <div id="modal-box"></div>
-    <div id="betting-options">
-        <div id="bet-button" class="betting-button">==> Make Bet</div>
+    <div id="all-options">
+        <table>
+            <tr>
+                <td>
+                    <div id="game-options">
+                        <div id="action-options">
+                            <div id="fold-button" class="action-button"></div>
+                            <div id="call-button" class="action-button"></div>
+                        </div>
+                        <div id="betting-options">
+                            <div id="quick-raises"></div>
+                            <div id="bet-button" class="betting-button">==> Make Bet</div>
+                        </div>
+                        <div id="game-response" class="response-normal"></div>
+                    </div>            
+                </td>
+                <td>
+                    <div id="setup-options">
+                        <div id="new-game-button" class="setup-button">Start Game</div>
+                        <div id="join-button" class="setup-button">Join Game</div>
+                        <div id="help-button" class="setup-button">Help</div>
+                        <div id="next-hand-button" class="setup-button">Next Hand</div>
+                        <div id="mode-button" class="setup-button">Dark mode</div>
+                    </div>            
+                </td>
+            </tr>
+        </table>
+        <div id="history"></div>
+        <div id="production-code"></div>
+        <div id="modal-box"></div>
     </div>
 </body>

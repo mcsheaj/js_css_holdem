@@ -6,20 +6,18 @@
   box-shadow    : 0 0.0625em 0 rgba(255,255,255,0.5);
 }
 
-.spinBox input{
-  display                   : block;
-  height                    : 1.5625em;
-  width                     : 3em;
-  padding                   : 0 0.25em;
-  border                    : 0.0625em solid rgb(224,224,224);
-  border-right              : none;
-  border-top-left-radius    : 0.25em;
-  border-bottom-left-radius : 0.25em;
-  color                     : rgb(64,64,64);
-  font-family               : inherit;
-  font-size                 : 1em;
-  text-align                : right;
-  box-shadow                : 0 0.125em 0.125em rgba(0,0,0,0.03125) inset;
+.spinBox input {
+  display: block;
+  width: 55px;
+  padding: 0 0.25em;
+  border: 0.0625em solid rgb(224,224,224);
+  border-right: none;
+  border-top-left-radius: 0.25em;
+  border-bottom-left-radius: 0.25em;
+  color: rgb(64,64,64);
+  text-align: right;
+  font-size: 18px;
+  height: 28.5px;
 }
 
 .spinBox input[disabled]{

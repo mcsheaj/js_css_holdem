@@ -72,7 +72,12 @@ function internal_GetCardImageUrl (card) {
 
 function internal_setBackground (diva, image, opacity) {
   var komage = diva.style;
-  komage.opacity = opacity;
+  if(image === "url('')") {
+    komage.opacity = 0;
+  }
+  else {
+    komage.opacity = opacity;
+  }
   komage['background-image'] = image;
 }
 
