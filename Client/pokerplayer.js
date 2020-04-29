@@ -110,8 +110,8 @@ function cl_get_action () {
                         //(LOCAL_STATE.current_bet_amount/100) -
                         //(LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet/100); 
 
-    var bankrollCurrency = (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll/100) +
-                          (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet/100); 
+    var bankrollCurrency = (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll/100) -
+                            LOCAL_STATE.TO_CALL/100;
 
     var stepCurrency = lowest_chip_amount/100;
     
