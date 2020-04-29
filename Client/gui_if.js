@@ -470,7 +470,7 @@ function internal_get_into_the_mode (mode) {
     color = 'White';
     button_text = 'Dark mode';
 }
-  document.body.style.backgroundColor = color;
+  //document.body.style.backgroundColor = color;
   mode_button.innerHTML = button_text;
 }
 
