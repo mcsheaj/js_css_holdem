@@ -4,6 +4,18 @@ html {
     -webkit-text-size-adjust: 100%; /* 2 */
 }
 
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+
+html {
+    background-image: url('images/HoldemBackground.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: left top;
+}
 
 .poker-table {
     background-repeat: no-repeat;
@@ -36,7 +48,7 @@ html {
     height: 33px;
     position: absolute;
     text-align: center;
-    top: 65px;
+    top: 75px;
     width: 140px;
 }
 
@@ -57,7 +69,7 @@ html {
     height: 73px;
     left: 20px;
     position: absolute;
-    top: -10px;
+    top: 0;
     width: 102px;
 }
 
@@ -81,6 +93,10 @@ html {
     text-shadow: -1px 0 1px black, 0 1px 1px black, 1px 0 1px black, 0 -1px 1px black;
 }
 
+.bet {
+    top: 110px; 
+}
+
 #seat0 {
     left: 0px;
     top:  330px;
@@ -88,9 +104,6 @@ html {
 .seat0-button {
     left: 235px;
     top:  410px;
-}
-#seat0 .bet {
-    top: 100px; 
 }
 
 #seat1 {
@@ -101,9 +114,6 @@ html {
     left: 185px;
     top:  235px;
 }
-#seat1 .bet {
-    top: 100px;
-}
 
 #seat2 {
     left: 0px;
@@ -112,9 +122,6 @@ html {
 .seat2-button {
     left: 235px;
     top:   80px;
-}
-#seat2 .bet {
-    top: 100px;
 }
 
 #seat3 {
@@ -126,9 +133,6 @@ html {
     left: 280px;
     top:   80px;
 }
-#seat3 .bet {
-    top: 100px;
-}
 
 #seat4 {
     left: 400px;
@@ -138,9 +142,6 @@ html {
 .seat4-button {
     left: 480px;
     top:   80px;
-}
-#seat4 .bet {
-    top: 100px;
 }
 
 #seat5 {
@@ -152,9 +153,6 @@ html {
     left: 680px;
     top:   80px;
 }
-#seat5 .bet {
-    top: 100px;
-}
 
 #seat6 {
     left: 650px;
@@ -163,9 +161,6 @@ html {
 .seat6-button {
     left: 730px;
     top:  235px;
-}
-#seat6 .bet {
-    top: 100px;
 }
 
 #seat7 {
@@ -176,9 +171,6 @@ html {
     left: 680px;
     top:  410px;
 }
-#seat7 .bet {
-    top: 100px;
-}
 
 #seat8 {
     left: 400px;
@@ -188,9 +180,6 @@ html {
     left: 480px;
     top:  410px;
 }
-#seat8 .bet {
-    top: 100px;
-}
 
 #seat9 {
     left: 200px;
@@ -199,9 +188,6 @@ html {
 .seat9-button {
     left: 280px;
     top:  410px;
-}
-#seat9 .bet {
-    top: 100px;
 }
 
 
@@ -265,7 +251,7 @@ html {
     height: 50px;
     left: 110px;
     position: absolute;
-    top: 450px;
+    top: 480px;
     width: 500px;
 }
 
@@ -286,7 +272,7 @@ html {
     height: 400px;
     left: 900px;
     position: absolute;
-    top: 400px;
+    top: 430px;
     width: 200px;
 }
 
@@ -312,7 +298,7 @@ html {
     height:50px;
     left: 200px;
     position: absolute;
-    top: 530px;
+    top: 560px;
     width: 200px;
 }
 
@@ -373,6 +359,7 @@ html {
 }
 
 #game-response {
+    background-color: rgba(255,255,255,.3);
     border: none;
     color: black;
     font-size: 12px;
@@ -380,7 +367,7 @@ html {
     left: 9px;
     position: absolute;
     text-align: left;
-    top: 600px;
+    top: 630px;
     width: 800px;
 }
 
@@ -424,7 +411,7 @@ html {
     left: 100px;
     position: absolute;
     text-align: center;
-    top: 535px;
+    top: 565px;
     width: 3.5em;
 }
 #quick-raises a:link {
