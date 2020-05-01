@@ -76,7 +76,7 @@ var app = {
         // now initiate the connection
         app.connection.start()
             .then(function () { 
-                if (!app.ready) {
+                if (!app.ready && app.timerId) {
                     console.log('reconnected');
                     clearInterval(app.timerId); 
                 }
