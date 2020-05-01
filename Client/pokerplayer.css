@@ -16,10 +16,10 @@ body {
 
 .poker-table {
     background-repeat: no-repeat;
-    height: 411px;
-    width: 745px;
+    width: 1028px;
     padding-left: 100px;
 }
+
 .seat {
     height: 150px;
     position: absolute;
@@ -41,10 +41,9 @@ body {
     color: white;
     font-size: 14px;
     height: 33px;
-    position: absolute;
     text-align: center;
-    top: 75px;
     width: 140px;
+    margin-top: 3px;
 }
 
 .player-name {
@@ -52,169 +51,152 @@ body {
 }
 
 .card {
-    background-image: url('images/cardback.png');
-    background-size: 100%;
+    background-image: url(images/cardback.png);
+    background-size: cover;
     border-radius: 4px;
-    height: 73px;
-    width: 50px;
-}
-
-.holecards {
-    float: left;
-    height: 73px;
-    left: 20px;
-    position: absolute;
-    top: 0;
-    width: 102px;
+    height: 101px;
+    width: 69px;
 }
 
 .holecard1 {
-    left: 0px;
-    position: absolute;
+    display: table-cell;
 }
 
 .holecard2 {
-    left: 50px;
-    position: absolute;
+    display: table-cell;
 }
-
 
 .bet {
     color: white;
     font-size: 12px;
-    position: absolute;
     top: 0px;
-    text-shadow: -1px 0     black, 0 1px     black, 1px 0     black, 0 -1px     black;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
     text-shadow: -1px 0 1px black, 0 1px 1px black, 1px 0 1px black, 0 -1px 1px black;
+    margin-top: 5px;
 }
 
-.bet {
-    top: 110px; 
-}
 
 #seat0 {
-    left: 100px;
-    top:  330px;
-}
-
-.seat0-button {
-    left: 235px;
-    top:  410px;
+    left: 200px;
+    top: 480px;
 }
 
 #seat1 {
-    left:  50px;
-    top: 155px;
+    left: 50px;
+    top: 240px;
+}
+
+#seat2 {
+    left: 200px;
+    top: 5px;
+}
+
+#seat3 {
+    left: 415px;
+    top: 5px;
+}
+
+#seat4 {
+    left: 630px;
+    top: 5px;
+}
+
+#seat5 {
+    left: 850px;
+    top: 5px;
+}
+
+#seat6 {
+    left: 1030px;
+    top: 240px;
+}
+
+#seat7 {
+    left: 850px;
+    top: 480px;
+}
+
+#seat8 {
+    left: 630px;
+    top: 480px;
+}
+
+#seat9 {
+    left: 415px;
+    top: 480px;
+}
+
+.seat0-button {
+    left: 335px;
+    top: 590px;
 }
 
 .seat1-button {
     left: 185px;
-    top:  235px;
-}
-
-#seat2 {
-    left: 100px;
-    top:  5px;
+    top: 350px;
 }
 
 .seat2-button {
-    left: 235px;
-    top:   80px;
-}
-
-#seat3 {
-    left: 300px;
-    top:    5px;
+    left: 330px;
+    top: 116px;
 }
 
 .seat3-button {
-    left: 280px;
-    top:   80px;
-}
-
-#seat4 {
-    left: 500px;
-    top:    5px;
+    left: 545px;
+    top: 115px;
 }
 
 .seat4-button {
-    left: 480px;
-    top:   80px;
-}
-
-#seat5 {
-    left: 700px;
-    top:    5px;
+    left: 760px;
+    top: 115px;
 }
 
 .seat5-button {
-    left: 680px;
-    top:   80px;
-}
-
-#seat6 {
-    left: 750px;
-    top:  155px;
+    left: 980px;
+    top: 115px;
 }
 
 .seat6-button {
-    left: 730px;
-    top:  235px;
-}
-
-#seat7 {
-    left: 700px;
-    top:  330px;
+    left: 1156px;
+    top: 350px;
 }
 
 .seat7-button {
-    left: 680px;
-    top:  410px;
-}
-
-#seat8 {
-    left: 500px;
-    top:  330px;
+    left: 980px;
+    top: 590px;
 }
 
 .seat8-button {
-    left: 480px;
-    top:  410px;
-}
-
-#seat9 {
-    left: 300px;
-    top:  330px;
+    left: 760px;
+    top: 590px;
 }
 
 .seat9-button {
-    left: 280px;
-    top:  410px;
+    left: 330px;
+    top: 590px;
 }
 
-
 #board {
-    left: 250px;
+    left: 440px;
     position: absolute;
-    top:  168px;
+    top: 222px;
 }
 
 #pot {
     color: white;
     font-size: 16px;
-    left: 325px;
+    left: 560px;
     position: absolute;
     text-align: center;
-    top: 245px;
+    top: 345px;
 }
 
 .boardcard {
-    height: 73px;
+    height: 101px;
     left: 0px;
     background-repeat: no-repeat;
-    position: absolute;
-    top: -10px;
-    width: 50px;
+    width: 69px;
+    display: table-cell;
 }
 
 #flop1 {
@@ -238,15 +220,23 @@ body {
 }
 
 #burn1 {
-    left: 280px;
+    left: 380px;
     transform: rotate(-18deg);
+    position: absolute;
+    top: 0;
 }
+
 #burn2 {
-    left: 290px;
+    position: absolute;
+    left: 390px;
+    top: 0;
 }
+
 #burn3 {
-    left: 300px;
+    left: 400px;
     transform: rotate(15deg);
+    position: absolute;
+    top: 0;
 }
 
 #all-options {
@@ -255,7 +245,7 @@ body {
 
 #game-options {
     width: 620px;
-    padding: 0 10px;
+    padding: 50px 10px;
 }
 
 #action-options {
