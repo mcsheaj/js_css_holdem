@@ -194,7 +194,8 @@ function number_of_active_players() {
     var num_playing = 0;
     var i;
     for (i = 0; i < SERVER_STATE.players.length; i++) {
-        if ((has_money(i)) && (SERVER_STATE.players[i].status != "BUST")) {
+        if ((has_money(i)) && ((SERVER_STATE.players[i].status != "BUST") || 
+                                (SERVER_STATE.players[i].status != "AWAY"))) {
             num_playing += 1;
         }
     }
@@ -207,6 +208,7 @@ function number_of_players_in_hand() {
     for (i = 0; i < SERVER_STATE.players.length; i++) {
         if ((SERVER_STATE.players[i].status != "FOLD") &&
             (SERVER_STATE.players[i].status != "BUST") &&
+            (SERVER_STATE.players[i].status != "AWAY") &&
             (SERVER_STATE.players[i].status != "WAIT")) {
             num_playing += 1;
         }
@@ -298,9 +300,6 @@ function deal_and_write_b() {
         SERVER_STATE.players[current_player].cardb = cards[deck_index++];
         current_player = get_next_player_position(current_player, 1);
     } while (current_player != start_player);
-
-    //first player to act is button position + 3
-    //SERVER_STATE.current_bettor_index = get_next_player_position(SERVER_STATE.button_index, 3);
 }
 
 function deal_flop() {
@@ -353,6 +352,7 @@ function handle_end_of_round() {
         my_total_bets_per_player[i] = SERVER_STATE.players[i].total_bet;
         if (SERVER_STATE.players[i].status != "FOLD" &&
             SERVER_STATE.players[i].status != "BUST" &&
+            SERVER_STATE.players[i].status != "AWAY" &&
             SERVER_STATE.players[i].status != "WAIT") {
             candidates[i] = SERVER_STATE.players[i];
             still_active_candidates += 1;
@@ -572,16 +572,18 @@ function clear_pot() {
 
 function reset_player_statuses(type) {
     for (var i = 0; i < SERVER_STATE.players.length; i++) {
-        if (type == 0) {
+        if ((type == 0) && (SERVER_STATE.players[i].status != "AWAY")) {
             SERVER_STATE.players[i].status = "";
         } else if (type == 1 &&
-            SERVER_STATE.players[i].status != "BUST") {
+                SERVER_STATE.players[i].status != "BUST" &&
+                SERVER_STATE.players[i].status != "AWAY") {
             SERVER_STATE.players[i].status = "";
         } else if (type == 2 &&
-            SERVER_STATE.players[i].status != "FOLD" &&
-            SERVER_STATE.players[i].status != "BUST" &&
-            SERVER_STATE.players[i].status != "ALL IN" &&
-            SERVER_STATE.players[i].status != "WAIT") {
+                SERVER_STATE.players[i].status != "FOLD" &&
+                SERVER_STATE.players[i].status != "BUST" &&
+                SERVER_STATE.players[i].status != "AWAY" &&
+                SERVER_STATE.players[i].status != "ALL IN" &&
+                SERVER_STATE.players[i].status != "WAIT") {
             SERVER_STATE.players[i].status = "";
         }
     }
@@ -592,6 +594,7 @@ function get_num_betting() {
     for (var i = 0; i < SERVER_STATE.players.length; i++) {
         if (SERVER_STATE.players[i].status != "FOLD" &&
             SERVER_STATE.players[i].status != "BUST" &&
+            SERVER_STATE.players[i].status != "AWAY" &&
             SERVER_STATE.players[i].status != "WAIT" &&
             has_money(i)) {
             n++;
@@ -625,9 +628,11 @@ function get_next_player_position(i, delta) {
         if (SERVER_STATE.players[i].status == "BUST") loop_on = 1;
         if (SERVER_STATE.players[i].status == "FOLD") loop_on = 1;
         if (SERVER_STATE.players[i].status == "WAIT") loop_on = 1;
+        if (SERVER_STATE.players[i].status == "AWAY") loop_on = 1;
         if (!has_money(i)) loop_on = 1;
         if (++j < delta) loop_on = 1;
         if (j > SERVER_STATE.players.length) { //no active players, getting here is not good
+            console.log("Bad stuff, no next player to get")
             loop_on = 0;
         }
     } while (loop_on);
@@ -647,6 +652,7 @@ function active_player(i) {
     if ((SERVER_STATE.players[i].status == "BUST") ||
         (SERVER_STATE.players[i].status == "FOLD") ||
         (SERVER_STATE.players[i].status == "WAIT") ||
+        (SERVER_STATE.players[i].status == "AWAY") ||
         (!has_money(i))) {
             return false;
         }

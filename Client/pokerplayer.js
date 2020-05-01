@@ -276,6 +276,7 @@ function cl_away_func() {  //toggles status between AWAY and WAIT, WAIT will get
     button.innerHTML = "Press to Sit Out"
     cl_away = true;
     LOCAL_STATE.players[seat].status = "WAIT";
+    cl_write_player(seat,0,0);
   }
   LOCAL_STATE.CMD = "Player Sitting Out";
   cl_send_SignalR(LOCAL_STATE);
@@ -512,11 +513,7 @@ function cl_write_player (n, hilite, show_cards) {
     gui_place_dealer_button(n);
   }
   var bet_text = "TO BE OVERWRITTEN";
-  //var allin = "Bet:";
 
- // if (LOCAL_STATE.players[n].status == "CALL") {
- //   allin = "Called:";
- // }
   if (LOCAL_STATE.players[n].status == "FOLD") {
     bet_text = "FOLDED ($" +
                (LOCAL_STATE.players[n].total_bet/100).toFixed(2) + ")";
