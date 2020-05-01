@@ -66,11 +66,22 @@ var app = {
         });
 
         // setup a callback to tell me when my connection is lost
-        app.connection.onclose(function () { console.log('disconnected'); app.init(); });
+        app.connection.onclose(function () { 
+            app.ready = false;
+            console.log('disconnected'); 
+            app.init();
+            app.timerId = setInterval(app.init, 10000);
+        });
 
         // now initiate the connection
         app.connection.start()
-            .then(function () { app.ready = true; })
+            .then(function () { 
+                if (!app.ready) {
+                    console.log('reconnected');
+                    clearInterval(app.timerId); 
+                }
+                app.ready = true; 
+            })
             .catch(console.error);
     },
 
