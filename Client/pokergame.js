@@ -852,81 +852,12 @@ function send_game_response(response) {
 function send_SignalR(current_state) {
     current_state.SENDER = my_name;
     current_state.DIRECTION = "GAME"
-    //unplaycards(current_state);
     app.sendMessage(current_state);
     SERVER_STATE.CMD == "";
 }
 
 function rcv_SignalR(current_state) {
-    //playcards(current_state);
     msg_dispatch(current_state);
     cl_rcv_SignalR(current_state);
     SERVER_STATE.CMD == "";
 }
-
-var cardsPlayed = false; 
-
-function playcards(current_state) {
-  if (cardsPlayed) return;
-  for (var n=0; n<current_state.players.length; n++) {
-    if (current_state.players[n].carda){
-      cardsPlayed = true;
-      current_state.players[n].carda = current_state.players[n].carda.defs(13);
-      current_state.players[n].cardb = current_state.players[n].cardb.defs(13);
-    }
-  }
-}
-  
-function unplaycards(current_state) {
-  if (!cardsPlayed) return;
-  for (var n=0; n<current_state.players.length; n++) {
-    if (current_state.players[n].carda){
-      cardsPlayed = false;
-      current_state.players[n].carda = current_state.players[n].carda.obfs(13);
-      current_state.players[n].cardb = current_state.players[n].cardb.obfs(13);
-    }
-  }
-}
-
-/**
- * Obfuscate a plaintext string with a simple rotation algorithm similar to
- * the rot13 cipher.
- * @param  {[type]} key rotation index between 0 and n
- * @param  {Number} n   maximum char that will be affected by the algorithm
- * @return {[type]}     obfuscated string
- */
-String.prototype.obfs = function(key, n = 126) {
-    // return String itself if the given parameters are invalid
-    if (!(typeof(key) === 'number' && key % 1 === 0)
-      || !(typeof(key) === 'number' && key % 1 === 0)) {
-      return this.toString();
-    }
-  
-    var chars = this.toString().split('');
-  
-    for (var i = 0; i < chars.length; i++) {
-      var c = chars[i].charCodeAt(0);
-  
-      if (c <= n) {
-        chars[i] = String.fromCharCode((chars[i].charCodeAt(0) + key) % n);
-      }
-    }
-  
-    return chars.join('');
-  };
-  
-  /**
-   * De-obfuscate an obfuscated string with the method above.
-   * @param  {[type]} key rotation index between 0 and n
-   * @param  {Number} n   same number that was used for obfuscation
-   * @return {[type]}     plaintext string
-   */
-  String.prototype.defs = function(key, n = 126) {
-    // return String itself if the given parameters are invalid
-    if (!(typeof(key) === 'number' && key % 1 === 0)
-      || !(typeof(key) === 'number' && key % 1 === 0)) {
-      return this.toString();
-    }
-  
-    return this.toString().obfs(n - key);
-  };

@@ -71,13 +71,13 @@ function cl_get_action () {
     gui_hide_quick_raise ();
     
     var to_call = LOCAL_STATE.TO_CALL;
+
+    if (to_call > LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {
+      to_call = LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll;
+    }
     var call_button_text = "Call " + (to_call/100).toFixed(2);
     var fold_button_text = "Fold";
 
-    if (to_call > LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {   //*************************
-      to_call = LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll;       //*************************
-    }
-    var that_is_not_the_key_you_are_looking_for;
     if (to_call == 0) {
       call_button_text = "Check";
       fold_button_text = 0;
@@ -104,23 +104,31 @@ function cl_get_action () {
     }
     //PUT SPINNER INPUT HERE
     var response = document.getElementById('quick-raises');
-    response.style.visibility = 'visible';
 
-    var minCurrency = (LOCAL_STATE.current_min_raise/100);
-                        //(LOCAL_STATE.current_bet_amount/100) -
-                        //(LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet/100); 
+    var minCurrency, bankrollCurrency, stepCurrency;
 
-    var bankrollCurrency = (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll/100) -
-                            LOCAL_STATE.TO_CALL/100;
+    if (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll <= LOCAL_STATE.TO_CALL) {
+      response.style.visibility = 'hidden';
+      gui_hide_betting_click();
+    }
+    else {
+      minCurrency = (LOCAL_STATE.current_min_raise/100);
+                          //(LOCAL_STATE.current_bet_amount/100) -
+                          //(LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet/100); 
 
-    var stepCurrency = lowest_chip_amount/100;
-    
-    spinBox = new SpinBox('quick-raises', 
-          {'minimum' : minCurrency, 
-          'maximum' : bankrollCurrency,
-          'value' : minCurrency,
-          'step' : stepCurrency, 
-          'decimals' : 2});
+      bankrollCurrency = (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll/100) -
+                              LOCAL_STATE.TO_CALL/100;
+
+      stepCurrency = lowest_chip_amount/100;
+      response.style.visibility = 'visible';
+      
+      spinBox = new SpinBox('quick-raises', 
+            {'minimum' : minCurrency, 
+            'maximum' : bankrollCurrency, 
+            'value' : minCurrency,
+            'step' : stepCurrency, 
+            'decimals' : 2});
+    }
   }
   else {
     gui_hide_fold_call_click();
@@ -188,10 +196,15 @@ function cl_player_folds() {
   gui_write_game_response("");
   LOCAL_STATE.CMD = "player action";
   cl_send_SignalR(LOCAL_STATE);
+  var buttons = document.getElementById('setup-options');
+  internal_le_button(buttons,'away-button', cl_away_func);
 }
 
 function cl_player_calls() {   //call back from betting control
   var to_call = LOCAL_STATE.TO_CALL;
+  if (to_call > LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll) {
+    to_call = LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll;
+  }
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bet_amount = to_call;
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].subtotal_bet += to_call;
   LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll -= to_call;
@@ -238,12 +251,34 @@ function cl_new_game () {
   }
   cl_initialize_game();
   gui_setup_option_buttons(cl_start_game,
+    cl_away_func,
     cl_change_name,
     cl_help_func,
     cl_request_next_hand,
     gui_toggle_the_theme_mode);
     var buttons = document.getElementById('setup-options');
     //internal_hide_le_button(buttons, 'next-hand-button');
+}
+
+var cl_away = true;
+
+function cl_away_func() {  //toggles status between AWAY and WAIT, WAIT will get changed to a playing status
+                            //when a new hand is dealt
+  var seat = cl_get_my_seat();
+  var buttons = document.getElementById('setup-options');
+  var button = buttons.children['away-button'];
+  if (cl_away) {
+    button.innerHTML = "Press to Return"
+    cl_away = false;
+    LOCAL_STATE.players[seat].status = "AWAY";
+  }
+  else {
+    button.innerHTML = "Press to Sit Out"
+    cl_away = true;
+    LOCAL_STATE.players[seat].status = "WAIT";
+  }
+  LOCAL_STATE.CMD = "Player Sitting Out";
+  cl_send_SignalR(LOCAL_STATE);
 }
 
 function cl_new_game_continues (req_no_opponents) {
@@ -254,6 +289,8 @@ function cl_new_game_continues (req_no_opponents) {
 function cl_new_round () {
   LOCAL_STATE.RUN_EM = 0;
   // Clear buttons
+  var buttons = document.getElementById('setup-options');
+  internal_hide_le_button(buttons,'away-button', cl_away_func);
   gui_hide_fold_call_click();
   gui_hide_betting_click();
   //cl_clear_bets();
@@ -342,8 +379,10 @@ function cl_get_my_seat() {
   for (var n = 0; n < LOCAL_STATE.players.length; n++) {
     if (LOCAL_STATE.players[n].name == my_name) {
       my_seat = n;
+      break;
     }
   }
+  return my_seat;
 }
 
 function cl_help_func () {
@@ -375,6 +414,8 @@ function cl_change_name () {
     setLocalStorage("playername", my_name);
     cl_send_new_player(my_name);
   }
+  var buttons = document.getElementById('setup-options');
+  internal_le_button(buttons,'away-button', cl_away_func);
 }
 
 function cl_clear_pot () {
@@ -434,7 +475,8 @@ function cl_write_player (n, hilite, show_cards) {
     name_font_color = 'black';
     name_background_color = 'gray';
   }
-  if ((LOCAL_STATE.players[n].status == "BUST") || (LOCAL_STATE.players[n].status == "WAIT")){
+  if ((LOCAL_STATE.players[n].status == "BUST") || (LOCAL_STATE.players[n].status == "WAIT")
+                                                || (LOCAL_STATE.players[n].status == "AWAY")){
     name_font_color = 'white';
     name_background_color = 'black';
   }
@@ -470,11 +512,11 @@ function cl_write_player (n, hilite, show_cards) {
     gui_place_dealer_button(n);
   }
   var bet_text = "TO BE OVERWRITTEN";
-  var allin = "Bet:";
+  //var allin = "Bet:";
 
-  if (LOCAL_STATE.players[n].status == "CALL") {
-    allin = "Called:";
-  }
+ // if (LOCAL_STATE.players[n].status == "CALL") {
+ //   allin = "Called:";
+ // }
   if (LOCAL_STATE.players[n].status == "FOLD") {
     bet_text = "FOLDED ($" +
                (LOCAL_STATE.players[n].total_bet/100).toFixed(2) + ")";
@@ -524,7 +566,7 @@ function cl_write_all_players() {
     else {
       cl_write_player(n, 1, 0);
     }
-    if (LOCAL_STATE.players[n].status == "WIN") { //PROBLEM, should only show if show down!!!
+    if (LOCAL_STATE.players[n].status == "WIN") { 
       cl_write_player(n, 2, 0);
     }
   }
@@ -547,9 +589,9 @@ function cl_msg_dispatch () {
     gui_write_game_response("<font size=+2><b>" + LOCAL_STATE.CMD_PARMS + "</b></font>");
   }
 
-  //else if (LOCAL_STATE.CMD == "request new game") {
-  //  cl_new_game();
-  //}
+  else if (LOCAL_STATE.CMD == "player sitting out") {
+    cl_write_all_players();
+  }
 
   else if ((LOCAL_STATE.CMD == "start hand") || (LOCAL_STATE.CMD == "request next hand") ||
             (LOCAL_STATE.CMD == "request new game")) {
@@ -592,6 +634,8 @@ function cl_msg_dispatch () {
     cl_check_for_busts();
     cl_write_all_players();
     gui_write_game_response(LOCAL_STATE.CMD_PARMS);
+    var buttons = document.getElementById('setup-options');
+    internal_le_button(buttons,'away-button', cl_away_func);
   }
 }
 
@@ -627,7 +671,6 @@ function cl_request_next_hand() {
 function cl_send_SignalR(current_state) {
   current_state.SENDER = my_name;
   current_state.DIRECTION = "PLAYER";
-  //cl_unplaycards(current_state);
   app.sendMessage(current_state);
 }
 
@@ -636,26 +679,4 @@ function cl_rcv_SignalR(current_state) {
     LOCAL_STATE = current_state;
   }
     cl_msg_dispatch();
-}
-
-function cl_playcards(current_state) {
-  if (cardsPlayed) return;
-  for (var n=0; n<current_state.players.length; n++) {
-    if (current_state.players[n].carda){
-      cardsPlayed = true;
-      current_state.players[n].carda = current_state.players[n].carda.defs(13);
-      current_state.players[n].cardb = current_state.players[n].cardb.defs(13);
-    }
-  }
-}
-  
-function cl_unplaycards(current_state) {
-  if (!cardsPlayed) return;
-  for (var n=0; n<current_state.players.length; n++) {
-    if (current_state.players[n].carda){
-      cardsPlayed = false;
-      current_state.players[n].carda = current_state.players[n].carda.obfs(13);
-      current_state.players[n].cardb = current_state.players[n].cardb.obfs(13);
-    }
-  }
 }
