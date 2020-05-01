@@ -276,8 +276,8 @@ function cl_away_func() {  //toggles status between AWAY and WAIT, WAIT will get
     button.innerHTML = "Press to Sit Out"
     cl_away = true;
     LOCAL_STATE.players[seat].status = "WAIT";
-    cl_write_player(seat,0,0);
   }
+  cl_write_player(seat,0,0);
   LOCAL_STATE.CMD = "Player Sitting Out";
   cl_send_SignalR(LOCAL_STATE);
 }
@@ -290,8 +290,10 @@ function cl_new_game_continues (req_no_opponents) {
 function cl_new_round () {
   LOCAL_STATE.RUN_EM = 0;
   // Clear buttons
-  var buttons = document.getElementById('setup-options');
-  internal_hide_le_button(buttons,'away-button', cl_away_func);
+  if (LOCAL_STATE.players[cl_get_my_seat()].status != "AWAY") {
+    var buttons = document.getElementById('setup-options');
+    internal_hide_le_button(buttons,'away-button', cl_away_func);
+  }
   gui_hide_fold_call_click();
   gui_hide_betting_click();
   //cl_clear_bets();
@@ -576,8 +578,7 @@ function cl_msg_dispatch () {
 
   if (LOCAL_STATE.CMD == "new player added") {
     cl_write_all_players();
-    //cl_show_board();
-    //cl_get_action();
+    //to work correctly this needs to recover and draw current state of things
     gui_write_basic_general(LOCAL_STATE.current_bet_amount);
     return;
   }
@@ -675,5 +676,5 @@ function cl_rcv_SignalR(current_state) {
   if (current_state.CMD != "add new player") {
     LOCAL_STATE = current_state;
   }
-    cl_msg_dispatch();
+  cl_msg_dispatch();
 }
