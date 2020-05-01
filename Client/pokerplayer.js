@@ -278,7 +278,7 @@ function cl_away_func() {  //toggles status between AWAY and WAIT, WAIT will get
     LOCAL_STATE.players[seat].status = "WAIT";
   }
   cl_write_player(seat,0,0);
-  LOCAL_STATE.CMD = "Player Sitting Out";
+  LOCAL_STATE.CMD = "player sitting out";
   cl_send_SignalR(LOCAL_STATE);
 }
 
