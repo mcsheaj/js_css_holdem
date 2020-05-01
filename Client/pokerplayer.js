@@ -290,9 +290,11 @@ function cl_new_game_continues (req_no_opponents) {
 function cl_new_round () {
   LOCAL_STATE.RUN_EM = 0;
   // Clear buttons
-  if (LOCAL_STATE.players[cl_get_my_seat()].status != "AWAY") {
-    var buttons = document.getElementById('setup-options');
-    internal_hide_le_button(buttons,'away-button', cl_away_func);
+  if (LOCAL_STATE.players.length) { //hide sitting out button unless player is sitting out
+    if (LOCAL_STATE.players[my_seat].status != "AWAY") {
+      var buttons = document.getElementById('setup-options');
+      internal_hide_le_button(buttons,'away-button', cl_away_func);
+    }
   }
   gui_hide_fold_call_click();
   gui_hide_betting_click();
@@ -565,7 +567,7 @@ function cl_write_all_players() {
     else {
       cl_write_player(n, 1, 0);
     }
-    if (LOCAL_STATE.players[n].status == "WIN") { 
+    if ((LOCAL_STATE.players[n].status == "WIN") || (LOCAL_STATE.players[n].status == "NOSHOW")){ 
       cl_write_player(n, 2, 0);
     }
   }
