@@ -66,11 +66,22 @@ var app = {
         });
 
         // setup a callback to tell me when my connection is lost
-        app.connection.onclose(function () { console.log('disconnected'); app.init(); });
+        app.connection.onclose(function () { 
+            app.ready = false;
+            console.log('disconnected'); 
+            app.init();
+            app.timerId = setInterval(app.init, 10000);
+        });
 
         // now initiate the connection
         app.connection.start()
-            .then(function () { app.ready = true; })
+            .then(function () { 
+                if (!app.ready) {
+                    console.log('reconnected');
+                    clearInterval(app.timerId); 
+                }
+                app.ready = true; 
+            })
             .catch(console.error);
     },
 
@@ -194,7 +205,8 @@ function number_of_active_players() {
     var num_playing = 0;
     var i;
     for (i = 0; i < SERVER_STATE.players.length; i++) {
-        if ((has_money(i)) && (SERVER_STATE.players[i].status != "BUST")) {
+        if ((has_money(i)) && ((SERVER_STATE.players[i].status != "BUST") || 
+                                (SERVER_STATE.players[i].status != "AWAY"))) {
             num_playing += 1;
         }
     }
@@ -207,6 +219,7 @@ function number_of_players_in_hand() {
     for (i = 0; i < SERVER_STATE.players.length; i++) {
         if ((SERVER_STATE.players[i].status != "FOLD") &&
             (SERVER_STATE.players[i].status != "BUST") &&
+            (SERVER_STATE.players[i].status != "AWAY") &&
             (SERVER_STATE.players[i].status != "WAIT")) {
             num_playing += 1;
         }
@@ -298,9 +311,6 @@ function deal_and_write_b() {
         SERVER_STATE.players[current_player].cardb = cards[deck_index++];
         current_player = get_next_player_position(current_player, 1);
     } while (current_player != start_player);
-
-    //first player to act is button position + 3
-    //SERVER_STATE.current_bettor_index = get_next_player_position(SERVER_STATE.button_index, 3);
 }
 
 function deal_flop() {
@@ -353,6 +363,7 @@ function handle_end_of_round() {
         my_total_bets_per_player[i] = SERVER_STATE.players[i].total_bet;
         if (SERVER_STATE.players[i].status != "FOLD" &&
             SERVER_STATE.players[i].status != "BUST" &&
+            SERVER_STATE.players[i].status != "AWAY" &&
             SERVER_STATE.players[i].status != "WAIT") {
             candidates[i] = SERVER_STATE.players[i];
             still_active_candidates += 1;
@@ -572,16 +583,18 @@ function clear_pot() {
 
 function reset_player_statuses(type) {
     for (var i = 0; i < SERVER_STATE.players.length; i++) {
-        if (type == 0) {
+        if ((type == 0) && (SERVER_STATE.players[i].status != "AWAY")) {
             SERVER_STATE.players[i].status = "";
         } else if (type == 1 &&
-            SERVER_STATE.players[i].status != "BUST") {
+                SERVER_STATE.players[i].status != "BUST" &&
+                SERVER_STATE.players[i].status != "AWAY") {
             SERVER_STATE.players[i].status = "";
         } else if (type == 2 &&
-            SERVER_STATE.players[i].status != "FOLD" &&
-            SERVER_STATE.players[i].status != "BUST" &&
-            SERVER_STATE.players[i].status != "ALL IN" &&
-            SERVER_STATE.players[i].status != "WAIT") {
+                SERVER_STATE.players[i].status != "FOLD" &&
+                SERVER_STATE.players[i].status != "BUST" &&
+                SERVER_STATE.players[i].status != "AWAY" &&
+                SERVER_STATE.players[i].status != "ALL IN" &&
+                SERVER_STATE.players[i].status != "WAIT") {
             SERVER_STATE.players[i].status = "";
         }
     }
@@ -592,6 +605,7 @@ function get_num_betting() {
     for (var i = 0; i < SERVER_STATE.players.length; i++) {
         if (SERVER_STATE.players[i].status != "FOLD" &&
             SERVER_STATE.players[i].status != "BUST" &&
+            SERVER_STATE.players[i].status != "AWAY" &&
             SERVER_STATE.players[i].status != "WAIT" &&
             has_money(i)) {
             n++;
@@ -625,9 +639,11 @@ function get_next_player_position(i, delta) {
         if (SERVER_STATE.players[i].status == "BUST") loop_on = 1;
         if (SERVER_STATE.players[i].status == "FOLD") loop_on = 1;
         if (SERVER_STATE.players[i].status == "WAIT") loop_on = 1;
+        if (SERVER_STATE.players[i].status == "AWAY") loop_on = 1;
         if (!has_money(i)) loop_on = 1;
         if (++j < delta) loop_on = 1;
         if (j > SERVER_STATE.players.length) { //no active players, getting here is not good
+            console.log("Bad stuff, no next player to get")
             loop_on = 0;
         }
     } while (loop_on);
@@ -647,6 +663,7 @@ function active_player(i) {
     if ((SERVER_STATE.players[i].status == "BUST") ||
         (SERVER_STATE.players[i].status == "FOLD") ||
         (SERVER_STATE.players[i].status == "WAIT") ||
+        (SERVER_STATE.players[i].status == "AWAY") ||
         (!has_money(i))) {
             return false;
         }
@@ -852,81 +869,12 @@ function send_game_response(response) {
 function send_SignalR(current_state) {
     current_state.SENDER = my_name;
     current_state.DIRECTION = "GAME"
-    //unplaycards(current_state);
     app.sendMessage(current_state);
     SERVER_STATE.CMD == "";
 }
 
 function rcv_SignalR(current_state) {
-    //playcards(current_state);
     msg_dispatch(current_state);
     cl_rcv_SignalR(current_state);
     SERVER_STATE.CMD == "";
 }
-
-var cardsPlayed = false; 
-
-function playcards(current_state) {
-  if (cardsPlayed) return;
-  for (var n=0; n<current_state.players.length; n++) {
-    if (current_state.players[n].carda){
-      cardsPlayed = true;
-      current_state.players[n].carda = current_state.players[n].carda.defs(13);
-      current_state.players[n].cardb = current_state.players[n].cardb.defs(13);
-    }
-  }
-}
-  
-function unplaycards(current_state) {
-  if (!cardsPlayed) return;
-  for (var n=0; n<current_state.players.length; n++) {
-    if (current_state.players[n].carda){
-      cardsPlayed = false;
-      current_state.players[n].carda = current_state.players[n].carda.obfs(13);
-      current_state.players[n].cardb = current_state.players[n].cardb.obfs(13);
-    }
-  }
-}
-
-/**
- * Obfuscate a plaintext string with a simple rotation algorithm similar to
- * the rot13 cipher.
- * @param  {[type]} key rotation index between 0 and n
- * @param  {Number} n   maximum char that will be affected by the algorithm
- * @return {[type]}     obfuscated string
- */
-String.prototype.obfs = function(key, n = 126) {
-    // return String itself if the given parameters are invalid
-    if (!(typeof(key) === 'number' && key % 1 === 0)
-      || !(typeof(key) === 'number' && key % 1 === 0)) {
-      return this.toString();
-    }
-  
-    var chars = this.toString().split('');
-  
-    for (var i = 0; i < chars.length; i++) {
-      var c = chars[i].charCodeAt(0);
-  
-      if (c <= n) {
-        chars[i] = String.fromCharCode((chars[i].charCodeAt(0) + key) % n);
-      }
-    }
-  
-    return chars.join('');
-  };
-  
-  /**
-   * De-obfuscate an obfuscated string with the method above.
-   * @param  {[type]} key rotation index between 0 and n
-   * @param  {Number} n   same number that was used for obfuscation
-   * @return {[type]}     plaintext string
-   */
-  String.prototype.defs = function(key, n = 126) {
-    // return String itself if the given parameters are invalid
-    if (!(typeof(key) === 'number' && key % 1 === 0)
-      || !(typeof(key) === 'number' && key % 1 === 0)) {
-      return this.toString();
-    }
-  
-    return this.toString().obfs(n - key);
-  };
