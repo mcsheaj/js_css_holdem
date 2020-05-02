@@ -339,6 +339,7 @@ function gui_setup_option_buttons (new_game_func,
                                    away_game_func,
                                    join_game_func,
                                    help_func,
+                                   rebuy_func,
                                    next_hand_func,
                                    mode_func) {
   var buttons = document.getElementById('setup-options');
@@ -355,6 +356,7 @@ function gui_setup_option_buttons (new_game_func,
   internal_le_button(buttons, 'join-button', join_game_func);
   internal_hide_le_button(buttons, 'mode-button', mode_func);
   internal_le_button(buttons, 'help-button', help_func);
+  internal_hide_le_button(buttons, 'rebuy-button', rebuy_func);
 }
 
 function internal_hide_le_button (buttons, button_name, button_func) {
@@ -373,6 +375,7 @@ function gui_hide_setup_option_buttons (name_func,
   internal_hide_le_button(buttons, 'join-button');
   internal_hide_le_button(buttons, 'mode-button');
   internal_hide_le_button(buttons, 'help-button');
+  internal_hide_le_button(buttons, 'rebuy-button');
   internal_hide_le_button(buttons, 'next-hand-button');
 }
 

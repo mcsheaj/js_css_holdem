@@ -254,6 +254,7 @@ function cl_new_game () {
     cl_away_func,
     cl_change_name,
     cl_help_func,
+    cl_rebuy,
     cl_request_next_hand,
     gui_toggle_the_theme_mode);
     var buttons = document.getElementById('setup-options');
@@ -280,6 +281,10 @@ function cl_away_func() {  //toggles status between AWAY and WAIT, WAIT will get
   cl_write_player(seat,0,0);
   LOCAL_STATE.CMD = "player sitting out";
   cl_send_SignalR(LOCAL_STATE);
+}
+
+function cl_rebuy() {
+
 }
 
 function cl_new_game_continues (req_no_opponents) {
