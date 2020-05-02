@@ -26,7 +26,7 @@ body {
     width: 150px;
 }
 
-#button {
+#button, .button {
     background-image: url('images/dealerbutton.png');
     background-repeat: no-repeat;
     background-size: 100%;
