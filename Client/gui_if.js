@@ -295,13 +295,13 @@ function gui_hide_log_window () {
 
 function gui_place_dealer_button (seat) {
   var table_seat = seat; // interface start at 1
-  var button = document.getElementById('button');
-  if (seat < 0) {
-    button.style.visibility = 'hidden';
-  } else {
-    button.style.visibility = 'visible';
+  var dealerButton = document.querySelector(".dealerbutton.dealerbutton-current");
+  if(dealerButton) {
+      dealerButton.classList.remove("dealerbutton-current");
   }
-  button.className = 'seat' + table_seat + '-button';
+  if(table_seat > -1 && table_seat < 11) {
+      document.getElementById("dealerbutton" + table_seat).classList.add("dealerbutton-current");
+  }
 }
 
 function gui_hide_dealer_button () {
