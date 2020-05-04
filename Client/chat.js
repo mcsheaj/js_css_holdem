@@ -6,7 +6,7 @@
 
     // Change this to point to your asure function
     //var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net';
-    var apiBaseUrl = 'https://func-jsholdem-matt-useast.azurewebsites.net';
+    var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net';
 
     /////////////////////////////////////////////////////////////////
     // ChatClient is our application. It's a type that can be

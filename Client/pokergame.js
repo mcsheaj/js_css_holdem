@@ -44,7 +44,6 @@ function player(name, bankroll, carda, cardb, status, total_bet,
 }
 
 //var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net';
-//var apiBaseUrl = 'https://func-jsholdem-matt-useast.azurewebsites.net';
 var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net';
 var authProvider = 'aad'; // aad, twitter, microsoftaccount, google, facebook
 var app = {
