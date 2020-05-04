@@ -46,6 +46,13 @@ function cl_init() {
   gui_hide_dealer_button();
   gui_hide_game_response();
   gui_initialize_theme_mode();
+  gui_setup_option_buttons(cl_start_game,
+    cl_away_func,
+    cl_change_name,
+    cl_help_func,
+    cl_rebuy,
+    cl_request_next_hand,
+    gui_toggle_the_theme_mode);
   cl_new_game();
   cl_new_game_continues(); 
 }
@@ -250,15 +257,8 @@ function cl_new_game () {
     LOCAL_STATE.players[n].bankroll = LOCAL_STATE.STARTING_BANKROLL;
   }
   cl_initialize_game();
-  gui_setup_option_buttons(cl_start_game,
-    cl_away_func,
-    cl_change_name,
-    cl_help_func,
-    cl_rebuy,
-    cl_request_next_hand,
-    gui_toggle_the_theme_mode);
-    var buttons = document.getElementById('setup-options');
-    //internal_hide_le_button(buttons, 'next-hand-button');
+  var buttons = document.getElementById('setup-options');
+  internal_hide_le_button(buttons, 'next-hand-button');
 }
 
 var cl_away = true;
@@ -661,7 +661,7 @@ function cl_start_game() {
   }
   LOCAL_STATE.CMD = "request new game";
   var buttons = document.getElementById('setup-options');
-  //internal_hide_le_button(buttons, 'new-game-button');
+  internal_hide_le_button(buttons, 'new-game-button');
   cl_send_SignalR(LOCAL_STATE);
   cl_new_game();
 }
@@ -669,7 +669,7 @@ function cl_start_game() {
 function cl_request_next_hand() {
   LOCAL_STATE.CMD = "request next hand";
   var buttons = document.getElementById('setup-options');
-  //internal_hide_le_button(buttons, 'next-hand-button');
+  internal_hide_le_button(buttons, 'next-hand-button');
   cl_send_SignalR(LOCAL_STATE);
 }
 
