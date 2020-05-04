@@ -312,7 +312,7 @@ body {
     top: 0px;
 }
 
-#new-game-button {
+#deal-button {
     top: 0px;
 }
 
@@ -330,10 +330,6 @@ body {
 
 #help-button {
     top: 150px;
-}
-
-#next-hand-button {
-    top: 200px;
 }
 
 #history {

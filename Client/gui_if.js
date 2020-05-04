@@ -340,17 +340,14 @@ function gui_setup_option_buttons (new_game_func,
                                    join_game_func,
                                    help_func,
                                    rebuy_func,
-                                   next_hand_func,
                                    mode_func) {
   var buttons = document.getElementById('setup-options');
 
   if (I_am_Host) {
-    internal_le_button(buttons, 'new-game-button', new_game_func);
-    internal_le_button(buttons, 'next-hand-button', next_hand_func);
+    internal_le_button(buttons, 'deal-button', new_game_func);
   }
   else{
-    internal_hide_le_button(buttons, 'new-game-button', new_game_func);
-    internal_hide_le_button(buttons, 'next-hand-button', next_hand_func);
+    internal_hide_le_button(buttons, 'deal-button', new_game_func);
   }
   internal_hide_le_button(buttons, 'away-button', away_game_func);
   internal_le_button(buttons, 'join-button', join_game_func);
@@ -370,13 +367,12 @@ function gui_hide_setup_option_buttons (name_func,
                                         check_func) {
   var buttons = document.getElementById('setup-options');
 
-  internal_hide_le_button(buttons, 'new-game-button');
+  internal_hide_le_button(buttons, 'deal-button');
   internal_hide_le_button(buttons, 'away-button');
   internal_hide_le_button(buttons, 'join-button');
   internal_hide_le_button(buttons, 'mode-button');
   internal_hide_le_button(buttons, 'help-button');
   internal_hide_le_button(buttons, 'rebuy-button');
-  internal_hide_le_button(buttons, 'next-hand-button');
 }
 
 function gui_hide_game_response () {

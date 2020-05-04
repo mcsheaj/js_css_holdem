@@ -51,7 +51,6 @@ function cl_init() {
     cl_change_name,
     cl_help_func,
     cl_rebuy,
-    cl_request_next_hand,
     gui_toggle_the_theme_mode);
   cl_new_game();
   cl_new_game_continues(); 
@@ -257,8 +256,6 @@ function cl_new_game () {
     LOCAL_STATE.players[n].bankroll = LOCAL_STATE.STARTING_BANKROLL;
   }
   cl_initialize_game();
-  var buttons = document.getElementById('setup-options');
-  internal_hide_le_button(buttons, 'next-hand-button');
 }
 
 var cl_away = true;
@@ -628,7 +625,7 @@ function cl_msg_dispatch () {
   else if (LOCAL_STATE.CMD == "end of round") {
     if (I_am_Host) {
       var buttons = document.getElementById('setup-options');
-      internal_le_button(buttons, 'next-hand-button', cl_request_next_hand);
+      internal_le_button(buttons, 'deal-button', cl_request_next_hand);
     }
     cl_deal_flop();
     cl_deal_fourth();
@@ -660,16 +657,20 @@ function cl_start_game() {
     return;
   }
   LOCAL_STATE.CMD = "request new game";
-  var buttons = document.getElementById('setup-options');
-  internal_hide_le_button(buttons, 'new-game-button');
   cl_send_SignalR(LOCAL_STATE);
   cl_new_game();
+  gui_setup_option_buttons(cl_request_next_hand,
+    cl_away_func,
+    cl_change_name,
+    cl_help_func,
+    cl_rebuy,
+    gui_toggle_the_theme_mode);
 }
 
 function cl_request_next_hand() {
   LOCAL_STATE.CMD = "request next hand";
   var buttons = document.getElementById('setup-options');
-  internal_hide_le_button(buttons, 'next-hand-button');
+  internal_hide_le_button(buttons, 'deal-button');
   cl_send_SignalR(LOCAL_STATE);
 }
 
