@@ -44,7 +44,8 @@ function player(name, bankroll, carda, cardb, status, total_bet,
 }
 
 //var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net';
-var apiBaseUrl = 'https://func-jsholdem-matt-useast.azurewebsites.net';
+//var apiBaseUrl = 'https://func-jsholdem-matt-useast.azurewebsites.net';
+var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net';
 var authProvider = 'aad'; // aad, twitter, microsoftaccount, google, facebook
 var app = {
     connection: null,
@@ -202,19 +203,21 @@ function new_round() {
     blinds_and_deal();
 }
 
-function number_of_active_players() {
+function number_of_active_players() { //this does not include players who went all in
     var num_playing = 0;
     var i;
     for (i = 0; i < SERVER_STATE.players.length; i++) {
-        if ((has_money(i)) && ((SERVER_STATE.players[i].status != "BUST") || 
-                                (SERVER_STATE.players[i].status != "AWAY"))) {
+        if ((has_money(i)) && ((SERVER_STATE.players[i].status != "FOLD") &&
+        (SERVER_STATE.players[i].status != "BUST") &&
+        (SERVER_STATE.players[i].status != "AWAY") &&
+        (SERVER_STATE.players[i].status != "WAIT"))) {
             num_playing += 1;
         }
     }
     return num_playing;
 }
 
-function number_of_players_in_hand() {
+function number_of_players_in_hand() { //this includes players who went all in
     var num_playing = 0;
     var i;
     for (i = 0; i < SERVER_STATE.players.length; i++) {
@@ -801,7 +804,7 @@ function msg_dispatch(current_state) {
         //no need to send client and action msg as current bettor is already correct and they are ready to act
 
         else if (betting_is_done()) {
-            if ((all_all_in) || (number_of_active_players()) == 1) {
+            if ((all_all_in) || (number_of_active_players() < 2)) {
                 deal_rest_of_hand();
                 return;
             }
