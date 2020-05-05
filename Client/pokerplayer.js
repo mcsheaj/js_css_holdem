@@ -26,9 +26,10 @@ var LOCAL_STATE = {
   global_pot_remainder: 0
 }
 
-function cl_player (name, bankroll, carda, cardb, status, total_bet, subtotal_bet) {
+function cl_player (name, bankroll, totalbank, carda, cardb, status, total_bet, subtotal_bet) {
 this.name = name;
 this.bankroll = bankroll;
+this.totalbank = totalbank;
 this.carda = carda;
 this.cardb = cardb;
 this.status = status;
@@ -204,6 +205,10 @@ function cl_player_folds() {
   cl_send_SignalR(LOCAL_STATE);
   var buttons = document.getElementById('setup-options');
   internal_le_button(buttons,'away-button', cl_away_func);
+  var seat = cl_get_my_seat();
+  if (LOCAL_STATE.players[LOCAL_STATE.seat].bankroll < (LOCAL_STATE.STARTING_BANKROLL/4)) {
+    internal_le_button(buttons,'rebuy-button', cl_rebuy);
+  }
 }
 
 function cl_player_calls() {   //call back from betting control
@@ -276,12 +281,19 @@ function cl_away_func() {  //toggles status between AWAY and WAIT, WAIT will get
     LOCAL_STATE.players[seat].status = "WAIT";
   }
   cl_write_player(seat,0,0);
-  LOCAL_STATE.CMD = "player sitting out";
+  LOCAL_STATE.CMD = "update player status";
   cl_send_SignalR(LOCAL_STATE);
 }
 
 function cl_rebuy() {
-
+  var seat = cl_get_my_seat();
+  LOCAL_STATE.players[seat].bankroll += LOCAL_STATE.STARTING_BANKROLL;
+  LOCAL_STATE.players[seat].totalbank += LOCAL_STATE.STARTING_BANKROLL;
+  LOCAL_STATE.players[seat].status = "WAIT";
+  var buttons = document.getElementById('setup-options');
+  internal_hide_le_button(buttons,'rebuy-button', cl_rebuy);
+  LOCAL_STATE.CMD = "update player status";
+  cl_send_SignalR(LOCAL_STATE);
 }
 
 function cl_new_game_continues (req_no_opponents) {
@@ -296,6 +308,7 @@ function cl_new_round () {
     if (LOCAL_STATE.players[my_seat].status != "AWAY") {
       var buttons = document.getElementById('setup-options');
       internal_hide_le_button(buttons,'away-button', cl_away_func);
+      internal_hide_le_button(buttons,'rebuy-button', cl_rebuy);
     }
   }
   gui_hide_fold_call_click();
@@ -591,7 +604,7 @@ function cl_msg_dispatch () {
     gui_write_game_response("<font size=+2><b>" + LOCAL_STATE.CMD_PARMS + "</b></font>");
   }
 
-  else if (LOCAL_STATE.CMD == "player sitting out") {
+  else if (LOCAL_STATE.CMD == "update player status") {
     cl_write_all_players();
   }
 
@@ -638,6 +651,10 @@ function cl_msg_dispatch () {
     gui_write_game_response(LOCAL_STATE.CMD_PARMS);
     var buttons = document.getElementById('setup-options');
     internal_le_button(buttons,'away-button', cl_away_func);
+    var seat = cl_get_my_seat();
+    if (LOCAL_STATE.players[seat].bankroll < (LOCAL_STATE.STARTING_BANKROLL/4)) {
+      internal_le_button(buttons,'rebuy-button', cl_rebuy);
+    }
   }
 }
 
@@ -665,12 +682,14 @@ function cl_start_game() {
     cl_help_func,
     cl_rebuy,
     gui_toggle_the_theme_mode);
+  var buttons = document.getElementById('setup-options'); //this looks stupid, it is stupid, but I 
+  internal_hide_le_button(buttons, 'deal-button');        //don't feel like making the gui code work correctly
 }
 
 function cl_request_next_hand() {
-  LOCAL_STATE.CMD = "request next hand";
   var buttons = document.getElementById('setup-options');
   internal_hide_le_button(buttons, 'deal-button');
+  LOCAL_STATE.CMD = "request next hand";
   cl_send_SignalR(LOCAL_STATE);
 }
 

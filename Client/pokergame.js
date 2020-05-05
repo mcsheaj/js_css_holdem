@@ -32,10 +32,11 @@ var SERVER_STATE = {
     global_pot_remainder: 0
 }
 
-function player(name, bankroll, carda, cardb, status, total_bet,
+function player(name, bankroll, totalbank, carda, cardb, status, total_bet,
     subtotal_bet) {
     this.name = name;
     this.bankroll = bankroll;
+    this.totalbank = totalbank;
     this.carda = carda;
     this.cardb = cardb;
     this.status = status;
@@ -153,7 +154,10 @@ function add_new_player(current_state) {
     var player_added = false;
 
     if (SERVER_STATE.players.length == 0) { //first player
-        SERVER_STATE.players[0] = new player(current_state.CMD_PARMS, 1000, "", "", "WAIT", 0, 0);
+        SERVER_STATE.players[0] = 
+            new player(current_state.CMD_PARMS, 
+                        current_state.STARTING_BANKROLL, 
+                        current_state.STARTING_BANKROLL, "", "", "WAIT", 0, 0);
         player_added = true;
     }
     else if (SERVER_STATE.players.length < 10) { //can't have more than 10 players
@@ -167,7 +171,10 @@ function add_new_player(current_state) {
             }
         }
         if (!dup) {
-            SERVER_STATE.players[SERVER_STATE.players.length] = new player(current_state.CMD_PARMS, 1000, "", "", "WAIT", 0, 0);
+            SERVER_STATE.players[SERVER_STATE.players.length] = 
+                new player(current_state.CMD_PARMS, 
+                            current_state.STARTING_BANKROLL, 
+                            current_state.STARTING_BANKROLL, "", "", "WAIT", 0, 0);
             player_added = true;
         }
     }
