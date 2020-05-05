@@ -417,7 +417,12 @@ function cl_help_func () {
   "High Card\n" +
   "Leigh Anne Flush\n" +
   "Leigh Anne Straight\n" +
-  "*Need to ask Leigh Anne if the 5th card kicker is relevant";
+  "*Need to ask Leigh Anne if the 5th card kicker is relevant\n\nLet's Talk Bank: (during hand this does not account for current pot)\n\n";
+
+  for (var n=0; n<LOCAL_STATE.players.length; n++) {
+    help_text += LOCAL_STATE.players[n].name + "'s current bankroll is $" + 
+                ((LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank)/100).toFixed(2) + "\n";
+  }
   window.alert(help_text);
 }
 
@@ -636,10 +641,6 @@ function cl_msg_dispatch () {
     }
   }
   else if (LOCAL_STATE.CMD == "end of round") {
-    if (I_am_Host) {
-      var buttons = document.getElementById('setup-options');
-      internal_le_button(buttons, 'deal-button', cl_request_next_hand);
-    }
     cl_deal_flop();
     cl_deal_fourth();
     cl_deal_fifth();
@@ -654,6 +655,17 @@ function cl_msg_dispatch () {
     var seat = cl_get_my_seat();
     if (LOCAL_STATE.players[seat].bankroll < (LOCAL_STATE.STARTING_BANKROLL/4)) {
       internal_le_button(buttons,'rebuy-button', cl_rebuy);
+    }
+    if (I_am_Host) {
+      var buttons = document.getElementById('setup-options');
+      internal_le_button(buttons, 'deal-button', cl_request_next_hand);
+      var accounting = 0;
+      for (var n=0; n<LOCAL_STATE.players.length; n++) {
+        accounting += LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank + global_pot_remainder;
+      }
+      if (accounting) {
+        window.alert("House account is off by $" + (accounting/100).toFixed(2));
+      }
     }
   }
 }
