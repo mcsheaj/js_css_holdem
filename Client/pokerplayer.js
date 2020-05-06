@@ -421,9 +421,9 @@ function cl_help_func () {
   "*Need to ask Leigh Anne if the 5th card kicker is relevant\n\n";
 
   if (LOCAL_STATE.players.length) {
-    help_text += "Let's Talk Bank: (current bets not accounted for during a hand)\n\n"
+    help_text += "Let's Talk Bank: (current bets not accounted for during a hand)\n\n";
     for (var n=0; n<LOCAL_STATE.players.length; n++) {
-      help_text += LOCAL_STATE.players[n].name + "'s current account $" + 
+      help_text += LOCAL_STATE.players[n].name + "'s current winnings $" + 
                 ((LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank)/100).toFixed(2) + "\n";
     }
   }
