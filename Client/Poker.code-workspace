@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "$web",
+			"uri": "azurestorage:/$web?resourceId=/subscriptions/fb4e1590-7113-4d53-b6c8-9584ebd56a1b/resourceGroups/rg-jsholdem-eastus-matt/providers/Microsoft.Storage/storageAccounts/storjsholdemeastusmatt/Blob Containers/$web"
+		}
+	],
+	"settings": {}
+}
