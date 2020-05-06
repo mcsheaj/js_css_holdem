@@ -12,6 +12,7 @@ body {
     background-position: left top;
     height: 100%;
     margin: 0;
+    display: none;
 }
 
 .poker-table {
