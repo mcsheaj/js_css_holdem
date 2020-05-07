@@ -1,0 +1,445 @@
+html {
+    height: 100%;
+    background-image: url(images/HoldemBackground.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+html,
+body {
+    margin: 0;
+    height: 100%;
+}
+  
+.ribbon {
+    background-color: lightblue;
+    height: 100px;
+    width: 100%;
+}
+
+.poker-table {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1200px;
+    min-width: 980px;
+    padding: 0;
+}
+
+.poker-table-image {
+    width: 100%;
+    position: absolute;
+    top:0;
+    left:0;
+}
+
+#button, .dealerbutton {
+    background-image: url(images/dealerbutton.png);
+    background-repeat: no-repeat;
+    background-size: 100%;
+    height: 19px;
+    position: absolute;
+    width: 24px;
+    left: 130px;
+    top: 110px;
+}
+
+.dealerbutton.dealerbutton-current {
+    display: block;
+}
+
+.name-chips {
+    background-color: gray;
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+    height: 33px;
+    text-align: center;
+    width: 140px;
+    margin-top: 3px;
+}
+
+.player-name {
+    width: 100%;
+}
+
+.card {
+    background-image: url(images/cardback.png);
+    background-size: cover;
+    border-radius: 4px;
+    height: 101px;
+    width: 69px;
+}
+
+.holecard1 {
+    display: table-cell;
+}
+
+.holecard2 {
+    display: table-cell;
+}
+
+.bet {
+    color: white;
+    font-size: 16px;
+    top: 0px;
+    margin-top: 5px;
+}
+
+.seat {
+    height: 160px;
+    width: 160px;
+    display: inline-block;
+    position: absolute;
+}
+
+#seat0 {
+    top: 500px;
+    left: 150px;
+}
+
+#seat1 {
+    top: 250px;
+    left: 5px;
+}
+
+#seat2 {
+    top: 10px;
+    left: 150px;
+}
+
+#seat3 {
+    top: 10px;
+    left: 380px;
+}
+
+#seat4 {
+    top: 10px;
+    left: 610px;
+}
+
+#seat5 {
+    top: 10px;
+    left: 840px;
+}
+
+#seat6 {
+    top: 250px;
+    left: 1050px;
+}
+
+#seat7 {
+    top: 500px;
+    left: 840px;
+}
+
+#seat8 {
+    top: 500px;
+    left: 610px;
+}
+
+#seat9 {
+    top: 500px;
+    left: 380px;
+}
+
+#board {
+    position: absolute;
+    width: 490px;
+    top: 260px;
+    left: 370px;
+}
+
+#pot {
+    color: white;
+    font-size: 16px;
+    text-align: center;
+    width: 490px;
+    position: absolute;
+    top: 380px;
+    left: 370px;
+}
+
+@media (max-width: 1150px) {
+    #seat0 {
+        top: 460px;
+        left: 135px;
+    }
+    
+    #seat1 {
+        top: 240px;
+        left: 5px;
+    }
+    
+    #seat2 {
+        top: 10px;
+        left: 135px;
+    }
+    
+    #seat3 {
+        top: 10px;
+        left: 350px;
+    }
+    
+    #seat4 {
+        top: 10px;
+        left: 565px;
+    }
+    
+    #seat5 {
+        top: 10px;
+        left: 780px;
+    }
+
+    #seat6 {
+        top: 240px;
+        left: 980px;
+    }
+
+    #seat7 {
+        top: 480px;
+        left: 780px;
+    }
+    
+    #seat8 {
+        top: 480px;
+        left: 565px;
+    }
+    
+    #seat9 {
+        top: 480px;
+        left: 350px;
+    }
+    
+    #board {
+        top: 270px;
+        left: 290px;
+    }
+    
+    #pot {
+        top: 390px;
+        left: 290px;
+    }
+}
+
+@media (max-width: 1075px) {
+    #230px {
+        top: 460px;
+        left: 130px;
+    }
+    
+    #seat1 {
+        top: 230px;
+        left: 5px;
+    }
+    
+    #seat2 {
+        top: 10px;
+        left: 130px;
+    }
+    
+    #seat3 {
+        top: 10px;
+        left: 340px;
+    }
+    
+    #seat4 {
+        top: 10px;
+        left: 550px;
+    }
+    
+    #seat5 {
+        top: 10px;
+        left: 760px;
+    }
+
+    #seat6 {
+        top: 230px;
+        left: 930px;
+    }
+
+    #seat7 {
+        top: 460px;
+        left: 770px;
+    }
+    
+    #seat8 {
+        top: 460px;
+        left: 550px;
+    }
+    
+    #seat9 {
+        top: 460px;
+        left: 330px;
+    }
+    
+    #board {
+        top: 260px;
+        left: 270px;
+    }
+    
+    #pot {
+        top: 380px;
+        left: 270px;
+    }
+}
+
+@media (max-width: 1000px) {
+    #seat0 {
+        top: 420px;
+        left: 125px;
+    }
+    
+    #seat1 {
+        top: 225px;
+        left: 5px;
+    }
+    
+    #seat2 {
+        top: 10px;
+        left: 125px;
+    }
+    
+    #seat3 {
+        top: 10px;
+        left: 330px;
+    }
+    
+    #seat4 {
+        top: 10px;
+        left: 535px;
+    }
+    
+    #seat5 {
+        top: 10px;
+        left: 740px;
+    }
+
+    #seat6 {
+        top: 225px;
+        left: 820px;
+    }
+
+    #seat7 {
+        top: 420px;
+        left: 740px;
+    }
+    
+    #seat8 {
+        top: 420px;
+        left: 535px;
+    }
+    
+    #seat9 {
+        top: 420px;
+        left: 330px;
+    }
+
+    #board {
+        top: 230px;
+        left: 250px;
+    }
+    
+    #pot {
+        top: 350px;
+        left: 250px;
+    }
+}
+
+.seat0-button {
+    left: 335px;
+    top: 590px;
+}
+
+.seat1-button {
+    left: 185px;
+    top: 350px;
+}
+
+.seat2-button {
+    left: 330px;
+    top: 116px;
+}
+
+.seat3-button {
+    left: 545px;
+    top: 115px;
+}
+
+.seat4-button {
+    left: 760px;
+    top: 115px;
+}
+
+.seat5-button {
+    left: 980px;
+    top: 115px;
+}
+
+.seat6-button {
+    left: 1156px;
+    top: 350px;
+}
+
+.seat7-button {
+    left: 980px;
+    top: 590px;
+}
+
+.seat8-button {
+    left: 760px;
+    top: 590px;
+}
+
+.seat9-button {
+    left: 330px;
+    top: 590px;
+}
+
+.boardcard {
+    height: 101px;
+    left: 0px;
+    background-repeat: no-repeat;
+    width: 69px;
+    display: table-cell;
+}
+
+#flop1 {
+    left: 0 px;
+}
+
+#flop2 {
+    left: 52px;
+}
+
+#flop3 {
+    left: 104px;
+}
+
+#turn {
+    left: 156px;
+}
+
+#river {
+    left: 208px;
+}
+
+#burn1 {
+    left: 380px;
+    transform: rotate(-18deg);
+    position: absolute;
+    top: 0;
+}
+
+#burn2 {
+    position: absolute;
+    left: 390px;
+    top: 0;
+}
+
+#burn3 {
+    left: 400px;
+    transform: rotate(15deg);
+    position: absolute;
+    top: 0;
+}
