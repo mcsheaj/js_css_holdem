@@ -6,12 +6,12 @@ Project home page: http://sourceforge.net/projects/jsholdem/
 
 var cards = new Array(52);
 var deck_index = 0;
+var BG_HILITE = 'gold';
 
 var lowest_chip_amount = 5; //this works for my home game nickel/dime
 
 var SERVER_STATE = {
     SENDER: "",
-    DIRECTION: "",
     CMD: "",
     CMD_PARMS: "",
     NUM_ROUNDS: 0,
@@ -19,17 +19,15 @@ var SERVER_STATE = {
     STARTING_BANKROLL: 1000,
     SMALL_BLIND: 5,
     BIG_BLIND: 10,
-    BG_HILITE: 'gold',
-    //cards: new Array(52),
     players: new Array,
     board: new Array(),
-    //deck_index: 0,
     button_index: 0,
     current_bettor_index: 0,
     current_bet_amount: 0,
     current_total_bet: 0,
     current_min_raise: 0,
-    global_pot_remainder: 0
+    global_pot_remainder: 0,
+    last_raiser: -1
 }
 
 function player(name, bankroll, totalbank, carda, cardb, status, total_bet,
@@ -510,7 +508,7 @@ function handle_end_of_round() {
         }
     }
     var hi_lite_color = gui_get_theme_mode_highlite_color();
-    var html = "<html><body topmargin=2 bottommargin=0 bgcolor=" + SERVER_STATE.BG_HILITE +
+    var html = "<html><body topmargin=2 bottommargin=0 bgcolor=" + BG_HILITE +
         " onload='document.f.c.focus();'>" +
         get_pot_size_html() +
         "  <font size=+2 color=" + hi_lite_color +
@@ -878,7 +876,6 @@ function send_game_response(response) {
 
 function send_SignalR(current_state) {
     current_state.SENDER = my_name;
-    current_state.DIRECTION = "GAME"
     app.sendMessage(current_state);
     SERVER_STATE.CMD == "";
 }

@@ -5,7 +5,6 @@ var my_seat = 0;
 
 var LOCAL_STATE = {
   SENDER: "",
-  DIRECTION: "",
   CMD: "",
   CMD_PARMS: "",
   NUM_ROUNDS: 0,
@@ -13,17 +12,15 @@ var LOCAL_STATE = {
   STARTING_BANKROLL: 1000,
   SMALL_BLIND: 5,
   BIG_BLIND: 10,
-  BG_HILITE: 'gold',
-  //cards: new Array(52),
   players: new Array(),
   board: new Array(),
-  //deck_index: 0,
   button_index: 0,
   current_bettor_index: 0,
   current_bet_amount: 0,
   current_total_bet: 0,
   current_min_raise: 0,
-  global_pot_remainder: 0
+  global_pot_remainder: 0,
+  last_raiser: -1
 }
 
 function cl_player (name, bankroll, totalbank, carda, cardb, status, total_bet, subtotal_bet) {
@@ -258,6 +255,7 @@ function cl_player_checks() {          //call back from betting control
 function set_current_total_bet() {
   if (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].total_bet > LOCAL_STATE.current_total_bet) {
     LOCAL_STATE.current_total_bet = LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].total_bet;
+    LOCAL_STATE.last_raiser = LOCAL_STATE.current_bettor_index;
   }
 }
 
@@ -331,6 +329,7 @@ function cl_new_round () {
 
   gui_clear_the_board(LOCAL_STATE.board);
   gui_hide_quick_raise();
+  LOCAL_STATE.last_raiser = -1;
 }
 
 function cl_initialize_game () {
@@ -355,7 +354,7 @@ function cl_leave_pseudo_alert () {
 
 function cl_my_pseudo_alert (text) {
   var html = "<html><body topmargin=2 bottommargin=0 bgcolor=" +
-             LOCAL_STATE.BG_HILITE + " onload='document.f.y.focus();'>" +
+             BG_HILITE + " onload='document.f.y.focus();'>" +
              "<font size=+2>" + text +
              "</font><form name=f><input name=y type=button value='  OK  ' " +
              "onclick='parent.cl_leave_pseudo_alert()'></form></body></html>";
@@ -498,7 +497,7 @@ function cl_write_player (n, hilite, show_cards) {
   var name_background_color = "";
   var name_font_color = "";
   if (hilite == 1) {            // Current
-    name_background_color = LOCAL_STATE.BG_HILITE;
+    name_background_color = BG_HILITE;
     name_font_color = 'black';
   } else if (hilite == 2) {       // Winner
     name_background_color = 'red';
@@ -565,7 +564,15 @@ function cl_write_player (n, hilite, show_cards) {
   gui_set_bet(bet_text, n);
   gui_set_bankroll((LOCAL_STATE.players[n].bankroll/100).toFixed(2), n);
   
-  //only show cards for my seat, back of cards for all others
+  //show winner and last raiser cards
+  if ((LOCAL_STATE.players[n].status == "WIN") || (LOCAL_STATE.players[n].status == "SHOW")) {
+    gui_set_player_cards(carda, cardb, n, show_folded);
+    return;
+  }//unless no showdown
+  if (LOCAL_STATE.players[n].status == "NOSHOW") {
+    gui_set_player_cards("blinded", "blinded", n, show_folded);
+    return;
+  }
   if (LOCAL_STATE.players[n].name == my_name) {
     gui_set_player_cards(carda, cardb, n, show_folded);
   }
@@ -576,12 +583,7 @@ function cl_write_player (n, hilite, show_cards) {
     else {
       gui_set_player_cards("", "", n, show_folded);
     }
-    if (LOCAL_STATE.players[n].status == "WIN") {
-      gui_set_player_cards(carda, cardb, n, show_folded);
-    }
-    if (LOCAL_STATE.players[n].status == "NOSHOW") {
-      gui_set_player_cards("blinded", "blinded", n, show_folded);
-    }
+
     //gui_set_player_cards(carda, cardb, n, show_folded);  //get rid of this to hide other players cards*****************
   }
 }
@@ -649,14 +651,19 @@ function cl_msg_dispatch () {
   }
   else if (LOCAL_STATE.CMD == "end of round") {
     cl_deal_flop();
-    cl_deal_fourth();
-    cl_deal_fifth();
+    setTimeout(cl_deal_fourth,2000);
+    setTimeout(cl_deal_fifth,2500);
     gui_hide_quick_raise();
     gui_hide_fold_call_click ();
     gui_hide_betting_click();
     cl_check_for_busts();
+    for (var n=0; n<LOCAL_STATE.players.length; n++) { //show cards if player made last raise
+      if (n == LOCAL_STATE.last_raiser) {
+        (LOCAL_STATE.players[n].status = "SHOW")
+      }
+    }
     cl_write_all_players();
-    gui_write_game_response(LOCAL_STATE.CMD_PARMS);
+    setTimeout(gui_write_game_response, 2500, LOCAL_STATE.CMD_PARMS);
     var buttons = document.getElementById('setup-options');
     internal_le_button(buttons,'away-button', cl_away_func);
     var seat = cl_get_my_seat();
@@ -716,7 +723,6 @@ function cl_request_next_hand() {
 
 function cl_send_SignalR(current_state) {
   current_state.SENDER = my_name;
-  current_state.DIRECTION = "PLAYER";
   app.sendMessage(current_state);
 }
 
