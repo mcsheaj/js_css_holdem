@@ -76,6 +76,10 @@ var spinBox;
 function cl_get_action () {
   cl_get_my_seat();
   if ((LOCAL_STATE.current_bettor_index == my_seat) || (I_am_Host)) {
+    if (!I_am_Host) {
+      var sound = new Audio('sounds/ding.wav');
+      sound.play();
+    }
     gui_hide_quick_raise ();
     
     var to_call = LOCAL_STATE.TO_CALL;
@@ -379,21 +383,20 @@ function cl_show_board() {
 function cl_deal_flop() {
   cl_write_all_players();
   gui_burn_board_card(0, "blinded");
-  gui_lay_board_card(0, LOCAL_STATE.board[0]);
-  gui_lay_board_card(1, LOCAL_STATE.board[1]);
-  gui_lay_board_card(2, LOCAL_STATE.board[2]);
+  setTimeout(gui_lay_board_card, 500, 0, LOCAL_STATE.board[0]);
+  setTimeout(gui_lay_board_card, 1000, 1, LOCAL_STATE.board[1]);
+  setTimeout(gui_lay_board_card, 1500, 2, LOCAL_STATE.board[2]);
 }
 
 function cl_deal_fourth() {
   cl_write_all_players();
   gui_burn_board_card(1, "blinded");
-  gui_lay_board_card(3, LOCAL_STATE.board[3]);
-}
+  setTimeout(gui_lay_board_card, 500, 3, LOCAL_STATE.board[3]);}
 
 function cl_deal_fifth() {
   cl_write_all_players();
   gui_burn_board_card(2, "blinded");
-  gui_lay_board_card(4, LOCAL_STATE.board[4]);
+  setTimeout(gui_lay_board_card, 500, 4, LOCAL_STATE.board[4]);
 }
 
 function cl_get_my_seat() {
