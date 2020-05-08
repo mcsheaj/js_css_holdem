@@ -1,0 +1,60 @@
+<html>
+
+<head>
+    <script type="text/javascript" src="https://secure.aadcdn.microsoftonline-p.com/lib/0.2.4/js/msal.js"></script>
+</head>
+
+<body>
+    <div>
+        <button id="auth" onclick="login()">Login</button>
+    </div>
+    <pre class="response"></pre>
+    <script>
+        "use strict";
+
+        var appConf = {
+            clientID: '1fa03315-13a5-4fc1-9fbf-172197105d1c',
+            authority: 'https://login.microsoft.com/tfp/jsholdemb2c.onmicrosoft.com/B2C_1_jsholdem_susi',
+            b2cScopes: ["openid"]
+        };
+
+        var ctx = new Msal.UserAgentApplication(appConf.clientID, appConf.authority,
+            function (errorDesc, token, error, tokenType) {
+
+            });
+
+        function logError(error) {
+            console.log(error);
+        }
+
+        function login() {
+            ctx.loginPopup(appConf.b2cScopes).then(
+                function (idToken) {
+                    ctx.acquireTokenSilent(appConf.b2cScopes).then(
+                        function (accessToken) {
+                            updateUI();
+                        },
+                        function (error) {
+                            ctx.acquireTokenPopup(appConf.b2cScopes).then(
+                                function (accessToken) {
+                                    updateUI();
+                                },
+                                function logError(error) {
+                                    console.log("Error acquiring the popup:\n" + error);
+                                });
+                        })
+                },
+                function(error) {
+                    console.log("Error logging in:\n" + error);
+                });
+        }
+
+        function updateUI() {
+            let user = ctx.getUser();
+            console.log(JSON.stringify(user));
+            console.log("User '" + user.name + "' logged in.");
+        }
+    </script>
+</body>
+
+</html>

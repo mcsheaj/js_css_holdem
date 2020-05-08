@@ -5,12 +5,11 @@ html {
     background-repeat: no-repeat;
 }
 
-html,
-body {
+html, body {
     margin: 0;
     height: 100%;
 }
-  
+
 .ribbon {
     background-color: lightblue;
     height: 100px;
@@ -22,15 +21,15 @@ body {
     margin-left: auto;
     margin-right: auto;
     max-width: 1200px;
-    min-width: 980px;
+    min-width: 800px;
     padding: 0;
 }
 
 .poker-table-image {
     width: 100%;
     position: absolute;
-    top:0;
-    left:0;
+    top: 0;
+    left: 0;
 }
 
 #button, .dealerbutton {
@@ -50,13 +49,14 @@ body {
 
 .name-chips {
     background-color: gray;
-    border-radius: 4px;
+    border-radius: 3px;
     color: white;
-    font-size: 14px;
-    height: 33px;
+    font-size: 1em;
     text-align: center;
     width: 140px;
     margin-top: 3px;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .player-name {
@@ -81,9 +81,9 @@ body {
 
 .bet {
     color: white;
-    font-size: 16px;
-    top: 0px;
+    font-size: 1.3em;
     margin-top: 5px;
+    white-space: nowrap;
 }
 
 .seat {
@@ -145,205 +145,15 @@ body {
 
 #board {
     position: absolute;
-    width: 490px;
-    top: 260px;
-    left: 370px;
+    top: 280px;
+    left: 340px;
 }
 
 #pot {
     color: white;
-    font-size: 16px;
+    font-size: 1.3em;
     text-align: center;
-    width: 490px;
-    position: absolute;
-    top: 380px;
-    left: 370px;
-}
-
-@media (max-width: 1150px) {
-    #seat0 {
-        top: 460px;
-        left: 135px;
-    }
-    
-    #seat1 {
-        top: 240px;
-        left: 5px;
-    }
-    
-    #seat2 {
-        top: 10px;
-        left: 135px;
-    }
-    
-    #seat3 {
-        top: 10px;
-        left: 350px;
-    }
-    
-    #seat4 {
-        top: 10px;
-        left: 565px;
-    }
-    
-    #seat5 {
-        top: 10px;
-        left: 780px;
-    }
-
-    #seat6 {
-        top: 240px;
-        left: 980px;
-    }
-
-    #seat7 {
-        top: 480px;
-        left: 780px;
-    }
-    
-    #seat8 {
-        top: 480px;
-        left: 565px;
-    }
-    
-    #seat9 {
-        top: 480px;
-        left: 350px;
-    }
-    
-    #board {
-        top: 270px;
-        left: 290px;
-    }
-    
-    #pot {
-        top: 390px;
-        left: 290px;
-    }
-}
-
-@media (max-width: 1075px) {
-    #230px {
-        top: 460px;
-        left: 130px;
-    }
-    
-    #seat1 {
-        top: 230px;
-        left: 5px;
-    }
-    
-    #seat2 {
-        top: 10px;
-        left: 130px;
-    }
-    
-    #seat3 {
-        top: 10px;
-        left: 340px;
-    }
-    
-    #seat4 {
-        top: 10px;
-        left: 550px;
-    }
-    
-    #seat5 {
-        top: 10px;
-        left: 760px;
-    }
-
-    #seat6 {
-        top: 230px;
-        left: 930px;
-    }
-
-    #seat7 {
-        top: 460px;
-        left: 770px;
-    }
-    
-    #seat8 {
-        top: 460px;
-        left: 550px;
-    }
-    
-    #seat9 {
-        top: 460px;
-        left: 330px;
-    }
-    
-    #board {
-        top: 260px;
-        left: 270px;
-    }
-    
-    #pot {
-        top: 380px;
-        left: 270px;
-    }
-}
-
-@media (max-width: 1000px) {
-    #seat0 {
-        top: 420px;
-        left: 125px;
-    }
-    
-    #seat1 {
-        top: 225px;
-        left: 5px;
-    }
-    
-    #seat2 {
-        top: 10px;
-        left: 125px;
-    }
-    
-    #seat3 {
-        top: 10px;
-        left: 330px;
-    }
-    
-    #seat4 {
-        top: 10px;
-        left: 535px;
-    }
-    
-    #seat5 {
-        top: 10px;
-        left: 740px;
-    }
-
-    #seat6 {
-        top: 225px;
-        left: 820px;
-    }
-
-    #seat7 {
-        top: 420px;
-        left: 740px;
-    }
-    
-    #seat8 {
-        top: 420px;
-        left: 535px;
-    }
-    
-    #seat9 {
-        top: 420px;
-        left: 330px;
-    }
-
-    #board {
-        top: 230px;
-        left: 250px;
-    }
-    
-    #pot {
-        top: 350px;
-        left: 250px;
-    }
+    width: 340px;
 }
 
 .seat0-button {
@@ -442,4 +252,410 @@ body {
     transform: rotate(15deg);
     position: absolute;
     top: 0;
+}
+
+@media (max-width: 1150px) {
+    #seat0 {
+        top: 470px;
+        left: 141px;
+        transform: scale(1);
+    }
+    #seat1 {
+        top: 235px;
+        left: 5px;
+        transform: scale(1);
+    }
+    #seat2 {
+        top: 9px;
+        left: 141px;
+        transform: scale(1);
+    }
+    #seat3 {
+        top: 9px;
+        left: 357px;
+        transform: scale(1);
+    }
+    #seat4 {
+        top: 9px;
+        left: 573px;
+        transform: scale(1);
+    }
+    #seat5 {
+        top: 9px;
+        left: 790px;
+        transform: scale(1);
+    }
+    #seat6 {
+        top: 235px;
+        left: 987px;
+        transform: scale(1);
+    }
+    #seat7 {
+        top: 470px;
+        left: 790px;
+        transform: scale(1);
+    }
+    #seat8 {
+        top: 470px;
+        left: 573px;
+        transform: scale(1);
+    }
+    #seat9 {
+        top: 470px;
+        left: 357px;
+        transform: scale(1);
+    }
+    #board {
+        top: 263px;
+        left: 320px;
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 1100px) {
+    #seat0 {
+        top: 442px;
+        left: 133px;
+        transform: scale(1);
+    }
+    #seat1 {
+        top: 221px;
+        left: 5px;
+        transform: scale(1);
+    }
+    #seat2 {
+        top: 8px;
+        left: 133px;
+        transform: scale(1);
+    }
+    #seat3 {
+        top: 8px;
+        left: 336px;
+        transform: scale(1);
+    }
+    #seat4 {
+        top: 8px;
+        left: 539px;
+        transform: scale(1);
+    }
+    #seat5 {
+        top: 8px;
+        left: 743px;
+        transform: scale(1);
+    }
+    #seat6 {
+        top: 221px;
+        left: 928px;
+        transform: scale(1);
+    }
+    #seat7 {
+        top: 442px;
+        left: 743px;
+        transform: scale(1);
+    }
+    #seat8 {
+        top: 442px;
+        left: 539px;
+        transform: scale(1);
+    }
+    #seat9 {
+        top: 442px;
+        left: 336px;
+        transform: scale(1);
+    }
+    #board {
+        top: 247px;
+        left: 301px;
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 1050px) {
+    #seat0 {
+        top: 415px;
+        left: 125px;
+        transform: scale(1);
+    }
+    #seat1 {
+        top: 208px;
+        left: 5px;
+        transform: scale(1);
+    }
+    #seat2 {
+        top: 8px;
+        left: 125px;
+        transform: scale(1);
+    }
+    #seat3 {
+        top: 8px;
+        left: 316px;
+        transform: scale(1);
+    }
+    #seat4 {
+        top: 8px;
+        left: 507px;
+        transform: scale(1);
+    }
+    #seat5 {
+        top: 8px;
+        left: 698px;
+        transform: scale(1);
+    }
+    #seat6 {
+        top: 208px;
+        left: 872px;
+        transform: scale(1);
+    }
+    #seat7 {
+        top: 415px;
+        left: 698px;
+        transform: scale(1);
+    }
+    #seat8 {
+        top: 415px;
+        left: 507px;
+        transform: scale(1);
+    }
+    #seat9 {
+        top: 415px;
+        left: 316px;
+        transform: scale(1);
+    }
+    #board {
+        top: 232px;
+        left: 283px;
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 1000px) {
+    #seat0 {
+        top: 390px;
+        left: 118px;
+        transform: scale(0.9);
+    }
+    #seat1 {
+        top: 196px;
+        left: 5px;
+        transform: scale(0.9);
+    }
+    #seat2 {
+        top: 8px;
+        left: 118px;
+        transform: scale(0.9);
+    }
+    #seat3 {
+        top: 8px;
+        left: 297px;
+        transform: scale(0.9);
+    }
+    #seat4 {
+        top: 8px;
+        left: 477px;
+        transform: scale(0.9);
+    }
+    #seat5 {
+        top: 8px;
+        left: 656px;
+        transform: scale(0.9);
+    }
+    #seat6 {
+        top: 196px;
+        left: 820px;
+        transform: scale(0.9);
+    }
+    #seat7 {
+        top: 390px;
+        left: 656px;
+        transform: scale(0.9);
+    }
+    #seat8 {
+        top: 390px;
+        left: 477px;
+        transform: scale(0.9);
+    }
+    #seat9 {
+        top: 390px;
+        left: 297px;
+        transform: scale(0.9);
+    }
+    #board {
+        top: 218px;
+        left: 266px;
+        transform: scale(0.9);
+    }
+}
+
+@media (max-width: 950px) {
+    #seat0 {
+        top: 367px;
+        left: 111px;
+        transform: scale(0.9);
+    }
+    #seat1 {
+        top: 184px;
+        left: 5px;
+        transform: scale(0.9);
+    }
+    #seat2 {
+        top: 8px;
+        left: 111px;
+        transform: scale(0.9);
+    }
+    #seat3 {
+        top: 8px;
+        left: 279px;
+        transform: scale(0.9);
+    }
+    #seat4 {
+        top: 8px;
+        left: 448px;
+        transform: scale(0.9);
+    }
+    #seat5 {
+        top: 8px;
+        left: 617px;
+        transform: scale(0.9);
+    }
+    #seat6 {
+        top: 184px;
+        left: 771px;
+        transform: scale(0.9);
+    }
+    #seat7 {
+        top: 367px;
+        left: 617px;
+        transform: scale(0.9);
+    }
+    #seat8 {
+        top: 367px;
+        left: 448px;
+        transform: scale(0.9);
+    }
+    #seat9 {
+        top: 367px;
+        left: 279px;
+        transform: scale(0.9);
+    }
+    #board {
+        top: 205px;
+        left: 250px;
+        transform: scale(0.9);
+    }
+}
+
+@media (max-width: 900px) {
+    #seat0 {
+        top: 345px;
+        left: 104px;
+        transform: scale(0.8);
+    }
+    #seat1 {
+        top: 173px;
+        left: 5px;
+        transform: scale(0.8);
+    }
+    #seat2 {
+        top: 8px;
+        left: 104px;
+        transform: scale(0.8);
+    }
+    #seat3 {
+        top: 8px;
+        left: 262px;
+        transform: scale(0.8);
+    }
+    #seat4 {
+        top: 8px;
+        left: 421px;
+        transform: scale(0.8);
+    }
+    #seat5 {
+        top: 8px;
+        left: 580px;
+        transform: scale(0.8);
+    }
+    #seat6 {
+        top: 173px;
+        left: 725px;
+        transform: scale(0.8);
+    }
+    #seat7 {
+        top: 345px;
+        left: 580px;
+        transform: scale(0.8);
+    }
+    #seat8 {
+        top: 345px;
+        left: 421px;
+        transform: scale(0.8);
+    }
+    #seat9 {
+        top: 345px;
+        left: 262px;
+        transform: scale(0.8);
+    }
+    #board {
+        top: 193px;
+        left: 235px;
+        transform: scale(0.8);
+    }
+}
+
+@media (max-width: 850px) {
+    #seat0 {
+        top: 324px;
+        left: 98px;
+        transform: scale(0.8);
+    }
+    #seat1 {
+        top: 163px;
+        left: 5px;
+        transform: scale(0.8);
+    }
+    #seat2 {
+        top: 8px;
+        left: 98px;
+        transform: scale(0.8);
+    }
+    #seat3 {
+        top: 8px;
+        left: 246px;
+        transform: scale(0.8);
+    }
+    #seat4 {
+        top: 8px;
+        left: 396px;
+        transform: scale(0.8);
+    }
+    #seat5 {
+        top: 8px;
+        left: 545px;
+        transform: scale(0.8);
+    }
+    #seat6 {
+        top: 163px;
+        left: 682px;
+        transform: scale(0.8);
+    }
+    #seat7 {
+        top: 324px;
+        left: 545px;
+        transform: scale(0.8);
+    }
+    #seat8 {
+        top: 324px;
+        left: 396px;
+        transform: scale(0.8);
+    }
+    #seat9 {
+        top: 324px;
+        left: 246px;
+        transform: scale(0.8);
+    }
+    #board {
+        top: 181px;
+        left: 221px;
+        transform: scale(0.8);
+    }
 }
