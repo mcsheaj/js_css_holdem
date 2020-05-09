@@ -41,6 +41,7 @@ html, body {
     width: 24px;
     left: 130px;
     top: 110px;
+    display: none;
 }
 
 .dealerbutton.dealerbutton-current {
