@@ -251,18 +251,24 @@ function gui_burn_board_card (n, the_card) {
 }
 
 function gui_write_basic_general (pot_size) {
+  /*
   var table = document.getElementById('poker_table');
   var pot_div = table.children.pot;
   var total_div = pot_div.children['total-pot'];
+  */
+  var total_div = document.getElementById("total-pot");
 
   var the_pot = 'Total pot: $' + (pot_size/100).toFixed(2);
   total_div.innerHTML = the_pot;
 }
 
 function gui_write_basic_general_text (text) {
+  /*
   var table = document.getElementById('poker_table');
   var pot_div = table.children.pot;
   var total_div = pot_div.children['total-pot'];
+  */
+  var total_div = document.getElementById("total-pot");
   total_div.style.visibility = 'visible';
   total_div.innerHTML = text;
 }
