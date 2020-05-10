@@ -42,8 +42,8 @@ function player(name, bankroll, totalbank, carda, cardb, status, total_bet,
     this.subtotal_bet = subtotal_bet;
 }
 
-var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net';
-//var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net';
+var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net'; // JMM-Joe
+//var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net'; // MJM-Matt
 var authProvider = 'aad'; // aad, twitter, microsoftaccount, google, facebook
 var app = {
     connection: null,
