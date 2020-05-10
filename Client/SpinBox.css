@@ -57,7 +57,7 @@
 }
 
 .spinBoxUp span{
-  background : url('images/arrow-up.png') no-repeat center center;
+  background : url('images/__arrow-up.png') no-repeat center center;
 }
 
 .spinBoxDown{
@@ -66,5 +66,5 @@
 }
 
 .spinBoxDown span{
-  background : url('images/arrow-down.png') no-repeat center center;
+  background : url('images/__arrow-down.png') no-repeat center center;
 }
