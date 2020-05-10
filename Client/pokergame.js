@@ -1,7 +1,3 @@
-/*
-If you improve this software or find a bug, please let me know: orciu@users.sourceforge.net
-Project home page: http://sourceforge.net/projects/jsholdem/
-*/
 "use strict";
 
 var cards = new Array(52);
