@@ -74,10 +74,10 @@ function cl_get_action () {
   cl_get_my_seat();
   if ((LOCAL_STATE.current_bettor_index == my_seat) || (I_am_Host)) {
     if (LOCAL_STATE.current_bettor_index == my_seat) {
-      var sound = new Audio('sounds/ding.wav');
+      var sound = new Audio('sounds/gong.wav');
       sound.play();
     }
-    
+
     gui_hide_quick_raise ();
   
     var to_call = LOCAL_STATE.TO_CALL;
@@ -658,12 +658,15 @@ function cl_msg_dispatch () {
     gui_hide_betting_click();
     cl_check_for_busts();
     for (var n=0; n<LOCAL_STATE.players.length; n++) { //show cards if player made last raise
-      if ((n == LOCAL_STATE.last_raiser) && (LOCAL_STATE.players[n].status != "WIN")) {
-        (LOCAL_STATE.players[n].status = "SHOW")
+      if ((n == LOCAL_STATE.last_raiser) && (LOCAL_STATE.players[n].status != "WIN")  &&
+                                            (LOCAL_STATE.players[n].status != "NOSHOW")) {
+        LOCAL_STATE.players[n].status = "SHOW";
       }
     }
     cl_write_all_players();
     setTimeout(gui_write_game_response, 2500, LOCAL_STATE.CMD_PARMS);
+    var sound = new Audio('sounds/tada.wav');
+    sound.play();
     var buttons = document.getElementById('setup-options');
     internal_le_button(buttons,'away-button', cl_away_func);
     var seat = cl_get_my_seat();
