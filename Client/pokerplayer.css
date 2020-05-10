@@ -1,6 +1,6 @@
 html {
     height: 100%;
-    background-image: url(images/HoldemBackground.jpg);
+    background-image: url(images/__HoldemBackground.jpg);
     background-size: cover;
     background-repeat: no-repeat;
 }
@@ -33,7 +33,7 @@ html, body {
 }
 
 #button, .dealerbutton {
-    background-image: url(images/dealerbutton.png);
+    background-image: url(images/__dealerbutton.png);
     background-repeat: no-repeat;
     background-size: 100%;
     height: 19px;
@@ -65,7 +65,7 @@ html, body {
 }
 
 .card {
-    background-image: url(images/cardback.png);
+    background-image: url(images/_cardback.png);
     background-size: cover;
     border-radius: 4px;
     height: 101px;

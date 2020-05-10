@@ -94,7 +94,7 @@ function internal_setCard (diva, card, folded) {
   } else if (card === "") {
     image = "url('')";
   } else if (card === "blinded") {
-    image = "url('images/cardback.png')";
+    image = "url('images/_cardback.png')";
   } else {
     if (folded) {
       opacity = 0.5;
@@ -441,7 +441,7 @@ function gui_initialize_css () {
   var image;
   var item;
   item = document.getElementById('poker_table');
-  image = "url('images/poker_table.png')";
+  image = "url('images/__poker_table.png')";
   internal_setBackground(item, image, 1.0);
 }
 
