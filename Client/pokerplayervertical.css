@@ -1,0 +1,80 @@
+.vertical .poker-table {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 660px;
+    min-width: 440px;
+    padding: 0;
+}
+
+.vertical .poker-table-image {
+    display: none;
+}
+
+.vertical .poker-table-image-vertical {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+}
+
+.vertical #board {
+    top: 440px;
+    left: 140px;
+    transform: rotate(90deg);
+}
+
+.vertical #seat0 {
+    top: 180px;
+    left: 0;
+}
+
+.vertical #seat1 {
+    top: 5px;
+    left: 240px;
+}
+
+.vertical #seat2 {
+    top: 180px;
+    left: 480px;
+}
+
+.vertical #seat3 {
+    top: 390px;
+    left: 480px;
+}
+
+.vertical #seat4 {
+    top: 600px;
+    left: 480px;
+}
+
+.vertical #seat5 {
+    top: 810px;
+    left: 480px;
+}
+
+.vertical #seat6 {
+    top: 1010px;
+    left: 250px;
+}
+
+.vertical #seat7 {
+    top: 810px;
+    left: 0;
+}
+
+.vertical #seat8 {
+    top: 600px;
+    left: 0;
+}
+
+.vertical #seat9 {
+    top: 390px;
+    left: 0;
+}
+
+.vertical #all-options {
+    padding-top: 1200px;
+}

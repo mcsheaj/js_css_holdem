@@ -4,6 +4,7 @@
    <title>Matty's Poker Room</title>
    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
    <link rel="stylesheet" href="pokerplayer.css" type="text/css">
+   <link rel="stylesheet" href="pokerplayervertical.css" type="text/css">
    <link rel="stylesheet" href="SpinBox.css" type="text/css">
    <script src="https://cdn.jsdelivr.net/npm/@aspnet/signalr@1.0.3/dist/browser/signalr.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/axios@0.18.0/dist/axios.min.js"></script>
@@ -14,13 +15,12 @@
    <script charset="UTF-8" src=pokergame.js></script>
    <script>I_am_Host = false;</script>
 </head>
-<body onload="parent.init()">
-    <!--
+<body onload="parent.init()" class="horizontal">
     <div id="#ribbon" class="ribbon">
     </div>
-    -->
     <div id="poker_table" class="poker-table" data-uid="" style="visibility: visible;">
         <img src="images/__poker_table.png" class="poker-table-image" alt="">
+        <img src="images/__poker_table_vertical.png" class="poker-table-image-vertical" alt="">
         <div id="seat0" class="seat" style="visibility: visible;">
             <div class="holecards">
                 <div class="card holecard1" style="opacity: 1; background-image: url(&quot;images/_cardback.png&quot;);">
