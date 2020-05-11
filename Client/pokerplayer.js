@@ -74,7 +74,7 @@ function cl_get_action () {
   cl_get_my_seat();
   if ((LOCAL_STATE.current_bettor_index == my_seat) || (I_am_Host)) {
     if (LOCAL_STATE.current_bettor_index == my_seat) {
-      var sound = new Audio('sounds/gong.wav');
+      var sound = new Audio('sounds/ding.wav');
       sound.play();
     }
 
