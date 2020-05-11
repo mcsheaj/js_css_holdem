@@ -208,7 +208,7 @@ function cl_player_folds() {
   var buttons = document.getElementById('setup-options');
   internal_le_button(buttons,'away-button', cl_away_func);
   var seat = cl_get_my_seat();
-  if (LOCAL_STATE.players[LOCAL_STATE.seat].bankroll < (LOCAL_STATE.STARTING_BANKROLL/4)) {
+  if (LOCAL_STATE.players[seat].bankroll < (LOCAL_STATE.STARTING_BANKROLL/4)) {
     internal_le_button(buttons,'rebuy-button', cl_rebuy);
   }
 }
