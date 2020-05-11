@@ -571,7 +571,6 @@ function cl_write_player (n, hilite, show_cards) {
   }//unless no showdown
   if (LOCAL_STATE.players[n].status == "NOSHOW") {
     gui_set_player_cards("blinded", "blinded", n, show_folded);
-    return;
   }
   if (LOCAL_STATE.players[n].name == my_name) {
     gui_set_player_cards(carda, cardb, n, show_folded);
