@@ -457,15 +457,7 @@ function cl_clear_pot () {
 
 function cl_collect_cards () {
   LOCAL_STATE.board = new Array(6);
-  //for (var i = 0; i < LOCAL_STATE.players.length; i++) {
-    //LOCAL_STATE.players[i].carda = "";
-    //LOCAL_STATE.players[i].cardb = "";
-    LOCAL_STATE.board[0] = "";    
-    LOCAL_STATE.board[1] = "";
-    LOCAL_STATE.board[2] = "";
-    LOCAL_STATE.board[3] = "";
-    LOCAL_STATE.board[4] = "";
-  //}   
+   
   for (var i = 0; i < 5; i++) {
     LOCAL_STATE.board[i] = "";
     gui_lay_board_card(i, LOCAL_STATE.board[i]);     // Clear the board
@@ -624,7 +616,7 @@ function cl_msg_dispatch () {
   else if ((LOCAL_STATE.CMD == "start hand") || (LOCAL_STATE.CMD == "request next hand") ||
             (LOCAL_STATE.CMD == "request new game")) {
     cl_new_round();
-    cl_show_board();
+    //cl_show_board();
     gui_place_dealer_button(LOCAL_STATE.button_index);
     cl_write_all_players();
     LOCAL_STATE.CMD = "next player to act";
@@ -675,7 +667,7 @@ function cl_msg_dispatch () {
     }
     if (I_am_Host) {
       var buttons = document.getElementById('setup-options');
-      internal_le_button(buttons, 'deal-button', cl_request_next_hand);
+      setTimeout(internal_le_button, 5000, buttons, 'deal-button', cl_request_next_hand);
       var accounting = 0;
       for (var n=0; n<LOCAL_STATE.players.length; n++) {
         accounting += 
