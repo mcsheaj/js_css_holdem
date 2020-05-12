@@ -6,7 +6,7 @@ html {
 
 html, body {
     margin: 0;
-    height: 110%;
+    height: 100%;
 }
 
 .ribbon {
@@ -71,7 +71,7 @@ html, body {
     background-image: url(images/_cardback.png);
     background-size: cover;
     border-radius: 4px;
-    height: 101px;
+    height: 95px;
     width: 69px;
 }
 
@@ -212,7 +212,6 @@ html, body {
 }
 
 .boardcard {
-    height: 101px;
     left: 0px;
     background-repeat: no-repeat;
     width: 69px;
