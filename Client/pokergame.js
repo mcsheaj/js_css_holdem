@@ -38,8 +38,8 @@ function player(name, bankroll, totalbank, carda, cardb, status, total_bet,
     this.subtotal_bet = subtotal_bet;
 }
 
-var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net'; // JMM-Joe
-//var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net'; // MJM-Matt
+//var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net'; // JMM-Joe
+var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net'; // MJM-Matt
 var authProvider = 'aad'; // aad, twitter, microsoftaccount, google, facebook
 var app = {
     connection: null,
@@ -247,11 +247,11 @@ function collect_cards() {
             continue;
         }
         SERVER_STATE.board[i] = "";
-        gui_lay_board_card(i, SERVER_STATE.board[i]);     // Clear the board
+        //gui_lay_board_card(i, SERVER_STATE.board[i]);     // Clear the board
     }
     for (i = 0; i < 3; i++) {
         SERVER_STATE.board[i] = "";
-        gui_burn_board_card(i, SERVER_STATE.board[i]);
+        //gui_burn_board_card(i, SERVER_STATE.board[i]);
     }
 }
 
