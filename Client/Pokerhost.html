@@ -4,6 +4,7 @@
    <title>Matty's Poker Room</title>
    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
    <link rel="stylesheet" href="pokerplayer.css" type="text/css">
+   <link rel="stylesheet" href="pokerplayervertical.css" type="text/css">
    <link rel="stylesheet" href="SpinBox.css" type="text/css">
    <script src="https://cdn.jsdelivr.net/npm/@aspnet/signalr@1.0.3/dist/browser/signalr.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/axios@0.18.0/dist/axios.min.js"></script>
@@ -17,25 +18,46 @@
 
 <body onload="parent.init()">
     <div id="#ribbon" class="ribbon">
-        <div id="fold-button" class="ribbon-button">
-            <img src="images/fold.png" class="ribbon-icon"/>
+        <div id="call-button" class="ribbon-button">
+            <img src="images/__call.png" class="button-icon" />
+            <span class="button-text">Call</span>
         </div>
-        <div id="call-button" class="ribbon-button"></div>
-        <div id="quick-raises-outer" class="ribbon-button">
+        <div id="quick-raises-outer">
             <div id="quick-raises"></div>
+            <div id="bet-button" class="ribbon-button">
+                <img src="images/__raise.png" class="button-icon" />
+                <span class="button-text">Raise</span>
+            </div>
         </div>
-        <div id="bet-button" class="ribbon-button">==> Make Bet</div>
-        <div id="deal-button" class="ribbon-button">Deal Cards</div>
-        <div id="away-button" class="ribbon-button">Press to sit out</div>
-        <div id="join-button" class="ribbon-button">Join Game</div>
-        <div id="help-button" class="ribbon-button">Help</div>
-        <div id="rebuy-button" class="ribbon-button">Rebuy</div>
-        <div id="mode-button" class="ribbon-button">Dark mode</div>
+        <div id="fold-button" class="ribbon-button">
+            <img src="images/__fold.png" class="button-icon" />
+            <span class="button-text"></span>
+        </div>
+        <div id="help-button" class="ribbon-button setup-option">
+            <img src="images/__help.png" class="button-icon" />
+            <span class="button-text">Help</span>
+        </div>
+        <div id="join-button" class="ribbon-button setup-option">
+            <img src="images/__join.png" class="button-icon" />
+            <span class="button-text">Join Game</span>
+        </div>
+        <div id="away-button" class="ribbon-button setup-option">
+            <img src="images/__away.png" class="button-icon" />
+            <span class="button-text">Sit Out</span>
+        </div>
+        <div id="rebuy-button" class="ribbon-button setup-option">
+            <img src="images/__rebuy.png" class="button-icon" />
+            <span class="button-text">Rebuy</span>
+        </div>
+        <div id="deal-button" class="ribbon-button setup-option">
+            <img src="images/__deal.png" class="button-icon" />
+            <span class="button-text">Deal Cards</span>
+        </div>
     </div>
-    <div id="poker_table" class="poker-table" data-uid="" style="visibility: visible;">
+    <div id="poker_table" class="poker-table" data-uid="" >
         <img src="images/__poker_table.png" class="poker-table-image" alt="">
         <img src="images/__poker_table_vertical.png" class="poker-table-image-vertical" alt="">
-        <div id="seat0" class="seat" style="visibility: visible;">
+        <div id="seat0" class="seat" >
             <div class="holecards">
                 <div class="card holecard1">
                 </div>
@@ -49,11 +71,11 @@
             <div class="bet"></div>
             <div id="dealerbutton0" class="dealerbutton"></div>
         </div>
-        <div id="seat1" class="seat" style="visibility: visible;">
+        <div id="seat1" class="seat" >
             <div class="holecards">
-                <div class="card holecard1" style="opacity: 1; background-image: url(&quot;images/_cardback.png&quot;);">
+                <div class="card holecard1">
                 </div>
-                <div class="card holecard2" style="opacity: 1; background-image: url(&quot;images/_cardback.png&quot;);">
+                <div class="card holecard2"">
                 </div>
             </div>
             <div class="name-chips">
@@ -63,7 +85,7 @@
             <div class="bet"></div>
             <div id="dealerbutton1" class="dealerbutton"></div>
         </div>
-        <div id="seat2" class="seat" style="visibility: visible;">
+        <div id="seat2" class="seat" >
             <div class="holecards">
                 <div class="card holecard1">
                 </div>
@@ -77,7 +99,7 @@
             <div class="bet"></div>
             <div id="dealerbutton2" class="dealerbutton"></div>
         </div>
-        <div id="seat3" class="seat" style="visibility: visible;">
+        <div id="seat3" class="seat" >
             <div class="holecards">
                 <div class="card holecard1">
                 </div>
@@ -91,7 +113,7 @@
             <div class="bet"></div>
             <div id="dealerbutton3" class="dealerbutton"></div>
         </div>
-        <div id="seat4" class="seat" style="visibility: visible;">
+        <div id="seat4" class="seat" >
             <div class="holecards">
                 <div class="card holecard1">
                 </div>
@@ -105,7 +127,7 @@
             <div class="bet"></div>
             <div id="dealerbutton4" class="dealerbutton dealerbutton-current"></div>
         </div>
-        <div id="seat5" class="seat" style="visibility: visible;">
+        <div id="seat5" class="seat" >
             <div class="holecards">
                 <div class="card holecard1">
                 </div>
@@ -119,7 +141,7 @@
             <div class="bet"></div>
             <div id="dealerbutton5" class="dealerbutton"></div>
         </div>
-        <div id="seat6" class="seat" style="visibility: visible;">
+        <div id="seat6" class="seat" >
             <div class="holecards">
                 <div class="card holecard1">
                 </div>
@@ -133,7 +155,7 @@
             <div class="bet"></div>
             <div id="dealerbutton6" class="dealerbutton"></div>
         </div>
-        <div id="seat7" class="seat" style="visibility: visible;">
+        <div id="seat7" class="seat" >
             <div class="holecards">
                 <div class="card holecard1">
                 </div>
@@ -141,13 +163,13 @@
                 </div>
             </div>
             <div class="name-chips">
-                <div class="player-name" style="color: black; background-color: gold;">7</div>
+                <div class="player-name"></div>
                 <div class="chips"></div>
             </div>
             <div class="bet"></div>
             <div id="dealerbutton7" class="dealerbutton"></div>
         </div>
-        <div id="seat8" class="seat" style="visibility: visible;">
+        <div id="seat8" class="seat" >
             <div class="holecards">
                 <div class="card holecard1">
                 </div>
@@ -161,7 +183,7 @@
             <div class="bet"></div>
             <div id="dealerbutton8" class="dealerbutton"></div>
         </div>
-        <div id="seat9" class="seat" style="visibility: visible;">
+        <div id="seat9" class="seat" >
             <div class="holecards">
                 <div class="card holecard1">
                 </div>
@@ -189,9 +211,10 @@
                 <div id="total-pot">Total pot: $0</div>
             </div>
         </div>
-    </div>    
+    </div>
+    <div id="game-response" class="response-normal"></div>
     <div id="all-options">
-        <div id="game-response" class="response-normal"></div>
+        <div id="mode-button">Dark mode</div>
         <div id="history"></div>
         <div id="production-code"></div>
         <div id="modal-box"></div>

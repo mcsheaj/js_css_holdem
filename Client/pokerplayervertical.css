@@ -79,10 +79,6 @@
     left: 0;
 }
 
-.vertical #all-options {
-    padding-top: 1200px;
-}
-
 @media (max-width: 1150px) {
     .vertical .seat {
         transform: scale(1.2);

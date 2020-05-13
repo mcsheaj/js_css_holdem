@@ -272,13 +272,14 @@ function cl_away_func() {  //toggles status between AWAY and WAIT, WAIT will get
                             //when a new hand is dealt
   var seat = cl_get_my_seat();
   var button = document.getElementById('away-button');
+  var label = button.querySelector(".button-text");
   if (cl_away) {
-    button.innerHTML = "Press to Return"
+    label.innerHTML = "Return"
     cl_away = false;
     LOCAL_STATE.players[seat].status = "AWAY";
   }
   else {
-    button.innerHTML = "Press to Sit Out"
+    label.innerHTML = "Sit Out"
     cl_away = true;
     LOCAL_STATE.players[seat].status = "WAIT";
   }

@@ -125,6 +125,7 @@ app.init();
 function init() {
     cl_init();
     make_deck();
+    document.body.style.display = "block";
 }
 
 function make_deck() {
@@ -881,3 +882,4 @@ function rcv_SignalR(current_state) {
     cl_rcv_SignalR(current_state);
     SERVER_STATE.CMD == "";
 }
+

@@ -9,6 +9,10 @@ html, body {
     height: 100%;
 }
 
+body {
+    display: none;
+}
+
 .shown {
     display: block;
 }
@@ -18,18 +22,41 @@ html, body {
 }
 
 .ribbon {
-    background-color: rgba(71, 131, 164, .5);
-    height: 110px;
+    background-color: rgba(165, 196, 217, .8);
+    height: 113px;
     width: 100%;
+    min-width: 800px;
 }
 
 .ribbon-button {
-    background-color: silver;
+    background-color: rgba(165, 196, 217, .8);
     height: 90px;
     width: 90px;
     padding: 5px;
     float: left;
-    margin: 5px;
+    margin: 2px 3px;
+    box-shadow: 3px 3px 4px rgba(165, 196, 217, 0);
+    border: 3px ridge lightblue;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+
+.ribbon-button.setup-option {
+    float: right;
+}
+
+.ribbon-button:hover {
+    box-shadow: 3px 3px 4px #000000;
+}
+
+.button-icon {
+    margin-left: 3px;
+}
+
+div#quick-raises-outer {
+    float: left;
 }
 
 .poker-table {
@@ -60,7 +87,7 @@ html, body {
     position: absolute;
     width: 24px;
     left: 130px;
-    top: 110px;
+    top: 107px;
     display: none;
 }
 
@@ -722,14 +749,11 @@ html, body {
 
 #game-response {
     background-color: rgba(255,255,255,.3);
-    border: none;
-    color: black;
-    font-size: 12px;
-    height: 100px;
+    height: 60px;
     text-align: left;
-    width: 800px;
-    margin-top: 5px;
-    padding-left: 5px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
 }
 
 #production-code {
@@ -750,18 +774,6 @@ html, body {
     background-color: #FF0000;
 }
 
-#fold-button:hover {
-    box-shadow: 3px 3px 4px #000000;
-}
-
-#call-button {
-    left: 80px;
-}
-
-#call-button:hover {
-    box-shadow: 3px 3px 4px #000000;
-}
-
 #modal-box {
     background-color: silver;
     display: none;
@@ -780,6 +792,7 @@ html, body {
     color: white;
     text-decoration: none;
 }
+
 #modal-box a:hover {
     color: white;
     text-shadow: 3px 3px 4px #000000;

@@ -108,10 +108,17 @@ function internal_show(elem) {
 function internal_clickin_helper (button, button_text, func_on_click) {
   if (button_text === 0) {
     internal_hide(button);
-  } else {
-    internal_show(button);
-    button.innerHTML = button_text;
+  } 
+  else {
+    var label = button.querySelector(".button-text");
+    if(label) {
+       label.innerHTML = button_text;
+    }
+    else {
+      button.innerHTML = button_text;
+    }
     button.onclick = func_on_click;
+    internal_show(button);
   }
 }
 
