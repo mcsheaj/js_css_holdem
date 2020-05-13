@@ -9,10 +9,27 @@ html, body {
     height: 100%;
 }
 
+.shown {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
 .ribbon {
-    background-color: lightblue;
-    height: 100px;
+    background-color: rgba(71, 131, 164, .5);
+    height: 110px;
     width: 100%;
+}
+
+.ribbon-button {
+    background-color: silver;
+    height: 90px;
+    width: 90px;
+    padding: 5px;
+    float: left;
+    margin: 5px;
 }
 
 .poker-table {
@@ -85,7 +102,6 @@ html, body {
 
 .bet {
     color: white;
-    font-size: 1.3em;
     margin-top: 5px;
     white-space: nowrap;
 }
@@ -95,6 +111,8 @@ html, body {
     width: 160px;
     display: inline-block;
     position: absolute;
+    margin-top: 20px;
+    transform: scale(1.2);
 }
 
 #seat0 {
@@ -151,6 +169,7 @@ html, body {
     position: absolute;
     top: 280px;
     left: 340px;
+    transform: scale(1.2);
 }
 
 #pot {
@@ -259,172 +278,183 @@ html, body {
 }
 
 @media (max-width: 1150px) {
+    .seat {
+        transform: scale(1.1);
+    }
     #seat0 {
         top: 470px;
         left: 141px;
-        transform: scale(1);
+        
     }
     #seat1 {
         top: 235px;
         left: 5px;
-        transform: scale(1);
+        
     }
     #seat2 {
         top: 9px;
         left: 141px;
-        transform: scale(1);
+        
     }
     #seat3 {
         top: 9px;
         left: 357px;
-        transform: scale(1);
+        
     }
     #seat4 {
         top: 9px;
         left: 573px;
-        transform: scale(1);
+        
     }
     #seat5 {
         top: 9px;
         left: 790px;
-        transform: scale(1);
+        
     }
     #seat6 {
         top: 235px;
         left: 987px;
-        transform: scale(1);
+        
     }
     #seat7 {
         top: 470px;
         left: 790px;
-        transform: scale(1);
+        
     }
     #seat8 {
         top: 470px;
         left: 573px;
-        transform: scale(1);
+        
     }
     #seat9 {
         top: 470px;
         left: 357px;
-        transform: scale(1);
+        
     }
+    
     #board {
         top: 263px;
         left: 320px;
-        transform: scale(1);
+        transform: scale(1.1);        
     }
 }
 
 @media (max-width: 1100px) {
+    .seat {
+        transform: scale(1.1);
+    }
     #seat0 {
         top: 442px;
         left: 133px;
-        transform: scale(1);
+        
     }
     #seat1 {
         top: 221px;
         left: 5px;
-        transform: scale(1);
+        
     }
     #seat2 {
         top: 8px;
         left: 133px;
-        transform: scale(1);
+        
     }
     #seat3 {
         top: 8px;
         left: 336px;
-        transform: scale(1);
+        
     }
     #seat4 {
         top: 8px;
         left: 539px;
-        transform: scale(1);
+        
     }
     #seat5 {
         top: 8px;
         left: 743px;
-        transform: scale(1);
+        
     }
     #seat6 {
         top: 221px;
         left: 928px;
-        transform: scale(1);
+        
     }
     #seat7 {
         top: 442px;
         left: 743px;
-        transform: scale(1);
+        
     }
     #seat8 {
         top: 442px;
         left: 539px;
-        transform: scale(1);
+        
     }
     #seat9 {
         top: 442px;
         left: 336px;
-        transform: scale(1);
+        
     }
     #board {
         top: 247px;
         left: 301px;
-        transform: scale(1);
+        
     }
 }
 
 @media (max-width: 1050px) {
+    .seat {
+        transform: scale(1);
+    }
     #seat0 {
         top: 415px;
         left: 125px;
-        transform: scale(1);
+        
     }
     #seat1 {
         top: 208px;
         left: 5px;
-        transform: scale(1);
+        
     }
     #seat2 {
         top: 8px;
         left: 125px;
-        transform: scale(1);
+        
     }
     #seat3 {
         top: 8px;
         left: 316px;
-        transform: scale(1);
+        
     }
     #seat4 {
         top: 8px;
         left: 507px;
-        transform: scale(1);
+        
     }
     #seat5 {
         top: 8px;
         left: 698px;
-        transform: scale(1);
+        
     }
     #seat6 {
         top: 208px;
         left: 872px;
-        transform: scale(1);
+        
     }
     #seat7 {
         top: 415px;
         left: 698px;
-        transform: scale(1);
+        
     }
     #seat8 {
         top: 415px;
         left: 507px;
-        transform: scale(1);
+        
     }
     #seat9 {
         top: 415px;
         left: 316px;
-        transform: scale(1);
+        
     }
+
     #board {
         top: 232px;
         left: 283px;
@@ -433,322 +463,248 @@ html, body {
 }
 
 @media (max-width: 1000px) {
+    .seat {
+        transform: scale(0.9);
+    }
     #seat0 {
         top: 390px;
         left: 118px;
-        transform: scale(0.9);
+        
     }
     #seat1 {
         top: 196px;
         left: 5px;
-        transform: scale(0.9);
+        
     }
     #seat2 {
         top: 8px;
         left: 118px;
-        transform: scale(0.9);
+        
     }
     #seat3 {
         top: 8px;
         left: 297px;
-        transform: scale(0.9);
+        
     }
     #seat4 {
         top: 8px;
         left: 477px;
-        transform: scale(0.9);
+        
     }
     #seat5 {
         top: 8px;
         left: 656px;
-        transform: scale(0.9);
+        
     }
     #seat6 {
         top: 196px;
         left: 820px;
-        transform: scale(0.9);
+        
     }
     #seat7 {
         top: 390px;
         left: 656px;
-        transform: scale(0.9);
+        
     }
     #seat8 {
         top: 390px;
         left: 477px;
-        transform: scale(0.9);
+        
     }
     #seat9 {
         top: 390px;
         left: 297px;
-        transform: scale(0.9);
+        
     }
     #board {
         top: 218px;
         left: 266px;
-        transform: scale(0.9);
+        
     }
 }
 
 @media (max-width: 950px) {
+    .seat {
+
+        transform: scale(0.9);        
+    }
     #seat0 {
         top: 367px;
         left: 111px;
-        transform: scale(0.9);
+        
     }
     #seat1 {
         top: 184px;
         left: 5px;
-        transform: scale(0.9);
+        
     }
     #seat2 {
         top: 8px;
         left: 111px;
-        transform: scale(0.9);
+        
     }
     #seat3 {
         top: 8px;
         left: 279px;
-        transform: scale(0.9);
+        
     }
     #seat4 {
         top: 8px;
         left: 448px;
-        transform: scale(0.9);
+        
     }
     #seat5 {
         top: 8px;
         left: 617px;
-        transform: scale(0.9);
+        
     }
     #seat6 {
         top: 184px;
         left: 771px;
-        transform: scale(0.9);
+        
     }
     #seat7 {
         top: 367px;
         left: 617px;
-        transform: scale(0.9);
+        
     }
     #seat8 {
         top: 367px;
         left: 448px;
-        transform: scale(0.9);
+        
     }
     #seat9 {
         top: 367px;
         left: 279px;
-        transform: scale(0.9);
+        
     }
     #board {
         top: 205px;
         left: 250px;
-        transform: scale(0.9);
+        transform: scale(.9);        
     }
 }
 
 @media (max-width: 900px) {
+    .seat {
+        transform: scale(0.8);
+    }
     #seat0 {
         top: 345px;
         left: 104px;
-        transform: scale(0.8);
+        
     }
     #seat1 {
         top: 173px;
         left: 5px;
-        transform: scale(0.8);
+        
     }
     #seat2 {
         top: 8px;
         left: 104px;
-        transform: scale(0.8);
+        
     }
     #seat3 {
         top: 8px;
         left: 262px;
-        transform: scale(0.8);
+        
     }
     #seat4 {
         top: 8px;
         left: 421px;
-        transform: scale(0.8);
+        
     }
     #seat5 {
         top: 8px;
         left: 580px;
-        transform: scale(0.8);
+        
     }
     #seat6 {
         top: 173px;
         left: 725px;
-        transform: scale(0.8);
+        
     }
     #seat7 {
         top: 345px;
         left: 580px;
-        transform: scale(0.8);
+        
     }
     #seat8 {
         top: 345px;
         left: 421px;
-        transform: scale(0.8);
+        
     }
     #seat9 {
         top: 345px;
         left: 262px;
-        transform: scale(0.8);
+        
     }
     #board {
         top: 193px;
         left: 235px;
-        transform: scale(0.8);
+        
     }
 }
 
 @media (max-width: 850px) {
+    .seat {
+        transform: scale(0.8);
+    }
     #seat0 {
         top: 324px;
         left: 98px;
-        transform: scale(0.8);
+        
     }
     #seat1 {
         top: 163px;
         left: 5px;
-        transform: scale(0.8);
+        
     }
     #seat2 {
         top: 8px;
         left: 98px;
-        transform: scale(0.8);
+        
     }
     #seat3 {
         top: 8px;
         left: 246px;
-        transform: scale(0.8);
+        
     }
     #seat4 {
         top: 8px;
         left: 396px;
-        transform: scale(0.8);
+        
     }
     #seat5 {
         top: 8px;
         left: 545px;
-        transform: scale(0.8);
+        
     }
     #seat6 {
         top: 163px;
         left: 682px;
-        transform: scale(0.8);
+        
     }
     #seat7 {
         top: 324px;
         left: 545px;
-        transform: scale(0.8);
+        
     }
     #seat8 {
         top: 324px;
         left: 396px;
-        transform: scale(0.8);
+        
     }
     #seat9 {
         top: 324px;
         left: 246px;
-        transform: scale(0.8);
+        
     }
     #board {
         top: 181px;
         left: 221px;
-        transform: scale(0.8);
+        
     }
-}
-
-#all-options {
-    padding-top: 700px;
-}
-
-#game-options {
-    width: 820px;
-    padding: 50px 10px;
-}
-
-#action-options {
-    height: 50px;
-    display: inline-block;
-}
-
-.action-button {
-    background-color: silver;
-    border-radius: 3px;
-    color: darkgreen;
-    cursor: pointer;
-    font-size: 18px;
-    padding: 5px;
-    display: inline-block;
-}
-
-#setup-options {
-    width: 200px;
-    display: inline-block;
-}
-
-.setup-button {
-    background-color: silver;
-    border-radius: 3px;
-    cursor: pointer;
-    padding: 5px;
-    width: 160px;
-    margin: 3px;
-}
-
-.setup-button:hover {
-    box-shadow: 3px 3px 4px #000000;
-}
-
-#betting-options {
-    height:50px;
-    width: 600px;
-}
-
-.betting-button {
-    background-color: silver;
-    border-radius: 4px;
-    color: darkgreen;
-    cursor: pointer;
-    font-size: 18px;
-    text-align: center;
-    top: 0px;
-    padding: 5px;
-    display: inline-block;
-}
-
-.betting-button:hover {
-    box-shadow: 3px 3px 4px #000000;
-}
-
-#bet-button {
-    top: 0px;
-}
-
-#deal-button {
-    top: 0px;
-}
-
-#join-button {
-    top: 50px;
-}
-
-#away-button {
-    top: 100px;
-}
-
-#rebuy-button {
-    top: 100px;
-}
-
-#help-button {
-    top: 150px;
 }
 
 #history {
@@ -804,25 +760,6 @@ html, body {
 
 #call-button:hover {
     box-shadow: 3px 3px 4px #000000;
-}
-
-#quick-raises {
-    border-radius: 4px;
-    font-size: 18px;
-    height: 30px;
-    text-align: center;
-    width: 3.5em;
-    display: inline-block;
-}
-
-#quick-raises a:link {
-    color: white;
-    text-decoration: none;
-}
-
-#quick-raises a:hover {
-    color: white;
-    text-shadow: 3px 3px 4px #000000;
 }
 
 #modal-box {

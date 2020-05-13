@@ -117,7 +117,7 @@ function cl_get_action () {
     var minCurrency, bankrollCurrency, stepCurrency;
 
     if (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll <= LOCAL_STATE.TO_CALL) {
-      response.style.visibility = 'hidden';
+      internal_hide(response);
       gui_hide_betting_click();
     }
     else {
@@ -129,7 +129,7 @@ function cl_get_action () {
                               LOCAL_STATE.TO_CALL/100;
 
       stepCurrency = lowest_chip_amount/100;
-      response.style.visibility = 'visible';
+      internal_show(response);
       
       spinBox = new SpinBox('quick-raises', 
             {'minimum' : minCurrency, 
@@ -205,7 +205,7 @@ function cl_player_folds() {
   gui_write_game_response("");
   LOCAL_STATE.CMD = "player action";
   cl_send_SignalR(LOCAL_STATE);
-  var buttons = document.getElementById('setup-options');
+  //var buttons = document.getElementById('setup-options');
   internal_le_button(buttons,'away-button', cl_away_func);
   var seat = cl_get_my_seat();
   if (LOCAL_STATE.players[seat].bankroll < (LOCAL_STATE.STARTING_BANKROLL/4)) {
@@ -271,8 +271,7 @@ var cl_away = true;
 function cl_away_func() {  //toggles status between AWAY and WAIT, WAIT will get changed to a playing status
                             //when a new hand is dealt
   var seat = cl_get_my_seat();
-  var buttons = document.getElementById('setup-options');
-  var button = buttons.children['away-button'];
+  var button = document.getElementById('away-button');
   if (cl_away) {
     button.innerHTML = "Press to Return"
     cl_away = false;
@@ -293,7 +292,7 @@ function cl_rebuy() {
   LOCAL_STATE.players[seat].bankroll += LOCAL_STATE.STARTING_BANKROLL;
   LOCAL_STATE.players[seat].totalbank += LOCAL_STATE.STARTING_BANKROLL;
   LOCAL_STATE.players[seat].status = "WAIT";
-  var buttons = document.getElementById('setup-options');
+  //var buttons = document.getElementById('setup-options');
   internal_hide_le_button(buttons,'rebuy-button', cl_rebuy);
   LOCAL_STATE.CMD = "update player status";
   cl_send_SignalR(LOCAL_STATE);
@@ -309,7 +308,7 @@ function cl_new_round () {
   // Clear buttons
   if (LOCAL_STATE.players.length) { //hide sitting out button unless player is sitting out
     if (LOCAL_STATE.players[my_seat].status != "AWAY") {
-      var buttons = document.getElementById('setup-options');
+      //var buttons = document.getElementById('setup-options');
       internal_hide_le_button(buttons,'away-button', cl_away_func);
       internal_hide_le_button(buttons,'rebuy-button', cl_rebuy);
     }
@@ -445,7 +444,7 @@ function cl_change_name () {
     setLocalStorage("playername", my_name);
     cl_send_new_player(my_name);
   }
-  var buttons = document.getElementById('setup-options');
+  //var buttons = document.getElementById('setup-options');
   internal_le_button(buttons,'away-button', cl_away_func);
 }
 
@@ -658,7 +657,7 @@ function cl_msg_dispatch () {
     setTimeout(gui_write_game_response, 2500, LOCAL_STATE.CMD_PARMS);
     var sound = new Audio('sounds/tada.wav');
     sound.play();
-    var buttons = document.getElementById('setup-options');
+    //var buttons = document.getElementById('setup-options');
     internal_le_button(buttons,'away-button', cl_away_func);
     var seat = cl_get_my_seat();
     if ((LOCAL_STATE.players[seat].bankroll < (LOCAL_STATE.STARTING_BANKROLL/4)) ||
@@ -666,7 +665,7 @@ function cl_msg_dispatch () {
       internal_le_button(buttons,'rebuy-button', cl_rebuy);
     }
     if (I_am_Host) {
-      var buttons = document.getElementById('setup-options');
+      //var buttons = document.getElementById('setup-options');
       setTimeout(internal_le_button, 5000, buttons, 'deal-button', cl_request_next_hand);
       var accounting = 0;
       for (var n=0; n<LOCAL_STATE.players.length; n++) {
@@ -704,12 +703,12 @@ function cl_start_game() {
     cl_help_func,
     cl_rebuy,
     gui_toggle_the_theme_mode);
-  var buttons = document.getElementById('setup-options'); //this looks stupid, it is stupid, but I 
+  //var buttons = document.getElementById('setup-options'); //this looks stupid, it is stupid, but I 
   internal_hide_le_button(buttons, 'deal-button');        //don't feel like making the gui code work correctly
 }
 
 function cl_request_next_hand() {
-  var buttons = document.getElementById('setup-options');
+  //var buttons = document.getElementById('setup-options');
   internal_hide_le_button(buttons, 'deal-button');
   LOCAL_STATE.CMD = "request next hand";
   cl_send_SignalR(LOCAL_STATE);
