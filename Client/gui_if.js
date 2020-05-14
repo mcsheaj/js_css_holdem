@@ -80,7 +80,7 @@ function internal_setCard (diva, card, folded) {
   var opacity = 1.0;
 
   if (typeof card === 'undefined') {
-    alert('Undefined card ' + card);
+    //alert('Undefined card ' + card);
     image = "url('')";   
   } else if (card === "") {
     image = "url('')";
@@ -333,7 +333,8 @@ function gui_setup_fold_call_click (show_fold, call_text,
 function internal_le_button (buttons, button_name, button_func) {
   var le_button = document.getElementById(button_name);
   internal_show(le_button);
-  le_button.onclick = button_func;
+  //le_button.onclick = button_func;
+  le_button.addEventListener('click', button_func, false);
 }
 
 function gui_setup_option_buttons (new_game_func,
@@ -351,6 +352,7 @@ function gui_setup_option_buttons (new_game_func,
     internal_hide_le_button(buttons, 'deal-button', new_game_func);
   }
   internal_hide_le_button(buttons, 'away-button', away_game_func);
+  internal_hide_le_button(buttons, 'return-button', away_game_func);
   internal_le_button(buttons, 'join-button', join_game_func);
   internal_hide_le_button(buttons, 'mode-button', mode_func);
   internal_le_button(buttons, 'help-button', help_func);
@@ -370,6 +372,7 @@ function gui_hide_setup_option_buttons (name_func,
 
   internal_hide_le_button(buttons, 'deal-button');
   internal_hide_le_button(buttons, 'away-button');
+  internal_hide_le_button(buttons, 'return-button');
   internal_hide_le_button(buttons, 'join-button');
   internal_hide_le_button(buttons, 'mode-button');
   internal_hide_le_button(buttons, 'help-button');

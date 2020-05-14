@@ -21,14 +21,14 @@ body {
 
 .ribbon {
     background-color: rgba(165, 196, 217, .8);
-    height: 113px;
+    height: 123px;
     width: 100%;
     min-width: 800px;
 }
 
 .ribbon-button {
     background-color: rgba(165, 196, 217, .8);
-    height: 90px;
+    height: 100px;
     width: 90px;
     padding: 5px;
     float: left;

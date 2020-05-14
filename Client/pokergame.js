@@ -149,6 +149,17 @@ function init() {
     else {
         document.body.classList.remove("vertical");
     }
+
+    var rotateButton = document.getElementById('rotate-button');
+    rotateButton.addEventListener('click', function() {
+        if(document.body.classList.contains('vertical')) {
+            document.body.classList.remove('vertical');
+        }
+        else {
+            document.body.classList.add('vertical');
+        }
+    }, false);
+
     document.body.style.display = "block";
 }
 

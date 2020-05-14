@@ -207,6 +207,8 @@ function cl_player_folds() {
   cl_send_SignalR(LOCAL_STATE);
   //var buttons = document.getElementById('setup-options');
   internal_le_button(buttons,'away-button', cl_away_func);
+  internal_le_button(buttons,'return-button', cl_away_func);
+  internal_hide(document.getElementById('return-button'));
   var seat = cl_get_my_seat();
   if (LOCAL_STATE.players[seat].bankroll < (LOCAL_STATE.STARTING_BANKROLL/4)) {
     internal_le_button(buttons,'rebuy-button', cl_rebuy);
@@ -266,22 +268,22 @@ function cl_new_game () {
   cl_initialize_game();
 }
 
-var cl_away = true;
+var cl_away = false;
 
 function cl_away_func() {  //toggles status between AWAY and WAIT, WAIT will get changed to a playing status
                             //when a new hand is dealt
   var seat = cl_get_my_seat();
-  var button = document.getElementById('away-button');
-  var label = button.querySelector(".button-text");
   if (cl_away) {
-    label.innerHTML = "Return"
+    internal_hide(document.getElementById('return-button'));
+    internal_show(document.getElementById('away-button'));
     cl_away = false;
-    LOCAL_STATE.players[seat].status = "AWAY";
+    LOCAL_STATE.players[seat].status = "WAIT";
   }
   else {
-    label.innerHTML = "Sit Out"
+    internal_show(document.getElementById('return-button'));
+    internal_hide(document.getElementById('away-button'));
     cl_away = true;
-    LOCAL_STATE.players[seat].status = "WAIT";
+    LOCAL_STATE.players[seat].status = "AWAY";
   }
   cl_write_player(seat,0,0);
   LOCAL_STATE.CMD = "update player status";
@@ -311,7 +313,12 @@ function cl_new_round () {
     if (LOCAL_STATE.players[my_seat].status != "AWAY") {
       //var buttons = document.getElementById('setup-options');
       internal_hide_le_button(buttons,'away-button', cl_away_func);
+      internal_hide(document.getElementById('return-button'));
       internal_hide_le_button(buttons,'rebuy-button', cl_rebuy);
+    }
+    else {
+      internal_hide(document.getElementById('away-button'));
+      internal_hide_le_button(buttons,'return-button', cl_away_func);
     }
   }
   gui_hide_fold_call_click();
@@ -447,6 +454,8 @@ function cl_change_name () {
   }
   //var buttons = document.getElementById('setup-options');
   internal_le_button(buttons,'away-button', cl_away_func);
+  internal_le_button(buttons,'return-button', cl_away_func);
+  internal_hide(document.getElementById('return-button'));
 }
 
 function cl_clear_pot () {
@@ -660,6 +669,7 @@ function cl_msg_dispatch () {
     sound.play();
     //var buttons = document.getElementById('setup-options');
     internal_le_button(buttons,'away-button', cl_away_func);
+    internal_le_button(buttons,'return-button', cl_away_func);
     var seat = cl_get_my_seat();
     if ((LOCAL_STATE.players[seat].bankroll < (LOCAL_STATE.STARTING_BANKROLL/4)) ||
         (LOCAL_STATE.players[seat].status == "BUST")) {
