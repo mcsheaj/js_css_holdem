@@ -122,9 +122,33 @@ var app = {
 
 app.init();
 
+function dw_getWindowDims() {
+    var doc = document, w = window;
+    var docEl = (doc.compatMode && doc.compatMode === 'CSS1Compat')?
+            doc.documentElement: doc.body;
+    
+    var width = docEl.clientWidth;
+    var height = docEl.clientHeight;
+    
+    // mobile zoomed in?
+    if ( w.innerWidth && width > w.innerWidth ) {
+        width = w.innerWidth;
+        height = w.innerHeight;
+    }
+    
+    return {width: width, height: height};
+}
+
 function init() {
     cl_init();
     make_deck();
+    var dims = dw_getWindowDims();
+    if(dims.height > (dims.width * 1.3)) {
+        document.body.classList.add("vertical");
+    }
+    else {
+        document.body.classList.remove("vertical");
+    }
     document.body.style.display = "block";
 }
 
