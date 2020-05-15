@@ -454,6 +454,12 @@ function cl_change_name() {
     if (my_name) {
         setLocalStorage("playername", my_name);
         cl_send_new_player(my_name);
+        if(document.title.indexOf('-') > -1) {
+            document.title = my_name + ' - ' + document.title.substring(document.title.indexOf('-') + 2);
+        } 
+        else {
+            document.title = my_name + ' - ' + document.title;
+        }
     }
     //var buttons = document.getElementById('setup-options');
     internal_le_button(buttons, 'away-button', cl_away_func);
