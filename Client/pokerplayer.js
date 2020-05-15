@@ -670,6 +670,12 @@ function cl_msg_dispatch () {
     //var buttons = document.getElementById('setup-options');
     internal_le_button(buttons,'away-button', cl_away_func);
     internal_le_button(buttons,'return-button', cl_away_func);
+    if(cl_away) {
+      internal_hide(document.getElementById('away-button'));
+    }
+    else {
+      internal_hide(document.getElementById('return-button'));
+    }
     var seat = cl_get_my_seat();
     if ((LOCAL_STATE.players[seat].bankroll < (LOCAL_STATE.STARTING_BANKROLL/4)) ||
         (LOCAL_STATE.players[seat].status == "BUST")) {
