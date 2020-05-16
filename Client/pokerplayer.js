@@ -429,12 +429,15 @@ function cl_help_func () {
   "Leigh Anne Straight\n" +
   "*Need to ask Leigh Anne if the 5th card kicker is relevant\n\n";
 
+  var balance = 0;
   if (LOCAL_STATE.players.length) {
     help_text += "Let's Talk Bank: (current bets not accounted for during a hand)\n\n";
     for (var n=0; n<LOCAL_STATE.players.length; n++) {
       help_text += LOCAL_STATE.players[n].name + "'s current winnings $" + 
                 ((LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank)/100).toFixed(2) + "\n";
+      balance += LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank;
     }
+    help_text += "Balance = " + (balance/100).toFixed(2) + "\n";
   }
   window.alert(help_text);
 }
@@ -684,7 +687,7 @@ function cl_msg_dispatch () {
           LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank + LOCAL_STATE.global_pot_remainder;
       }
       if (accounting) {
-        window.alert("House account is off by $" + (accounting/100).toFixed(2));
+        setTimeout(window.alert, 4000, ("House account is off by $" + (accounting/100).toFixed(2)));
       }
     }
   }
