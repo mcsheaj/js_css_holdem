@@ -333,8 +333,8 @@ function gui_setup_fold_call_click (show_fold, call_text,
 function internal_le_button (buttons, button_name, button_func) {
   var le_button = document.getElementById(button_name);
   internal_show(le_button);
-  //le_button.onclick = button_func;
-  le_button.addEventListener('click', button_func, false);
+  le_button.onclick = button_func;
+  //le_button.addEventListener('click', button_func, false);
 }
 
 function gui_setup_option_buttons (new_game_func,
