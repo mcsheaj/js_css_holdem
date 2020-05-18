@@ -38,8 +38,8 @@ function player(name, bankroll, totalbank, carda, cardb, status, total_bet,
 }
 
 //var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net'; // JMM-Joe
-//var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net'; // MJM-Matt
-var apiBaseUrl = 'http://127.0.0.1:7071'; // JMM-Joe
+var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net'; // MJM-Matt
+//var apiBaseUrl = 'http://127.0.0.1:7071'; // JMM-Joe
 var authProvider = 'aad'; // aad, twitter, microsoftaccount, google, facebook
 var app = {
     connection: null,
