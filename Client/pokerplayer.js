@@ -727,7 +727,7 @@ function cl_msg_dispatch() {
                     LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank + LOCAL_STATE.global_pot_remainder;
             }
             if (accounting) {
-                window.alert("House account is off by $" + (accounting / 100).toFixed(2));
+                console.log("House account is off by $" + (accounting / 100).toFixed(2));
             }
         }
     }
