@@ -445,88 +445,85 @@ function cl_deal_fifth() {
 }
 
 function cl_get_my_seat() {
-    for (var n = 0; n < LOCAL_STATE.players.length; n++) {
-        if (LOCAL_STATE.players[n].name == my_name) {
-            my_seat = n;
-            break;
-        }
+  for (var n = 0; n < LOCAL_STATE.players.length; n++) {
+    if (LOCAL_STATE.players[n].name == my_name) {
+      my_seat = n;
+      break;
     }
-    return my_seat;
+  }
+  return my_seat;
 }
 
-function cl_help_func() {
-    var help_text = "Straight Flush\n" +
-        "Four of a Kind\n" +
-        "Full House\n" +
-        "Flush\n" +
-        "Straight\n" +
-        "Three of a Kind\n" +
-        "Two Pair\n" +
-        "One Pair\n" +
-        "High Card\n" +
-        "Leigh Anne Flush\n" +
-        "Leigh Anne Straight\n" +
-        "*Need to ask Leigh Anne if the 5th card kicker is relevant\n\n";
+function cl_help_func () {
+  var help_text = "Straight Flush\n" +
+  "Four of a Kind\n" +
+  "Full House\n" +
+  "Flush\n" +
+  "Straight\n" +
+  "Three of a Kind\n" +
+  "Two Pair\n" +
+  "One Pair\n" +
+  "High Card\n" +
+  "Leigh Anne Flush\n" +
+  "Leigh Anne Straight\n" +
+  "*Need to ask Leigh Anne if the 5th card kicker is relevant\n\n";
 
-    if (LOCAL_STATE.players.length) {
-        help_text += "Let's Talk Bank: (current bets not accounted for during a hand)\n\n";
-        for (var n = 0; n < LOCAL_STATE.players.length; n++) {
-            help_text += LOCAL_STATE.players[n].name + "'s current winnings $" +
-                ((LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank) / 100).toFixed(2) + "\n";
-        }
+  var balance = 0;
+  if (LOCAL_STATE.players.length) {
+    help_text += "Let's Talk Bank: (current bets not accounted for during a hand)\n\n";
+    for (var n=0; n<LOCAL_STATE.players.length; n++) {
+      help_text += LOCAL_STATE.players[n].name + "'s current winnings $" + 
+                ((LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank)/100).toFixed(2) + "\n";
+      balance += LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank;
     }
-    window.alert(help_text);
+    help_text += "Balance = " + (balance/100).toFixed(2) + "\n";
+  }
+  window.alert(help_text);
 }
 
-function cl_change_name() {
-    my_name = prompt("What is your name? (14 characters or less)", getLocalStorage("playername"));
-    if (my_name) {
-        if (my_name.length > 14) {
-            cl_my_pseudo_alert("Name must be less than 14 characters");
-            my_name = "";
-            return;
-        }
+function cl_change_name () {
+  my_name = prompt("What is your name? (14 characters or less)", getLocalStorage("playername"));
+  if (my_name) {
+    if (my_name.length > 14) {
+      cl_my_pseudo_alert("Name must be less than 14 characters");
+      my_name = "";
+      return;
     }
-    if (my_name) {
-        setLocalStorage("playername", my_name);
-        cl_send_new_player(my_name);
-        if(document.title.indexOf('-') > -1) {
-            document.title = my_name + ' - ' + document.title.substring(document.title.indexOf('-') + 2);
-        } 
-        else {
-            document.title = my_name + ' - ' + document.title;
-        }
-    }
-    //var buttons = document.getElementById('setup-options');
-    internal_le_button(buttons, 'away-button', cl_away_func);
-    internal_le_button(buttons, 'return-button', cl_away_func);
-    internal_hide(document.getElementById('return-button'));
+  }
+  if (my_name){
+    setLocalStorage("playername", my_name);
+    cl_send_new_player(my_name);
+  }
+  //var buttons = document.getElementById('setup-options');
+  internal_le_button(buttons,'away-button', cl_away_func);
+  internal_le_button(buttons,'return-button', cl_away_func);
+  internal_hide(document.getElementById('return-button'));
 }
 
-function cl_clear_pot() {
-    for (var i = 0; i < LOCAL_STATE.players.length; i++) {
-        LOCAL_STATE.players[i].total_bet = 0;
-    }
+function cl_clear_pot () {
+  for (var i = 0; i < LOCAL_STATE.players.length; i++) {
+    LOCAL_STATE.players[i].total_bet = 0;
+  }
 }
 
-function cl_collect_cards() {
-    LOCAL_STATE.board = new Array(6);
-
-    for (var i = 0; i < 5; i++) {
-        LOCAL_STATE.board[i] = "";
-        gui_lay_board_card(i, LOCAL_STATE.board[i]);     // Clear the board
-    }
-    for (i = 0; i < 3; i++) {
-        LOCAL_STATE.board[i] = "";
-        gui_burn_board_card(i, LOCAL_STATE.board[i]);
-    }
+function cl_collect_cards () {
+  LOCAL_STATE.board = new Array(6);
+   
+  for (var i = 0; i < 5; i++) {
+    LOCAL_STATE.board[i] = "";
+    gui_lay_board_card(i, LOCAL_STATE.board[i]);     // Clear the board
+  }
+  for (i = 0; i < 3; i++) {
+    LOCAL_STATE.board[i] = "";
+    gui_burn_board_card(i, LOCAL_STATE.board[i]);
+  }
 }
 
-function cl_has_money(i) {
-    if (LOCAL_STATE.players[i].bankroll >= 0.01) {
-        return true;
-    }
-    return false;
+function cl_has_money (i) {
+  if (LOCAL_STATE.players[i].bankroll >= 0.01) {
+    return true;
+  }
+  return false;
 }
 
 function cl_check_for_busts() {
@@ -741,6 +738,37 @@ function cl_msg_dispatch() {
     else {
         internal_hide(document.getElementById('return-button'));
     }
+    cl_write_all_players();
+    setTimeout(gui_write_game_response, 2500, LOCAL_STATE.CMD_PARMS);
+    var sound = new Audio('sounds/tada.wav');
+    sound.play();
+    //var buttons = document.getElementById('setup-options');
+    internal_le_button(buttons,'away-button', cl_away_func);
+    internal_le_button(buttons,'return-button', cl_away_func);
+    var seat = cl_get_my_seat();
+    if ((LOCAL_STATE.players[seat].bankroll < (LOCAL_STATE.STARTING_BANKROLL/4)) ||
+        (LOCAL_STATE.players[seat].status == "BUST")) {
+      internal_le_button(buttons,'rebuy-button', cl_rebuy);
+    }
+    if (I_am_Host) {
+      //var buttons = document.getElementById('setup-options');
+      setTimeout(internal_le_button, 5000, buttons, 'deal-button', cl_request_next_hand);
+      var accounting = 0;
+      for (var n=0; n<LOCAL_STATE.players.length; n++) {
+        accounting += 
+          LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank + LOCAL_STATE.global_pot_remainder;
+      }
+      if (accounting) {
+        setTimeout(window.alert, 4000, ("House account is off by $" + (accounting/100).toFixed(2)));
+      }
+    }
+
+  if(cl_away) {
+    internal_hide(document.getElementById('away-button'));
+  }
+  else {
+    internal_hide(document.getElementById('return-button'));
+  }
 }
 
 //Outgoing msg functions

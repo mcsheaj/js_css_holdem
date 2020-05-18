@@ -161,7 +161,9 @@ function add_new_player(current_state) {
                 dup = true;
                 SERVER_STATE.players[n].status = "WAIT";  //user must sit out rest of hand
                 send_game_response(SERVER_STATE.players[n].name + " has rejoined the game");
-                //rejoining with same name should just send back game state without adding new player
+                //rejoining with same name should just send back game state without adding new player\
+                LOCAL_STATE.CMD = "update player status";
+                cl_send_SignalR(LOCAL_STATE);
             }
         }
         if (!dup) {
@@ -552,7 +554,7 @@ function get_pot_size() {
 }
 
 function get_pot_size_html() {
-    return "<font size=+2><b>TOTAL POT: " + get_pot_size() + "</b><br></font>";
+    return "<font size=+2><b>TOTAL POT: $" + (get_pot_size()/100).toFixed(2) + "</b><br></font>";
 }
 
 function pot_is_good() {
