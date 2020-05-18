@@ -554,7 +554,7 @@ function get_pot_size() {
 }
 
 function get_pot_size_html() {
-    return "<font size=+2><b>TOTAL POT: $" + (get_pot_size()/100).toFixed(2) + "</b><br></font>";
+    return "<font size=+2><b>TOTAL POT: $" + (get_pot_size() / 100).toFixed(2) + "</b><br></font>";
 }
 
 function pot_is_good() {
@@ -829,7 +829,7 @@ function msg_dispatch(current_state) {
                 send_SignalR(SERVER_STATE);
             }
 
-            else { 
+            else {
                 handle_end_of_round();
                 SERVER_STATE.CMD = "end of round";
                 send_SignalR(SERVER_STATE);
