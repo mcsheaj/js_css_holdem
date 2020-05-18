@@ -34,7 +34,32 @@ function cl_player(name, bankroll, totalbank, carda, cardb, status, total_bet, s
     this.subtotal_bet = subtotal_bet;
 }
 
+function dw_getWindowDims() {
+    var doc = document, w = window;
+    var docEl = (doc.compatMode && doc.compatMode === 'CSS1Compat')?
+            doc.documentElement: doc.body;
+    
+    var width = docEl.clientWidth;
+    var height = docEl.clientHeight;
+    
+    // mobile zoomed in?
+    if ( w.innerWidth && width > w.innerWidth ) {
+        width = w.innerWidth;
+        height = w.innerHeight;
+    }
+    
+    return {width: width, height: height};
+}
+
 function cl_init() {
+    var dims = dw_getWindowDims();
+    if(dims.height > (dims.width * 1.3)) {
+        document.body.classList.add("vertical");
+    }
+    else {
+        document.body.classList.remove("vertical");
+    }
+
     document.querySelector('body').style.display = 'block';
     gui_hide_poker_table();
     gui_hide_log_window();
@@ -53,6 +78,18 @@ function cl_init() {
         gui_toggle_the_theme_mode);
     cl_new_game();
     cl_new_game_continues();
+
+    var rotateButton = document.getElementById('rotate-button');
+    rotateButton.addEventListener('click', function() {
+        if(document.body.classList.contains('vertical')) {
+            document.body.classList.remove('vertical');
+        }
+        else {
+            document.body.classList.add('vertical');
+        }
+    }, false);
+
+    document.body.style.display = "block";
 }
 
 function cl_get_pot_size() {
@@ -362,8 +399,7 @@ function cl_leave_pseudo_alert() {
 }
 
 function cl_my_pseudo_alert(text) {
-    var html = "<html><body topmargin=2 bottommargin=0 bgcolor=" +
-        BG_HILITE + " onload='document.f.y.focus();'>" +
+    var html = "<html><body topmargin=2 bottommargin=0 bgcolor=gold onload='document.f.y.focus();'>" +
         "<font size=+2>" + text +
         "</font><form name=f><input name=y type=button value='  OK  ' " +
         "onclick='parent.cl_leave_pseudo_alert()'></form></body></html>";
@@ -507,7 +543,7 @@ function cl_write_player(n, hilite, show_cards) {
     var name_background_color = "";
     var name_font_color = "";
     if (hilite == 1) {            // Current
-        name_background_color = BG_HILITE;
+        name_background_color = 'gold';
         name_font_color = 'black';
     } else if (hilite == 2) {       // Winner
         name_background_color = 'red';

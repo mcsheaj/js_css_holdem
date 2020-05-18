@@ -1,8 +1,7 @@
 "use strict";
 
-var cards = new Array(52);
+var gameDeck = new Array(52);
 var deck_index = 0;
-var BG_HILITE = 'gold';
 
 var lowest_chip_amount = 5; //this works for my home game nickel/dime
 
@@ -39,7 +38,8 @@ function player(name, bankroll, totalbank, carda, cardb, status, total_bet,
 }
 
 //var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net'; // JMM-Joe
-var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net'; // MJM-Matt
+//var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net'; // MJM-Matt
+var apiBaseUrl = 'http://127.0.0.1:7071'; // JMM-Joe
 var authProvider = 'aad'; // aad, twitter, microsoftaccount, google, facebook
 var app = {
     connection: null,
@@ -62,21 +62,21 @@ var app = {
         });
 
         // setup a callback to tell me when my connection is lost
-        app.connection.onclose(function () { 
+        app.connection.onclose(function () {
             app.ready = false;
-            console.log('disconnected'); 
+            console.log('disconnected');
             app.init();
             app.timerId = setInterval(app.init, 10000);
         });
 
         // now initiate the connection
         app.connection.start()
-            .then(function () { 
+            .then(function () {
                 if (app.timerId) {
                     console.log('reconnected');
-                    clearInterval(app.timerId); 
+                    clearInterval(app.timerId);
                 }
-                app.ready = true; 
+                app.ready = true;
             })
             .catch(console.error);
     },
@@ -122,55 +122,19 @@ var app = {
 
 app.init();
 
-function dw_getWindowDims() {
-    var doc = document, w = window;
-    var docEl = (doc.compatMode && doc.compatMode === 'CSS1Compat')?
-            doc.documentElement: doc.body;
-    
-    var width = docEl.clientWidth;
-    var height = docEl.clientHeight;
-    
-    // mobile zoomed in?
-    if ( w.innerWidth && width > w.innerWidth ) {
-        width = w.innerWidth;
-        height = w.innerHeight;
-    }
-    
-    return {width: width, height: height};
-}
-
 function init() {
     cl_init();
     make_deck();
-    var dims = dw_getWindowDims();
-    if(dims.height > (dims.width * 1.3)) {
-        document.body.classList.add("vertical");
-    }
-    else {
-        document.body.classList.remove("vertical");
-    }
-
-    var rotateButton = document.getElementById('rotate-button');
-    rotateButton.addEventListener('click', function() {
-        if(document.body.classList.contains('vertical')) {
-            document.body.classList.remove('vertical');
-        }
-        else {
-            document.body.classList.add('vertical');
-        }
-    }, false);
-
-    document.body.style.display = "block";
 }
 
 function make_deck() {
     var i;
     var j = 0;
     for (i = 2; i < 15; i++) {
-        cards[j++] = "h" + i;
-        cards[j++] = "d" + i;
-        cards[j++] = "c" + i;
-        cards[j++] = "s" + i;
+        gameDeck[j++] = "h" + i;
+        gameDeck[j++] = "d" + i;
+        gameDeck[j++] = "c" + i;
+        gameDeck[j++] = "s" + i;
     }
 }
 
@@ -184,10 +148,10 @@ function add_new_player(current_state) {
     var player_added = false;
 
     if (SERVER_STATE.players.length == 0) { //first player
-        SERVER_STATE.players[0] = 
-            new player(current_state.CMD_PARMS, 
-                        current_state.STARTING_BANKROLL, 
-                        current_state.STARTING_BANKROLL, "", "", "WAIT", 0, 0);
+        SERVER_STATE.players[0] =
+            new player(current_state.CMD_PARMS,
+                current_state.STARTING_BANKROLL,
+                current_state.STARTING_BANKROLL, "", "", "WAIT", 0, 0);
         player_added = true;
     }
     else if (SERVER_STATE.players.length < 10) { //can't have more than 10 players
@@ -201,10 +165,10 @@ function add_new_player(current_state) {
             }
         }
         if (!dup) {
-            SERVER_STATE.players[SERVER_STATE.players.length] = 
-                new player(current_state.CMD_PARMS, 
-                            current_state.STARTING_BANKROLL, 
-                            current_state.STARTING_BANKROLL, "", "", "WAIT", 0, 0);
+            SERVER_STATE.players[SERVER_STATE.players.length] =
+                new player(current_state.CMD_PARMS,
+                    current_state.STARTING_BANKROLL,
+                    current_state.STARTING_BANKROLL, "", "", "WAIT", 0, 0);
             player_added = true;
         }
     }
@@ -244,9 +208,9 @@ function number_of_active_players() { //this does not include players who went a
     var i;
     for (i = 0; i < SERVER_STATE.players.length; i++) {
         if ((has_money(i)) && ((SERVER_STATE.players[i].status != "FOLD") &&
-        (SERVER_STATE.players[i].status != "BUST") &&
-        (SERVER_STATE.players[i].status != "AWAY") &&
-        (SERVER_STATE.players[i].status != "WAIT"))) {
+            (SERVER_STATE.players[i].status != "BUST") &&
+            (SERVER_STATE.players[i].status != "AWAY") &&
+            (SERVER_STATE.players[i].status != "WAIT"))) {
             num_playing += 1;
         }
     }
@@ -296,18 +260,17 @@ function get_random_int(max) {
 }
 
 function new_shuffle() {
-    var len = cards.length;
+    var len = gameDeck.length;
     for (var i = 0; i < len; ++i) {
         var j = i + get_random_int(len - i);
-        var tmp = cards[i];
-        cards[i] = cards[j];
-        cards[j] = tmp;
+        var tmp = gameDeck[i];
+        gameDeck[i] = gameDeck[j];
+        gameDeck[j] = tmp;
     }
 }
 
 function shuffle() {
     new_shuffle();
-    deck_index = 0;
 }
 
 function blinds_and_deal() {
@@ -331,9 +294,9 @@ function deal_and_write_a() {
 
     start_player = current_player = get_next_player_position(SERVER_STATE.button_index, 1);
 
-    // Deal cards to players still active
+    // Deal gameDeck to players still active
     do {
-        SERVER_STATE.players[current_player].carda = cards[deck_index++];
+        SERVER_STATE.players[current_player].carda = gameDeck[deck_index++];
         current_player = get_next_player_position(current_player, 1);
     } while (current_player != start_player);
 
@@ -346,39 +309,39 @@ function deal_and_write_b() {
 
     start_player = current_player = get_next_player_position(SERVER_STATE.button_index, 1);
 
-    // Deal cards to players still active
+    // Deal gameDeck to players still active
     do {
-        SERVER_STATE.players[current_player].cardb = cards[deck_index++];
+        SERVER_STATE.players[current_player].cardb = gameDeck[deck_index++];
         current_player = get_next_player_position(current_player, 1);
     } while (current_player != start_player);
 }
 
 function deal_flop() {
-    var burn = cards[deck_index++];
+    var burn = gameDeck[deck_index++];
 
     for (var i = 0; i < 3; i++) {
-        SERVER_STATE.board[i] = cards[deck_index++];
+        SERVER_STATE.board[i] = gameDeck[deck_index++];
     }
     get_next_action_seat();
     clear_subtotal_bets();
 }
 
 function deal_fourth() {
-    var burn = cards[deck_index++];
-    SERVER_STATE.board[3] = cards[deck_index++];
+    var burn = gameDeck[deck_index++];
+    SERVER_STATE.board[3] = gameDeck[deck_index++];
     get_next_action_seat();
     clear_subtotal_bets();
 }
 
 function deal_fifth() {
-    var burn = cards[deck_index++];
-    SERVER_STATE.board[4] = cards[deck_index++];
+    var burn = gameDeck[deck_index++];
+    SERVER_STATE.board[4] = gameDeck[deck_index++];
     get_next_action_seat();
     clear_subtotal_bets();
 }
 
 function clear_subtotal_bets() {
-    for (var n=0; n<SERVER_STATE.players.length; n++) {
+    for (var n = 0; n < SERVER_STATE.players.length; n++) {
         SERVER_STATE.players[n].subtotal_bet = 0;
     }
 }
@@ -425,7 +388,7 @@ function handle_end_of_round() {
         // The first round all who not folded or busted are candidates
         // If that/ose winner(s) cannot get all of the pot then we try
         // with the remaining players until the pot is emptied
-        var winners = get_winners(candidates);
+        var winners = get_winners(candidates, SERVER_STATE.board);
         if (!best_hand_players) {
             best_hand_players = winners;
         }
@@ -515,14 +478,14 @@ function handle_end_of_round() {
             if (number_of_players_in_hand() > 1) {
                 winner_text += SERVER_STATE.players[i].name + " wins $" + (allocations[i] / 100).toFixed(2) + " with " +
                     winning_hands[i] + ". ";
-                    if (best_hand_players[i]) {
-                        SERVER_STATE.players[i].status = "WIN";
-                    } 
+                if (best_hand_players[i]) {
+                    SERVER_STATE.players[i].status = "WIN";
+                }
             } else {
                 winner_text += SERVER_STATE.players[i].name + " wins $" + (allocations[i] / 100).toFixed(2);
                 if (best_hand_players[i]) {
                     SERVER_STATE.players[i].status = "NOSHOW";
-                } 
+                }
             }
             SERVER_STATE.players[i].bankroll += allocations[i];
         }
@@ -540,8 +503,7 @@ function handle_end_of_round() {
         }
     }
     var hi_lite_color = gui_get_theme_mode_highlite_color();
-    var html = "<html><body topmargin=2 bottommargin=0 bgcolor=" + BG_HILITE +
-        " onload='document.f.c.focus();'>" +
+    var html = "<html><body topmargin=2 bottommargin=0 bgcolor=gold onload='document.f.c.focus();'>" +
         get_pot_size_html() +
         "  <font size=+2 color=" + hi_lite_color +
         "><b>Winning: " +
@@ -556,7 +518,7 @@ function the_bet_function(player_index, bet_amount) {
     if (SERVER_STATE.current_bet_amount < bet_amount) {
         SERVER_STATE.current_bet_amount = bet_amount;
     }
-    if (SERVER_STATE.current_min_raise < bet_amount) { 
+    if (SERVER_STATE.current_min_raise < bet_amount) {
         SERVER_STATE.current_min_raise = bet_amount;
     }
     SERVER_STATE.players[player_index].subtotal_bet += bet_amount;
@@ -597,10 +559,10 @@ function pot_is_good() {
     //if the next players total bet is = tables current bet then pot is good
     var good = true;
 
-        var next = get_next_player_position(SERVER_STATE.current_bettor_index, 1);
-            if (SERVER_STATE.players[next].total_bet != SERVER_STATE.current_total_bet) {
-                good = false
-            }
+    var next = get_next_player_position(SERVER_STATE.current_bettor_index, 1);
+    if (SERVER_STATE.players[next].total_bet != SERVER_STATE.current_total_bet) {
+        good = false
+    }
 
     return good;
 }
@@ -626,15 +588,15 @@ function reset_player_statuses(type) {
         if ((type == 0) && (SERVER_STATE.players[i].status != "AWAY")) {
             SERVER_STATE.players[i].status = "";
         } else if (type == 1 &&
-                SERVER_STATE.players[i].status != "BUST" &&
-                SERVER_STATE.players[i].status != "AWAY") {
+            SERVER_STATE.players[i].status != "BUST" &&
+            SERVER_STATE.players[i].status != "AWAY") {
             SERVER_STATE.players[i].status = "";
         } else if (type == 2 &&
-                SERVER_STATE.players[i].status != "FOLD" &&
-                SERVER_STATE.players[i].status != "BUST" &&
-                SERVER_STATE.players[i].status != "AWAY" &&
-                SERVER_STATE.players[i].status != "ALL IN" &&
-                SERVER_STATE.players[i].status != "WAIT") {
+            SERVER_STATE.players[i].status != "FOLD" &&
+            SERVER_STATE.players[i].status != "BUST" &&
+            SERVER_STATE.players[i].status != "AWAY" &&
+            SERVER_STATE.players[i].status != "ALL IN" &&
+            SERVER_STATE.players[i].status != "WAIT") {
             SERVER_STATE.players[i].status = "";
         }
     }
@@ -705,8 +667,8 @@ function active_player(i) {
         (SERVER_STATE.players[i].status == "WAIT") ||
         (SERVER_STATE.players[i].status == "AWAY") ||
         (!has_money(i))) {
-            return false;
-        }
+        return false;
+    }
     return true;
 }
 
@@ -732,9 +694,9 @@ function betting_is_done() {  //this is done before we move to next player so se
         why = "pot is not right"
     }
     //but if next player has OPTION (BB in first round) then betting is still not done
-    else if (SERVER_STATE.players[get_next_player_position(SERVER_STATE.current_bettor_index, 1)].status == 
-                "OPTION") {
-         done = false; why = "option"
+    else if (SERVER_STATE.players[get_next_player_position(SERVER_STATE.current_bettor_index, 1)].status ==
+        "OPTION") {
+        done = false; why = "option"
     }
     //and if any players status is "" then we haven't been completely around once in this round so keep betting
     for (var n = 0; n < SERVER_STATE.players.length; n++) {
@@ -742,7 +704,7 @@ function betting_is_done() {  //this is done before we move to next player so se
             done = false; why = "not around once";
         }
         //if anyones total bet is not equal to the tables current high total then keep betting
-        if (active_player(n)) { 
+        if (active_player(n)) {
             if (SERVER_STATE.players[n].total_bet != SERVER_STATE.current_total_bet) {
                 done = false; why = "player " + SERVER_STATE.players[n].name + " bet not = current total bet";
             }
@@ -759,8 +721,8 @@ function betting_is_done() {  //this is done before we move to next player so se
         done = true;
         all_all_in = true; why = "all in";
     }
-    console.log("betting_is_done returned " + done + ", player is " + 
-                SERVER_STATE.players[SERVER_STATE.current_bettor_index].name + ", because " + why);
+    console.log("betting_is_done returned " + done + ", player is " +
+        SERVER_STATE.players[SERVER_STATE.current_bettor_index].name + ", because " + why);
     return done;
 }
 

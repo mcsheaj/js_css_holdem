@@ -3,7 +3,10 @@
 
 var tests = ["straight_flush", "four_of_a_kind", "full_house", "flush", "straight", "three_of_a_kind", "two_pair", "one_pair", "hi_card"];
 
-function get_winners (my_players) {
+var _board;
+
+function get_winners (my_players, board) {
+  _board = board;
   var winners;
   for (var i = 0; i < tests.length; i++) {
     winners = winners_helper(my_players, tests[i]);
@@ -724,7 +727,7 @@ function get_predominant_suit (my_cards) {
 function group_cards (player) {
   var c = new Array(7);
   for (var i = 0; i < 5; i++) {
-    c[i] = SERVER_STATE.board[i];
+    c[i] = _board[i];
   }
   c[5] = player.carda;
   c[6] = player.cardb;
