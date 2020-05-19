@@ -345,10 +345,10 @@ function gui_setup_option_buttons(new_game_func,
     mode_func) {
     //var buttons = document.getElementById('setup-options');
 
-    //if (I_am_Host) {
-    //    internal_le_button(buttons, 'deal-button', new_game_func);
-    //}
-    //else {
+    if (cl_i_am_host()) {
+        internal_le_button(buttons, 'deal-button', new_game_func);
+    }
+    else {
         internal_hide_le_button(buttons, 'deal-button', new_game_func);
     //}
     internal_hide_le_button(buttons, 'away-button', away_game_func);
