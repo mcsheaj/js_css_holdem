@@ -889,6 +889,16 @@ div#quick-raises-outer {
     }
 }
 
+@media (min-width: 1000px) {
+    .poker-table {
+        margin-top: 100px;
+    }
+
+    .vertical .poker-table {
+        margin-top: 0;
+    }
+}
+
 #history {
     border-color: black;
     border-radius: 4px;

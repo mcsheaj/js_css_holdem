@@ -37,8 +37,8 @@ function player(name, bankroll, totalbank, carda, cardb, status, total_bet,
     this.subtotal_bet = subtotal_bet;
 }
 
-//var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net'; // JMM-Joe
 var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net'; // MJM-Matt
+//var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net'; // JMM-Joe
 //var apiBaseUrl = 'http://127.0.0.1:7071'; // JMM-Joe
 var authProvider = 'aad'; // aad, twitter, microsoftaccount, google, facebook
 var app = {
@@ -154,7 +154,8 @@ function add_new_player(current_state) {
                 current_state.STARTING_BANKROLL, "", "", "WAIT", 0, 0);
         player_added = true;
     }
-    else if (SERVER_STATE.players.length < 10) { //can't have more than 10 players
+    else {
+        // first check for a player rejoining
         var dup = false;
         for (var n = 0; n < SERVER_STATE.players.length; n++) { //look for a player with duplicate name
             if (SERVER_STATE.players[n].name == current_state.CMD_PARMS) {
@@ -176,16 +177,15 @@ function add_new_player(current_state) {
                 }
             }
         }
-        if (!dup) {
+
+        // if it's not a rejoin, AND the table isn't full, add the player
+        if (!dup && SERVER_STATE.players.length < 10) {
             SERVER_STATE.players[SERVER_STATE.players.length] =
                 new player(current_state.CMD_PARMS,
                     current_state.STARTING_BANKROLL,
                     current_state.STARTING_BANKROLL, "", "", "WAIT", 0, 0);
             player_added = true;
         }
-    }
-    else {
-        //send_game_response("Player tried to join a full game. No more than 10 players allowed");
     }
     return player_added;
 }
