@@ -273,6 +273,7 @@ function new_shuffle() {
 
 function shuffle() {
     new_shuffle();
+    deck_index = 0;
 }
 
 function blinds_and_deal() {
