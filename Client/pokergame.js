@@ -37,8 +37,8 @@ function player(name, bankroll, totalbank, carda, cardb, status, total_bet,
     this.subtotal_bet = subtotal_bet;
 }
 
-var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net'; // JMM-Joe
-//var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net'; // MJM-Matt
+//var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net'; // JMM-Joe
+var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net'; // MJM-Matt
 //var apiBaseUrl = 'http://127.0.0.1:7071'; // JMM-Joe
 var authProvider = 'aad'; // aad, twitter, microsoftaccount, google, facebook
 var app = {
@@ -159,11 +159,21 @@ function add_new_player(current_state) {
         for (var n = 0; n < SERVER_STATE.players.length; n++) { //look for a player with duplicate name
             if (SERVER_STATE.players[n].name == current_state.CMD_PARMS) {
                 dup = true;
-                SERVER_STATE.players[n].status = "WAIT";  //user must sit out rest of hand
+                if ((SERVER_STATE.players[n].status != "BUST") &&
+                    (SERVER_STATE.players[n].status != "AWAY") &&
+                    (SERVER_STATE.players[n].status != "WAIT")) {
+                        SERVER_STATE.players[n].status = "FOLD";  //user must sit out rest of hand
+                    }
                 send_game_response(SERVER_STATE.players[n].name + " has rejoined the game");
-                //rejoining with same name should just send back game state without adding new player\
-                LOCAL_STATE.CMD = "update player status";
-                cl_send_SignalR(LOCAL_STATE);
+                //rejoining with same name should just send back game state without adding new player
+                SERVER_STATE.CMD = "update player status";
+                cl_send_SignalR(SERVER_STATE);
+                if (SERVER_STATE.current_bettor_index == n) {
+                    SERVER_STATE.players[n].status = "FOLD";
+                    SERVER_STATE.CMD = "player action";  //testing, this seems like it should take care of player rejoining
+                                                    //while having the action
+                    cl_send_SignalR(SERVER_STATE);
+                }
             }
         }
         if (!dup) {
