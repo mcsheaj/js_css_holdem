@@ -37,8 +37,8 @@ function player(name, bankroll, totalbank, carda, cardb, status, total_bet,
     this.subtotal_bet = subtotal_bet;
 }
 
-//var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net'; // JMM-Joe
-var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net'; // MJM-Matt
+var apiBaseUrl = 'https://func-jsholdem-useast.azurewebsites.net'; // JMM-Joe
+//var apiBaseUrl = 'https://func-jsholdem-eastus-matt.azurewebsites.net'; // MJM-Matt
 //var apiBaseUrl = 'http://127.0.0.1:7071'; // JMM-Joe
 var authProvider = 'aad'; // aad, twitter, microsoftaccount, google, facebook
 var app = {
@@ -746,7 +746,7 @@ function compRan() {
 
 function msg_dispatch(current_state) {
 
-    if (!I_am_Host) return;  //if i'm not host then don't do any game logic
+    if (!cl_i_am_host()) return;  //if i'm not host then don't do any game logic
 
     if (current_state.CMD == "add new player") {
         if (add_new_player(current_state)) {

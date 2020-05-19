@@ -23,6 +23,10 @@ var LOCAL_STATE = {
     last_raiser: -1
 }
 
+function cl_i_am_host() {
+    return window.location.search.toLowerCase().indexOf("iamhost=true") > -1;
+}
+
 function cl_player(name, bankroll, totalbank, carda, cardb, status, total_bet, subtotal_bet) {
     this.name = name;
     this.bankroll = bankroll;
@@ -109,7 +113,7 @@ var spinBox;
 
 function cl_get_action() {
     cl_get_my_seat();
-    if ((LOCAL_STATE.current_bettor_index == my_seat) || (I_am_Host)) {
+    if ((LOCAL_STATE.current_bettor_index == my_seat) || (cl_i_am_host())) {
         if (LOCAL_STATE.current_bettor_index == my_seat) {
             var sound = new Audio('sounds/ding.wav');
             sound.play();
@@ -718,7 +722,7 @@ function cl_msg_dispatch() {
             (LOCAL_STATE.players[seat].status == "BUST")) {
             internal_le_button(buttons, 'rebuy-button', cl_rebuy);
         }
-        if (I_am_Host) {
+        if (cl_i_am_host()) {
             //var buttons = document.getElementById('setup-options');
             setTimeout(internal_le_button, 5000, buttons, 'deal-button', cl_request_next_hand);
             var accounting = 0;
