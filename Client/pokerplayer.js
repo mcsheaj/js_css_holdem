@@ -655,6 +655,16 @@ function cl_write_all_players() {
 function cl_msg_dispatch() {
 
     if (LOCAL_STATE.CMD == "new player added") {
+        if(LOCAL_STATE.players[LOCAL_STATE.players.length-1].name === my_name) {
+            if(document.title.indexOf(":") > -1) { 
+                document.title = my_name + " : " + document.title.substring(document.title.indexOf(':') + 2);
+            }
+            else {
+                document.title = my_name + " : " + document.title;
+            }
+    
+        }
+
         cl_write_all_players();
         //to work correctly this needs to recover and draw current state of things
         gui_write_basic_general(LOCAL_STATE.current_bet_amount);
