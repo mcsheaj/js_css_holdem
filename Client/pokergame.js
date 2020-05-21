@@ -134,12 +134,6 @@ function make_deck() {
     }
 }
 
-function clear_player_cards(count) {
-    count = count;
-    for (var pl = 0; pl < count; ++pl) {
-    }
-}
-
 function add_new_player(current_state) {
     var player_added = false;
 
