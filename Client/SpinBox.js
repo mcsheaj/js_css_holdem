@@ -68,20 +68,28 @@ function SpinBox(container, options) {
 
     }
 
+    // apply the classes
+    container.className += ' ' + this.options.className;
+
     // create the up button
-    var upButton = document.createElement('span');
+    var upButton = container.querySelector("span." + this.options.className + "Up");
+    if(upButton) {
+        upButton.parentNode.removeChild(upButton);
+    }
+    upButton = document.createElement('span');
     upButton.appendChild(document.createElement('span'));
+    upButton.className = this.options.className + 'Up';
     container.appendChild(upButton);
 
     // create the down button
-    var downButton = document.createElement('span');
+    var downButton = container.querySelector("span." + this.options.className + "Down");
+    if(downButton) {
+        downButton.parentNode.removeChild(downButton);
+    }
+    downButton = document.createElement('span');
     downButton.appendChild(document.createElement('span'));
-    container.appendChild(downButton);
-
-    // apply the classes
-    container.className += ' ' + this.options.className;
-    upButton.className = this.options.className + 'Up';
     downButton.className = this.options.className + 'Down';
+    container.appendChild(downButton);
 
     // add the listeners
     this.addEventListener(
