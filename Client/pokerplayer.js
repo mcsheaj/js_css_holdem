@@ -489,19 +489,24 @@ function cl_help_func() {
 }
 
 function cl_change_name() {
-    my_name = prompt("What is your name? (14 characters or less)", getLocalStorage("playername"));
-    if (my_name) {
-        if (my_name.length > 14) {
+    var tmp_name = prompt("What is your name? (14 characters or less)", getLocalStorage("playername"));
+    if (tmp_name) {
+        if (tmp_name.length > 14) {
             cl_my_pseudo_alert("Name must be less than 14 characters");
             my_name = "";
             return;
         }
+        else {
+            my_name = tmp_name;
+        }
+    }
+    else {
+        return; // the user hit cancel, don't fold them for no reason
     }
     if (my_name) {
         setLocalStorage("playername", my_name);
         cl_send_new_player(my_name);
     }
-    //var buttons = document.getElementById('setup-options');
     internal_le_button(buttons, 'away-button', cl_away_func);
     internal_le_button(buttons, 'return-button', cl_away_func);
     internal_hide(document.getElementById('return-button'));
@@ -709,9 +714,9 @@ function cl_msg_dispatch() {
         }
     }
     else if (LOCAL_STATE.CMD == "end of round") {
-        cl_deal_flop();
-        setTimeout(cl_deal_fourth, 2000);
-        setTimeout(cl_deal_fifth, 2500);
+        //cl_deal_flop();
+        //setTimeout(cl_deal_fourth, 2000);
+        //setTimeout(cl_deal_fifth, 2500);
         gui_hide_quick_raise();
         gui_hide_fold_call_click();
         gui_hide_betting_click();
