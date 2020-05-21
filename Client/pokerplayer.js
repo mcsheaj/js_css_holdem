@@ -114,6 +114,7 @@ var spinBox;
 function cl_get_action() {
     cl_get_my_seat();
     if ((LOCAL_STATE.current_bettor_index == my_seat) || (cl_i_am_host())) {
+
         if (LOCAL_STATE.current_bettor_index == my_seat) {
             var sound = new Audio('sounds/ding.wav');
             sound.play();
@@ -148,17 +149,19 @@ function cl_get_action() {
         }
         if (to_call) {
             gui_setup_betting_click("==> Raise", cl_handle_raise);
+            document.getElementById("quick-raises-description").innerHTML =
+                call_button_text + " and enter raise:";
         }
         else {
+            document.getElementById("quick-raises-description").innerHTML =
+                "Enter bet amount:";
             gui_setup_betting_click("==> Bet", cl_handle_raise);
         }
-        //PUT SPINNER INPUT HERE
-        var response = document.getElementById('quick-raises');
 
         var minCurrency, bankrollCurrency, stepCurrency;
 
         if (LOCAL_STATE.players[LOCAL_STATE.current_bettor_index].bankroll <= LOCAL_STATE.TO_CALL) {
-            internal_hide(response);
+            gui_hide_quick_raise();
             gui_hide_betting_click();
         }
         else {
@@ -170,7 +173,7 @@ function cl_get_action() {
                 LOCAL_STATE.TO_CALL / 100;
 
             stepCurrency = lowest_chip_amount / 100;
-            internal_show(response);
+            gui_show_quick_raise();
 
             spinBox = new SpinBox('quick-raises',
                 {
@@ -654,17 +657,16 @@ function cl_write_all_players() {
 //HANDLE incoming message from server
 function cl_msg_dispatch() {
 
-    if (LOCAL_STATE.CMD == "new player added") {
-        if(LOCAL_STATE.players[LOCAL_STATE.players.length-1].name === my_name) {
-            if(document.title.indexOf(":") > -1) { 
-                document.title = my_name + " : " + document.title.substring(document.title.indexOf(':') + 2);
-            }
-            else {
-                document.title = my_name + " : " + document.title;
-            }
-    
+    if (my_name && !document.title.startsWith(my_name + ": ")) {
+        if (document.title.indexOf(":") > -1) {
+            document.title = my_name + ": " + document.title.substring(document.title.indexOf(':') + 2);
         }
+        else {
+            document.title = my_name + ": " + document.title;
+        }
+    }
 
+    if (LOCAL_STATE.CMD == "new player added") {
         cl_write_all_players();
         //to work correctly this needs to recover and draw current state of things
         gui_write_basic_general(LOCAL_STATE.current_bet_amount);

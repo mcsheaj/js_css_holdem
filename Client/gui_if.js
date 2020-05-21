@@ -420,7 +420,13 @@ function gui_write_quick_raise(text) {
 }
 
 function gui_hide_quick_raise() {
-    gui_write_quick_raise("");
+    document.getElementById("quick-raises-outer").classList.add("hidden");
+    document.getElementById("quick-raises").classList.add("hidden");
+}
+
+function gui_show_quick_raise() {
+    document.getElementById("quick-raises-outer").classList.remove("hidden");
+    document.getElementById("quick-raises").classList.remove("hidden");
 }
 
 function gui_write_modal_box(text) {
