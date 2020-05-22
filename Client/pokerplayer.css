@@ -21,14 +21,14 @@ body {
 
 .ribbon {
     background-color: rgba(165, 196, 217, .8);
-    height: 123px;
+    height: 136px;
     width: 100%;
     min-width: 800px;
 }
 
 .ribbon-button {
     background-color: rgba(165, 196, 217, .8);
-    height: 100px;
+    height: 113px;
     width: 90px;
     padding: 5px;
     float: left;
@@ -64,6 +64,26 @@ div#quick-raises-inner {
     width: 150px;
     padding: 10px;
     margin: 0 20px 0 20px;
+}
+
+.small-buttons {
+    float: right;
+    margin: 0;
+    padding: 0;
+    width: 202px;
+}
+
+.small-buttons .ribbon-button.setup-option {
+    height: 47px;
+    width: 45px;
+}
+
+.small-buttons img.button-icon {
+    height: 32px;
+}
+
+.small-buttons span.button-text {
+    font-size: .8em;
 }
 
 .poker-table {
