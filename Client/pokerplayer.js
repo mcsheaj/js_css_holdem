@@ -116,8 +116,10 @@ function cl_get_action() {
     if ((LOCAL_STATE.current_bettor_index == my_seat) || (cl_i_am_host())) {
 
         if (LOCAL_STATE.current_bettor_index == my_seat) {
-            var sound = new Audio('sounds/ding.wav');
+            var sound = document.getElementById("ding");
             sound.play();
+//            var sound = new Audio('sounds/ding.wav');
+//            sound.play();
         }
 
         gui_hide_quick_raise();
@@ -489,16 +491,9 @@ function cl_help_func() {
 }
 
 function cl_change_name() {
-    var tmp_name = prompt("What is your name? (14 characters or less)", getLocalStorage("playername"));
+    var tmp_name = prompt("What is your name? ", getLocalStorage("playername"));
     if (tmp_name) {
-        if (tmp_name.length > 14) {
-            cl_my_pseudo_alert("Name must be less than 14 characters");
-            my_name = "";
-            return;
-        }
-        else {
-            my_name = tmp_name;
-        }
+        my_name = tmp_name;
     }
     else {
         return; // the user hit cancel, don't fold them for no reason
@@ -546,6 +541,22 @@ function cl_check_for_busts() {
     }
 }
 
+function cl_is_player_in_game(player) {
+    if(player.status === "RAISE" ||
+       player.status === "CHECK" ||
+       player.status === "CALL" ||
+       player.status === "WIN" ||
+       player.status === "SHOW" ||
+       player.status === "NOSHOW" ||
+       player.status === "OPTION" ||
+       player.status === "") {
+           return true;
+    }
+    else {
+        return false;
+    }
+}
+
 function cl_write_player(n, hilite, show_cards) {
     var carda = "";
     var cardb = "";
@@ -572,25 +583,29 @@ function cl_write_player(n, hilite, show_cards) {
     show_cards = 1;
 
     if (LOCAL_STATE.players[n].carda) {
-        if (LOCAL_STATE.players[n].status == "FOLD") {
+        if (!cl_is_player_in_game(LOCAL_STATE.players[n])) {
             carda = "";
-            show_folded = true;
+            if(LOCAL_STATE.players[n].status == "FOLD") {
+                show_folded = true;
+            }            
         } else {
             carda = "blinded";
         }
-        if (show_cards && LOCAL_STATE.players[n].status != "FOLD") {
+        if (show_cards && cl_is_player_in_game(LOCAL_STATE.players[n])) {
             carda = LOCAL_STATE.players[n].carda;
         }
     }
 
     if (LOCAL_STATE.players[n].cardb) {
-        if (LOCAL_STATE.players[n].status == "FOLD") {
+        if (!cl_is_player_in_game(LOCAL_STATE.players[n])) {
             cardb = "";
-            show_folded = true;
+            if(LOCAL_STATE.players[n].status == "FOLD") {
+                show_folded = true;
+            }            
         } else {
             cardb = "blinded";
         }
-        if (show_cards && LOCAL_STATE.players[n].status != "FOLD") {
+        if (show_cards && cl_is_player_in_game(LOCAL_STATE.players[n])) {
             cardb = LOCAL_STATE.players[n].cardb;
         }
     }
@@ -601,19 +616,15 @@ function cl_write_player(n, hilite, show_cards) {
 
     if (LOCAL_STATE.players[n].status == "FOLD") {
         bet_text = "FOLDED";
-        // ($" +(LOCAL_STATE.players[n].total_bet/100).toFixed(2) + ")";
     } else if ((LOCAL_STATE.players[n].status == "BUST")) {
         bet_text = "BUSTED";
     } else if (!cl_has_money(n)) {
         bet_text = "ALL IN " + (LOCAL_STATE.players[n].subtotal_bet / 100).toFixed(2);
-        // + " ($" + (LOCAL_STATE.players[n].total_bet / 100).toFixed(2) + ")";
     } else {
         bet_text = LOCAL_STATE.players[n].status + " $" + (LOCAL_STATE.players[n].subtotal_bet / 100).toFixed(2);
-        // + " ($" + (LOCAL_STATE.players[n].total_bet / 100).toFixed(2) + ")";
     }
     if (LOCAL_STATE.players[n].status == "CHECK") {
         bet_text = "Check";
-        // + " ($" + (LOCAL_STATE.players[n].total_bet / 100).toFixed(2) + ")";
     }
 
     gui_set_player_name(LOCAL_STATE.players[n].name, n);    // offset 1 on seat-index
@@ -656,8 +667,6 @@ function cl_write_all_players() {
         }
     }
 }
-
-
 
 //HANDLE incoming message from server
 function cl_msg_dispatch() {
@@ -729,8 +738,11 @@ function cl_msg_dispatch() {
         }
         cl_write_all_players();
         setTimeout(gui_write_game_response, 2500, LOCAL_STATE.CMD_PARMS);
-        var sound = new Audio('sounds/tada.wav');
+        var sound = document.getElementById("tada");
+        sound.volume = 0.1;
         sound.play();
+        //var sound = new Audio('sounds/tada.wav');
+        //sound.play();
         //var buttons = document.getElementById('setup-options');
         internal_le_button(buttons, 'away-button', cl_away_func);
         internal_le_button(buttons, 'return-button', cl_away_func);
@@ -755,9 +767,11 @@ function cl_msg_dispatch() {
 
     if (cl_away) {
         internal_hide(document.getElementById('away-button'));
+        internal_show(document.getElementById('return-button'));
     }
     else {
         internal_hide(document.getElementById('return-button'));
+        internal_show(document.getElementById('away-button'));
     }
 }
 
