@@ -723,9 +723,9 @@ function cl_msg_dispatch() {
         }
     }
     else if (LOCAL_STATE.CMD == "end of round") {
-        //cl_deal_flop();
-        //setTimeout(cl_deal_fourth, 2000);
-        //setTimeout(cl_deal_fifth, 2500);
+        cl_deal_flop();
+        setTimeout(cl_deal_fourth, 2000);
+        setTimeout(cl_deal_fifth, 2500);
         gui_hide_quick_raise();
         gui_hide_fold_call_click();
         gui_hide_betting_click();
