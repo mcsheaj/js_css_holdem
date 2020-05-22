@@ -769,9 +769,13 @@ function cl_msg_dispatch() {
         internal_hide(document.getElementById('away-button'));
         internal_show(document.getElementById('return-button'));
     }
-    else {
+    else if (LOCAL_STATE.players[my_seat] && !cl_is_player_in_game(LOCAL_STATE.players[my_seat])) {
         internal_hide(document.getElementById('return-button'));
         internal_show(document.getElementById('away-button'));
+    }
+    else {
+        internal_hide(document.getElementById('return-button'));
+        internal_hide(document.getElementById('away-button'));
     }
 }
 
