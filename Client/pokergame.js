@@ -487,7 +487,7 @@ function handle_end_of_round() {
             } else {
                 winner_text += SERVER_STATE.players[i].name + " wins $" + (allocations[i] / 100).toFixed(2);
                 if (best_hand_players[i]) {
-                    SERVER_STATE.players[i].status = "NOSHOW";
+                    //SERVER_STATE.players[i].status = "NOSHOW";
                 }
             }
             SERVER_STATE.players[i].bankroll += allocations[i];

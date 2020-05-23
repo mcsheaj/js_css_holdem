@@ -559,11 +559,21 @@ function cl_is_player_in_game(player) {
 function cl_num_players_in_hand() {
     var num = 0;
     for (var n=0; n<LOCAL_STATE.players.length; n++) {
-        if (cl_is_player_in_game(n)) {
+        if (cl_is_player_in_game(LOCAL_STATE.players[n])) {
             num++;
         }
     }
     return num;
+}
+
+function cl_hand_is_over() {
+    var hand_over = false;
+    for (var n=0; n<LOCAL_STATE.players.length; n++) {
+        if (LOCAL_STATE.players[n].status == "WIN") {
+            hand_over = true;
+        }
+    }
+    return hand_over;
 }
 
 function cl_write_player(n, hilite, show_cards) {
@@ -640,17 +650,26 @@ function cl_write_player(n, hilite, show_cards) {
     gui_set_bet(bet_text, n);
     gui_set_bankroll((LOCAL_STATE.players[n].bankroll / 100).toFixed(2), n);
 
-    //show winner and last raiser cards
-    if ((LOCAL_STATE.players[n].status == "WIN") || 
-            ((LOCAL_STATE.players[n].status != "NOSHOW") && LOCAL_STATE.last_raiser == n)) {
-        gui_set_player_cards(carda, cardb, n, show_folded);
+    if (cl_hand_is_over()) { //special things to do if hand is complete
+        if (cl_num_players_in_hand() < 2) { // no showdown hand
+            gui_set_player_cards("blinded", "blinded", n, show_folded);
+            return;
+        }
+        //show winner's cards
+        if (LOCAL_STATE.players[n].status == "WIN") { // show winners cards
+            gui_set_player_cards(carda, cardb, n, show_folded);
+            return;
+        }
+        // *********ADD CODE HERE -- NEED TO SHOW last raiser cards somehow, need to identify that the hand is over
+        if (cl_hand_is_over()) {
+            if (n == LOCAL_STATE.last_raiser) {
+                gui_set_player_cards(carda, cardb, n, show_folded);
+            }
+        }
         return;
-    }//unless no showdown
-    //if (LOCAL_STATE.players[n].status == "NOSHOW") {
-    if (cl_num_players_in_hand() < 2) {
-        gui_set_player_cards("blinded", "blinded", n, show_folded);
     }
-    if (LOCAL_STATE.players[n].name == my_name) {
+
+    if (LOCAL_STATE.players[n].name == my_name) { // always show my own cards
         gui_set_player_cards(carda, cardb, n, show_folded);
     }
     else {
