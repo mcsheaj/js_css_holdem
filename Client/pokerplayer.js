@@ -435,7 +435,9 @@ function cl_show_board() {
 
 function cl_deal_flop() {
     cl_write_all_players();
-    setTimeout(gui_burn_board_card, 500, 0, "blinded");
+    if (LOCAL_STATE.board[2] != "") {
+        setTimeout(gui_burn_board_card, 500, 0, "blinded");
+    }
     setTimeout(gui_lay_board_card, 1000, 0, LOCAL_STATE.board[0]);
     setTimeout(gui_lay_board_card, 1500, 1, LOCAL_STATE.board[1]);
     setTimeout(gui_lay_board_card, 2000, 2, LOCAL_STATE.board[2]);
@@ -443,13 +445,17 @@ function cl_deal_flop() {
 
 function cl_deal_fourth() {
     cl_write_all_players();
-    setTimeout(gui_burn_board_card, 500, 1, "blinded");
+    if (LOCAL_STATE.board[3] != "") {
+        setTimeout(gui_burn_board_card, 500, 1, "blinded");
+    }
     setTimeout(gui_lay_board_card, 1000, 3, LOCAL_STATE.board[3]);
 }
 
 function cl_deal_fifth() {
     cl_write_all_players();
-    setTimeout(gui_burn_board_card, 500, 2, "blinded");
+    if (LOCAL_STATE.board[4] != "") {
+        setTimeout(gui_burn_board_card, 500, 2, "blinded");
+    }
     setTimeout(gui_lay_board_card, 1000, 4, LOCAL_STATE.board[4]);
 }
 
