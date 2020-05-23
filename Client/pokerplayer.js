@@ -546,7 +546,6 @@ function cl_is_player_in_game(player) {
        player.status === "CHECK" ||
        player.status === "CALL" ||
        player.status === "WIN" ||
-       player.status === "SHOW" ||
        player.status === "NOSHOW" ||
        player.status === "OPTION" ||
        player.status === "") {
@@ -632,7 +631,8 @@ function cl_write_player(n, hilite, show_cards) {
     gui_set_bankroll((LOCAL_STATE.players[n].bankroll / 100).toFixed(2), n);
 
     //show winner and last raiser cards
-    if ((LOCAL_STATE.players[n].status == "WIN") || (LOCAL_STATE.players[n].status == "SHOW")) {
+    if ((LOCAL_STATE.players[n].status == "WIN") || 
+            ((LOCAL_STATE.players[n].status != "NOSHOW") && LOCAL_STATE.last_raiser == n)) {
         gui_set_player_cards(carda, cardb, n, show_folded);
         return;
     }//unless no showdown
@@ -730,21 +730,12 @@ function cl_msg_dispatch() {
         gui_hide_fold_call_click();
         gui_hide_betting_click();
         cl_check_for_busts();
-        for (var n = 0; n < LOCAL_STATE.players.length; n++) { //show cards if player made last raise
-            if ((n == LOCAL_STATE.last_raiser) && (LOCAL_STATE.players[n].status != "WIN") &&
-                (LOCAL_STATE.players[n].status != "NOSHOW")) {
-                LOCAL_STATE.players[n].status = "SHOW";
-            }
-        }
         cl_write_all_players();
         setTimeout(gui_write_game_response, 2500, LOCAL_STATE.CMD_PARMS);
         var sound = document.getElementById("tada");
         sound.volume = 0.1;
         sound.play();
-        //var sound = new Audio('sounds/tada.wav');
-        //sound.play();
-        //var buttons = document.getElementById('setup-options');
-        internal_le_button(buttons, 'away-button', cl_away_func);
+         internal_le_button(buttons, 'away-button', cl_away_func);
         internal_le_button(buttons, 'return-button', cl_away_func);
         var seat = cl_get_my_seat();
         if ((LOCAL_STATE.players[seat].bankroll < (LOCAL_STATE.STARTING_BANKROLL / 4)) ||
@@ -752,7 +743,6 @@ function cl_msg_dispatch() {
             internal_le_button(buttons, 'rebuy-button', cl_rebuy);
         }
         if (cl_i_am_host()) {
-            //var buttons = document.getElementById('setup-options');
             setTimeout(internal_le_button, 5000, buttons, 'deal-button', cl_request_next_hand);
             var accounting = 0;
             for (var n = 0; n < LOCAL_STATE.players.length; n++) {
