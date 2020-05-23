@@ -91,7 +91,7 @@ var app = {
                 text: messageText
             }
         };
-
+        console.log("message about to be sent");
 
         // send the message using axios promises
         return axios.post(`${apiBaseUrl}/api/send`, message)

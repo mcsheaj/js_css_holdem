@@ -432,7 +432,7 @@ function cl_show_board() {
 }
 
 function cl_deal_flop() {
-    cl_write_all_players();
+    //cl_write_all_players();
     if (LOCAL_STATE.board[2] != "") {
         setTimeout(gui_burn_board_card, 500, 0, "blinded");
     }
@@ -442,7 +442,7 @@ function cl_deal_flop() {
 }
 
 function cl_deal_fourth() {
-    cl_write_all_players();
+    //cl_write_all_players();
     if (LOCAL_STATE.board[3] != "") {
         setTimeout(gui_burn_board_card, 500, 1, "blinded");
     }
@@ -450,7 +450,7 @@ function cl_deal_fourth() {
 }
 
 function cl_deal_fifth() {
-    cl_write_all_players();
+    //cl_write_all_players();
     if (LOCAL_STATE.board[4] != "") {
         setTimeout(gui_burn_board_card, 500, 2, "blinded");
     }
@@ -546,11 +546,41 @@ function cl_check_for_busts() {
 }
 
 function cl_is_player_in_game(player) {
+    /*
     if(player.status === "RAISE" ||
        player.status === "CHECK" ||
        player.status === "CALL" ||
        player.status === "WIN" ||
-       player.status === "NOSHOW" ||
+       player.status === "WAIT" ||
+       player.status === "OPTION" ||
+       player.status === "FOLD" ||
+       player.status === "") {
+           return true;
+    } */
+    if (player.status !== "BUST" &&
+        player.status !== "AWAY") {
+            return true;
+        }
+    else {
+        return false;
+    }
+}
+
+function cl_num_players_in_game() {
+    var num = 0;
+    for (var n=0; n<LOCAL_STATE.players.length; n++) {
+        if (cl_is_player_in_game(LOCAL_STATE.players[n])) {
+            num++;
+        }
+    }
+    return num;
+}
+
+function cl_is_player_in_hand(player) {
+    if(player.status === "RAISE" ||
+       player.status === "CHECK" ||
+       player.status === "CALL" ||
+       player.status === "WIN" ||
        player.status === "OPTION" ||
        player.status === "") {
            return true;
@@ -563,7 +593,7 @@ function cl_is_player_in_game(player) {
 function cl_num_players_in_hand() {
     var num = 0;
     for (var n=0; n<LOCAL_STATE.players.length; n++) {
-        if (cl_is_player_in_game(LOCAL_STATE.players[n])) {
+        if (cl_is_player_in_hand(LOCAL_STATE.players[n])) {
             num++;
         }
     }
@@ -606,7 +636,7 @@ function cl_write_player(n, hilite, show_cards) {
     show_cards = 1;
 
     if (LOCAL_STATE.players[n].carda) {
-        if (!cl_is_player_in_game(LOCAL_STATE.players[n])) {
+        if (!cl_is_player_in_hand(LOCAL_STATE.players[n])) {
             carda = "";
             if(LOCAL_STATE.players[n].status == "FOLD") {
                 show_folded = true;
@@ -614,13 +644,13 @@ function cl_write_player(n, hilite, show_cards) {
         } else {
             carda = "blinded";
         }
-        if (show_cards && cl_is_player_in_game(LOCAL_STATE.players[n])) {
+        if (show_cards && cl_is_player_in_hand(LOCAL_STATE.players[n])) {
             carda = LOCAL_STATE.players[n].carda;
         }
     }
 
     if (LOCAL_STATE.players[n].cardb) {
-        if (!cl_is_player_in_game(LOCAL_STATE.players[n])) {
+        if (!cl_is_player_in_hand(LOCAL_STATE.players[n])) {
             cardb = "";
             if(LOCAL_STATE.players[n].status == "FOLD") {
                 show_folded = true;
@@ -628,7 +658,7 @@ function cl_write_player(n, hilite, show_cards) {
         } else {
             cardb = "blinded";
         }
-        if (show_cards && cl_is_player_in_game(LOCAL_STATE.players[n])) {
+        if (show_cards && cl_is_player_in_hand(LOCAL_STATE.players[n])) {
             cardb = LOCAL_STATE.players[n].cardb;
         }
     }
@@ -689,21 +719,24 @@ function cl_write_player(n, hilite, show_cards) {
 }
 
 function cl_write_all_players() {
+    console.log("write all players called");
     for (var n = 0; n < LOCAL_STATE.players.length; n++) {
+        if (LOCAL_STATE.players[n].status == "WIN") {
+            cl_write_player(n, 2, 0);
+            return;
+        }
         if (LOCAL_STATE.current_bettor_index != n) {
             cl_write_player(n, 0, 0);
         }
         else {
             cl_write_player(n, 1, 0);
         }
-        if ((LOCAL_STATE.players[n].status == "WIN") || (LOCAL_STATE.players[n].status == "NOSHOW")) {
-            cl_write_player(n, 2, 0);
-        }
     }
 }
 
 //HANDLE incoming message from server
 function cl_msg_dispatch() {
+    console.log("msg dispatch called, CMD - " + LOCAL_STATE.CMD);
 
     if (my_name && !document.title.startsWith(my_name + ": ")) {
         if (document.title.indexOf(":") > -1) {
@@ -793,7 +826,7 @@ function cl_msg_dispatch() {
         internal_hide(document.getElementById('away-button'));
         internal_show(document.getElementById('return-button'));
     }
-    else if (LOCAL_STATE.players[my_seat] && !cl_is_player_in_game(LOCAL_STATE.players[my_seat])) {
+    else if (LOCAL_STATE.players[my_seat] && !cl_is_player_in_hand(LOCAL_STATE.players[my_seat])) {
         internal_hide(document.getElementById('return-button'));
         internal_show(document.getElementById('away-button'));
     }
@@ -827,15 +860,19 @@ function cl_start_game() {
         cl_help_func,
         cl_rebuy,
         gui_toggle_the_theme_mode);
-    //var buttons = document.getElementById('setup-options'); //this looks stupid, it is stupid, but I 
-    internal_hide_le_button(buttons, 'deal-button');        //don't feel like making the gui code work correctly
+    
+    internal_hide_le_button(buttons, 'deal-button');        
 }
 
 function cl_request_next_hand() {
-    //var buttons = document.getElementById('setup-options');
-    internal_hide_le_button(buttons, 'deal-button');
-    LOCAL_STATE.CMD = "request next hand";
-    cl_send_SignalR(LOCAL_STATE);
+    if (cl_num_players_in_game() > 1) {    
+        internal_hide_le_button(buttons, 'deal-button');
+        LOCAL_STATE.CMD = "request next hand";
+        cl_send_SignalR(LOCAL_STATE);
+    }
+    else {
+        gui_write_game_response("Not enough active players to deal hand");
+    }
 }
 
 function cl_send_SignalR(current_state) {
