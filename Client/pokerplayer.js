@@ -556,6 +556,16 @@ function cl_is_player_in_game(player) {
     }
 }
 
+function cl_num_players_in_hand() {
+    var num = 0;
+    for (var n=0; n<LOCAL_STATE.players.length; n++) {
+        if (cl_is_player_in_game(n)) {
+            num++;
+        }
+    }
+    return num;
+}
+
 function cl_write_player(n, hilite, show_cards) {
     var carda = "";
     var cardb = "";
@@ -636,7 +646,8 @@ function cl_write_player(n, hilite, show_cards) {
         gui_set_player_cards(carda, cardb, n, show_folded);
         return;
     }//unless no showdown
-    if (LOCAL_STATE.players[n].status == "NOSHOW") {
+    //if (LOCAL_STATE.players[n].status == "NOSHOW") {
+    if (cl_num_players_in_hand() < 2) {
         gui_set_player_cards("blinded", "blinded", n, show_folded);
     }
     if (LOCAL_STATE.players[n].name == my_name) {
@@ -735,7 +746,7 @@ function cl_msg_dispatch() {
         var sound = document.getElementById("tada");
         sound.volume = 0.1;
         sound.play();
-         internal_le_button(buttons, 'away-button', cl_away_func);
+        internal_le_button(buttons, 'away-button', cl_away_func);
         internal_le_button(buttons, 'return-button', cl_away_func);
         var seat = cl_get_my_seat();
         if ((LOCAL_STATE.players[seat].bankroll < (LOCAL_STATE.STARTING_BANKROLL / 4)) ||
@@ -750,7 +761,7 @@ function cl_msg_dispatch() {
                     LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank + LOCAL_STATE.global_pot_remainder;
             }
             if (accounting) {
-                window.alert("House account is off by $" + (accounting / 100).toFixed(2));
+                console.log("House account is off by $" + (accounting / 100).toFixed(2));
             }
         }
     }
