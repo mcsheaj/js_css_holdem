@@ -355,7 +355,6 @@ function cl_new_game_continues(req_no_opponents) {
 }
 
 function cl_new_round() {
-    LOCAL_STATE.RUN_EM = 0;
     // Clear buttons
     if (LOCAL_STATE.players.length) { //hide sitting out button unless player is sitting out
         if (LOCAL_STATE.players[my_seat].status != "AWAY") {
@@ -377,8 +376,7 @@ function cl_new_round() {
     LOCAL_STATE.current_bet_amount = LOCAL_STATE.BIG_BLIND;
     cl_collect_cards();
 
-    var i;
-    for (i = 0; i < LOCAL_STATE.players.length; i++) {
+    for (var i = 0; i < LOCAL_STATE.players.length; i++) {
         cl_write_player(i, 0, 0);
     }
 
@@ -765,8 +763,8 @@ function cl_msg_dispatch() {
         gui_hide_quick_raise();
         gui_hide_fold_call_click();
         gui_hide_betting_click();
-        cl_check_for_busts();
         cl_write_all_players();
+        cl_check_for_busts();
         setTimeout(gui_write_game_response, 2500, LOCAL_STATE.CMD_PARMS);
         var sound = document.getElementById("tada");
         sound.volume = 0.1;
