@@ -91,8 +91,7 @@ var app = {
                 text: messageText
             }
         };
-        console.log("message about to be sent");
-
+        
         // send the message using axios promises
         return axios.post(`${apiBaseUrl}/api/send`, message)
             .then(
@@ -464,6 +463,7 @@ function handle_end_of_round() {
     } // End of pot distribution
 
     SERVER_STATE.global_pot_remainder = pot_remainder;
+    console.log("global pot remainder is " + SERVER_STATE.global_pot_remainder);
 
     pot_remainder = 0;
     var winner_text = "";
@@ -502,6 +502,7 @@ function handle_end_of_round() {
             if (has_money(i)) {
                 SERVER_STATE.players[i].bankroll += pot_remainder;
                 pot_remainder = 0;
+                SERVER_STATE.global_pot_remainder = 0;
             }
         }
     }
@@ -548,7 +549,7 @@ function make_readable_rank(r) {
 function get_pot_size() {
     var p = 0;
     for (var i = 0; i < SERVER_STATE.players.length; i++) {
-        p += SERVER_STATE.players[i].total_bet; // + SERVER_STATE.players[i].subtotal_bet;
+        p += SERVER_STATE.players[i].total_bet; 
     }
     p += SERVER_STATE.global_pot_remainder;
     return p;
@@ -620,8 +621,7 @@ function get_num_betting() {
 }
 
 function get_next_player_position(i, delta) {
-    if (number_of_active_players() < 1) { // getting here is not good
-        console.log("no active player left but get_next_player was called")
+    if (number_of_active_players() < 1) { 
         return;
     }
     var j = 0;
@@ -648,7 +648,6 @@ function get_next_player_position(i, delta) {
         if (!has_money(i)) loop_on = 1;
         if (++j < delta) loop_on = 1;
         if (j > SERVER_STATE.players.length) { //no active players, getting here is not good
-            console.log("Bad stuff, no next player to get")
             loop_on = 0;
         }
     } while (loop_on);
@@ -724,8 +723,8 @@ function betting_is_done() {  //this is done before we move to next player so se
         done = true;
         all_all_in = true; why = "all in";
     }
-    console.log("betting_is_done returned " + done + ", player is " +
-        SERVER_STATE.players[SERVER_STATE.current_bettor_index].name + ", because " + why);
+    //console.log("betting_is_done returned " + done + ", player is " +
+    //    SERVER_STATE.players[SERVER_STATE.current_bettor_index].name + ", because " + why);
     return done;
 }
 

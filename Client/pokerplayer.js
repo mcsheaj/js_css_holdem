@@ -719,7 +719,7 @@ function cl_write_player(n, hilite, show_cards) {
 }
 
 function cl_write_all_players() {
-    console.log("write all players called");
+    //console.log("write all players called");
     for (var n = 0; n < LOCAL_STATE.players.length; n++) {
         if (LOCAL_STATE.players[n].status == "WIN") {
             cl_write_player(n, 2, 0);
@@ -736,7 +736,7 @@ function cl_write_all_players() {
 
 //HANDLE incoming message from server
 function cl_msg_dispatch() {
-    console.log("msg dispatch called, CMD - " + LOCAL_STATE.CMD);
+    //console.log("msg dispatch called, CMD - " + LOCAL_STATE.CMD);
 
     if (my_name && !document.title.startsWith(my_name + ": ")) {
         if (document.title.indexOf(":") > -1) {
