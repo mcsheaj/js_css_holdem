@@ -380,11 +380,11 @@ function handle_end_of_round() {
     var best_hand_players;
     var current_pot_to_split = 0;
     var pot_remainder = 0;
-    if (SERVER_STATE.global_pot_remainder) {
-        pot_remainder = SERVER_STATE.global_pot_remainder;
-        my_total_pot_size += SERVER_STATE.global_pot_remainder;
-        SERVER_STATE.global_pot_remainder = 0;
-    }
+    //if (SERVER_STATE.global_pot_remainder) {
+    //    pot_remainder = SERVER_STATE.global_pot_remainder;
+    //    my_total_pot_size += SERVER_STATE.global_pot_remainder;
+    //    SERVER_STATE.global_pot_remainder = 0;
+    //}
 
     while (my_total_pot_size > (pot_remainder + 0.9) && still_active_candidates) {
         // The first round all who not folded or busted are candidates
@@ -416,7 +416,7 @@ function handle_end_of_round() {
             }
         }
 
-        current_pot_to_split = pot_remainder;
+        current_pot_to_split = SERVER_STATE.global_pot_remainder;
         pot_remainder = 0;
 
         for (i = 0; i < SERVER_STATE.players.length; i++) {
@@ -462,8 +462,8 @@ function handle_end_of_round() {
         }
     } // End of pot distribution
 
-    SERVER_STATE.global_pot_remainder = pot_remainder;
-    console.log("global pot remainder is " + SERVER_STATE.global_pot_remainder);
+    //SERVER_STATE.global_pot_remainder = pot_remainder;
+    //console.log("global pot remainder is " + SERVER_STATE.global_pot_remainder);
 
     pot_remainder = 0;
     var winner_text = "";
@@ -481,14 +481,11 @@ function handle_end_of_round() {
             if (number_of_players_in_hand() > 1) {
                 winner_text += SERVER_STATE.players[i].name + " wins $" + (allocations[i] / 100).toFixed(2) + " with " +
                     winning_hands[i] + ". ";
-                if (best_hand_players[i]) {
+                //if (best_hand_players[i]) {
                     SERVER_STATE.players[i].status = "WIN";
-                }
+                //}
             } else {
                 winner_text += SERVER_STATE.players[i].name + " wins $" + (allocations[i] / 100).toFixed(2);
-                if (best_hand_players[i]) {
-                    //SERVER_STATE.players[i].status = "NOSHOW";
-                }
             }
             SERVER_STATE.players[i].bankroll += allocations[i];
         }
@@ -502,7 +499,7 @@ function handle_end_of_round() {
             if (has_money(i)) {
                 SERVER_STATE.players[i].bankroll += pot_remainder;
                 pot_remainder = 0;
-                SERVER_STATE.global_pot_remainder = 0;
+                //SERVER_STATE.global_pot_remainder = 0;
             }
         }
     }
@@ -514,6 +511,7 @@ function handle_end_of_round() {
         winner_text + "</b></font><br>";
 
     SERVER_STATE.CMD_PARMS = html; //winner_text gets sent to players to display
+    SERVER_STATE.global_pot_remainder = my_total_pot_size;
 }
 
 

@@ -489,7 +489,8 @@ function cl_help_func() {
                 ((LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank) / 100).toFixed(2) + "\n";
             balance += LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank;
         }
-        help_text += "Balance = " + (balance / 100).toFixed(2) + "\n";
+        var total = balance + LOCAL_STATE.global_pot_remainder;
+        help_text += "Balance with pot remainder = " + (total / 100).toFixed(2) + "\n";
     }
     window.alert(help_text);
 }
@@ -537,28 +538,26 @@ function cl_has_money(i) {
     return false;
 }
 
+function cl_player_has_money(player) {
+    if (player.bankroll >= 0.01) {
+        return true;
+    }
+    return false;
+}
+
 function cl_check_for_busts() {
+    console.log("check for busts called");
     for (var n = 0; n < LOCAL_STATE.players.length; n++) {
         if (LOCAL_STATE.players[n].bankroll == 0) {
-            LOCAL_STATE.players[n].status = "BUST";
+            //LOCAL_STATE.players[n].status = "BUST";
         }
     }
 }
 
 function cl_is_player_in_game(player) {
-    /*
-    if(player.status === "RAISE" ||
-       player.status === "CHECK" ||
-       player.status === "CALL" ||
-       player.status === "WIN" ||
-       player.status === "WAIT" ||
-       player.status === "OPTION" ||
-       player.status === "FOLD" ||
-       player.status === "") {
-           return true;
-    } */
-    if (player.status !== "BUST" &&
-        player.status !== "AWAY") {
+    if ((player.status !== "BUST") &&
+        (cl_player_has_money(player)) &&
+        (player.status !== "AWAY")) {
             return true;
         }
     else {
@@ -694,11 +693,9 @@ function cl_write_player(n, hilite, show_cards) {
             gui_set_player_cards(carda, cardb, n, show_folded);
             return;
         }
-        // *********ADD CODE HERE -- NEED TO SHOW last raiser cards somehow, need to identify that the hand is over
-        if (cl_hand_is_over()) {
-            if (n == LOCAL_STATE.last_raiser) {
-                gui_set_player_cards(carda, cardb, n, show_folded);
-            }
+        // show last raiser's cards
+        if (n == LOCAL_STATE.last_raiser) {
+            gui_set_player_cards(carda, cardb, n, show_folded);
         }
         return;
     }
@@ -719,11 +716,11 @@ function cl_write_player(n, hilite, show_cards) {
 }
 
 function cl_write_all_players() {
-    //console.log("write all players called");
+    console.log("write all players called");
     for (var n = 0; n < LOCAL_STATE.players.length; n++) {
         if (LOCAL_STATE.players[n].status == "WIN") {
             cl_write_player(n, 2, 0);
-            return;
+            continue;
         }
         if (LOCAL_STATE.current_bettor_index != n) {
             cl_write_player(n, 0, 0);
@@ -767,7 +764,7 @@ function cl_msg_dispatch() {
         cl_new_round();
         //cl_show_board();
         gui_place_dealer_button(LOCAL_STATE.button_index);
-        cl_write_all_players();
+        //cl_write_all_players();
         LOCAL_STATE.CMD = "next player to act";
     }
 
@@ -814,8 +811,9 @@ function cl_msg_dispatch() {
             var accounting = 0;
             for (var n = 0; n < LOCAL_STATE.players.length; n++) {
                 accounting +=
-                    LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank + LOCAL_STATE.global_pot_remainder;
+                    LOCAL_STATE.players[n].bankroll - LOCAL_STATE.players[n].totalbank;
             }
+            accounting += LOCAL_STATE.global_pot_remainder;
             if (accounting) {
                 console.log("House account is off by $" + (accounting / 100).toFixed(2));
             }
