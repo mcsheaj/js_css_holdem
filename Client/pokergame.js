@@ -164,8 +164,8 @@ function add_new_player(current_state) {
                     SERVER_STATE.CMD = "player action";  //testing, this seems like it should take care of player rejoining
                                                     //while having the action
                     cl_send_SignalR(SERVER_STATE);
-                    break;
                 }
+                break;
             }
         }
 
