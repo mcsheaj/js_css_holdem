@@ -158,11 +158,13 @@ function add_new_player(current_state) {
                 //rejoining with same name should just send back game state without adding new player
                 SERVER_STATE.CMD = "update player status";
                 cl_send_SignalR(SERVER_STATE);
+                //unless player has the action in which case we need to move the action along
                 if (SERVER_STATE.current_bettor_index == n) {
                     SERVER_STATE.players[n].status = "FOLD";
                     SERVER_STATE.CMD = "player action";  //testing, this seems like it should take care of player rejoining
                                                     //while having the action
                     cl_send_SignalR(SERVER_STATE);
+                    break;
                 }
             }
         }
