@@ -331,6 +331,15 @@ function gui_setup_fold_call_click(show_fold, call_text,
 
     var call = document.getElementById('call-button');
     internal_clickin_helper(call, call_text, call_func);
+
+    if (call_text === "Check") {
+        call.querySelector(".call-button").classList.add("hidden");
+        call.querySelector(".check-button").classList.remove("hidden");
+    }
+    else {
+        call.querySelector(".call-button").classList.remove("hidden");
+        call.querySelector(".check-button").classList.add("hidden");
+    }
 }
 
 function internal_le_button(buttons, button_name, button_func) {

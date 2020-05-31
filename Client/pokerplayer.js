@@ -141,7 +141,7 @@ function cl_get_action() {
             gui_setup_fold_call_click(fold_button_text,
                 call_button_text,
                 cl_player_folds,
-                cl_player_calls);
+                cl_player_calls);    
         }
         else {
             gui_setup_fold_call_click(fold_button_text,
